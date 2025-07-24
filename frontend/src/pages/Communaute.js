@@ -264,6 +264,7 @@ const Communaute = () => {
                 </div>
               ) : (
                 filteredMembers.map(member => (
+                  <div key={member.id} className="member-card-pro">
                 <div key={member.id} className="member-card-pro">
                   <div className="member-header-pro">
                     <div className="member-avatar-pro">
