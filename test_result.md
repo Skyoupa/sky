@@ -225,20 +225,53 @@ backend:
         agent: "testing"
         comment: "✅ Admin initialization script working correctly. Default admin user (admin@oupafamilly.com) created successfully, welcome announcement generated, proper error handling for existing admin."
 
-  - task: "Dependencies Installation"
+  - task: "CS2 Tournament Templates Integration"
+    implemented: true
+    working: false
+    file: "/app/backend/routes/tournaments.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Created 6 specialized CS2 tournament templates with detailed rules: 1v1 Quick Match, 5v5 Team Deathmatch, Competitive 5v5, Retake Masters, Aim Challenge, and Pistol Only Tournament. Each template has specific CS2 rules and configurations."
+
+  - task: "Frontend CS2 Focus Update"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/pages/AdminTournaments.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Updated AdminTournaments to focus exclusively on CS2, removed other games, added detailed rules display with collapsible sections for each template. Enhanced UX for CS2-specific tournament creation."
+
+  - task: "Public Tournament Page CS2 Integration"
     implemented: true
     working: true
-    file: "/app/backend/requirements.txt"
+    file: "/app/frontend/src/pages/Tournois.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Page already integrated with backend API and working. Updated to support CS2-only display. Dynamic tournament fetching, registration system, and status management all functional."
+
+  - task: "Database Cleanup CS2 Focus"
+    implemented: true
+    working: true
+    file: "/app/backend/cleanup_non_cs2.py"
     stuck_count: 0
     priority: "medium"
     needs_retesting: false
     status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Added bcrypt dependency for password hashing and updated requirements.txt with all necessary packages for the backend functionality."
       - working: true
-        agent: "testing"
-        comment: "✅ All dependencies properly installed and working. bcrypt for password hashing, FastAPI, Motor for MongoDB, JWT libraries, all functioning correctly."
+        agent: "main"
+        comment: "Created and executed cleanup script. Database already contained only CS2 tournaments (6 total). No cleanup needed, system optimized for CS2-only operation."
 
 frontend:
   - task: "Frontend Pages Structure"
