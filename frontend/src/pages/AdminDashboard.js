@@ -143,6 +143,9 @@ const AdminDashboard = () => {
             </div>
           </div>
 
+          {/* Gestion des équipes */}
+          <AdminTeamsManagement />
+
           {/* Actions rapides */}
           <div className="admin-section">
             <h2>⚡ Actions rapides</h2>
