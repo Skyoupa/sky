@@ -8,6 +8,7 @@ import Tutoriels from './pages/Tutoriels';
 import Tournois from './pages/Tournois';
 import Communaute from './pages/Communaute';
 import APropos from './pages/APropos';
+import Profil from './pages/Profil';
 import './App.css';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
               <Route path="/tournois" element={<Tournois />} />
               <Route path="/communaute" element={<Communaute />} />
               <Route path="/a-propos" element={<APropos />} />
+              <Route path="/profil" element={<Profil />} />
             </Routes>
           </main>
           <Footer />
