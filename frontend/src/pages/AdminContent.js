@@ -795,13 +795,13 @@ const AdminContent = () => {
         }
 
         .views {
-          color: #6b7280;
+          color: #333333;
           font-size: 12px;
           font-weight: 600;
         }
 
         .content-summary {
-          color: #374151;
+          color: #1a1a1a;
           margin: 10px 0;
           line-height: 1.5;
         }
@@ -822,7 +822,7 @@ const AdminContent = () => {
 
         .tag {
           background: #e2e8f0;
-          color: #374151;
+          color: #1a1a1a;
           padding: 2px 6px;
           border-radius: 4px;
           font-size: 11px;
@@ -830,7 +830,7 @@ const AdminContent = () => {
         }
 
         .content-date {
-          color: #9ca3af;
+          color: #333333;
           font-size: 12px;
           font-weight: 600;
         }
