@@ -11,9 +11,10 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
     confirmPassword: ''
   });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const { login, register } = useAuth();
+  const { login, register, API_BASE_URL } = useAuth();
 
   const handleChange = (e) => {
     setFormData({
