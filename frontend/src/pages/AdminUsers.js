@@ -50,13 +50,12 @@ const AdminUsers = () => {
 
   const updateUserStatus = async (userId, newStatus) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/users/${userId}/status`, {
+      const response = await fetch(`${API_BASE_URL}/admin/users/${userId}/status?new_status=${newStatus}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newStatus)
+        }
       });
 
       if (response.ok) {
@@ -73,13 +72,12 @@ const AdminUsers = () => {
 
   const updateUserRole = async (userId, newRole) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/users/${userId}/role`, {
+      const response = await fetch(`${API_BASE_URL}/admin/users/${userId}/role?new_role=${newRole}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newRole)
+        }
       });
 
       if (response.ok) {
