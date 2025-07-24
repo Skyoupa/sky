@@ -672,14 +672,12 @@ cl_crosshaircolor_b 255
 - **Mouse acceleration** : OFF
 
 **In-game settings :**
-\`\`\`
 m_rawinput 1
 m_customaccel 0
 m_mouseaccel1 0
 m_mouseaccel2 0
 sensitivity 2.0
 zoom_sensitivity_ratio_mouse 1.0
-\`\`\`
 
 **Hardware recommendations :**
 - **Polling rate** : 1000Hz minimum
