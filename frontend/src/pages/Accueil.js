@@ -21,118 +21,220 @@ const Accueil = () => {
 
   const values = [
     {
-      icon: '🎉',
-      title: 'Fun avant tout',
-      description: 'Le gaming doit rester un plaisir. Chez nous, on privilégie la bonne ambiance et les fous rires.'
+      icon: (
+        <svg className="value-icon-svg" viewBox="0 0 64 64" fill="none">
+          <circle cx="32" cy="32" r="28" stroke="currentColor" strokeWidth="3" fill="rgba(59, 130, 246, 0.1)"/>
+          <path d="M20 32L28 40L44 24" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ),
+      title: 'Excellence Compétitive',
+      description: 'Nous visons l\'excellence dans chaque match, avec un esprit de compétition saine et une progression constante.'
     },
     {
-      icon: '🏆',
-      title: 'Compétition saine',
-      description: 'On aime gagner, mais toujours dans le respect. La progression de chacun nous tient à cœur.'
+      icon: (
+        <svg className="value-icon-svg" viewBox="0 0 64 64" fill="none">
+          <rect x="12" y="20" width="40" height="28" rx="4" stroke="currentColor" strokeWidth="3" fill="rgba(59, 130, 246, 0.1)"/>
+          <path d="M18 32h28M18 38h20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          <circle cx="42" cy="35" r="3" fill="currentColor"/>
+        </svg>
+      ),
+      title: 'Stratégie Professionnelle',
+      description: 'Chaque membre bénéficie d\'un coaching personnalisé et d\'analyses tactiques approfondies.'
     },
     {
-      icon: '😎',
-      title: 'Pas de prise de tête',
-      description: 'Zero drama, zero toxicité. On est là pour se détendre et passer de bons moments ensemble.'
+      icon: (
+        <svg className="value-icon-svg" viewBox="0 0 64 64" fill="none">
+          <circle cx="32" cy="25" r="8" stroke="currentColor" strokeWidth="3" fill="rgba(59, 130, 246, 0.1)"/>
+          <path d="M20 45c0-8 5-12 12-12s12 4 12 12" stroke="currentColor" strokeWidth="3"/>
+          <path d="M15 52h34" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+        </svg>
+      ),
+      title: 'Esprit Familial',
+      description: 'Une communauté soudée où chaque membre compte et contribue au succès collectif.'
     },
     {
-      icon: '👨‍👩‍👧‍👦',
-      title: 'Esprit famille',
-      description: 'Plus qu\'une team, on est une vraie famille. On se soutient et on grandit ensemble.'
+      icon: (
+        <svg className="value-icon-svg" viewBox="0 0 64 64" fill="none">
+          <path d="M32 8L42 22H22L32 8z" stroke="currentColor" strokeWidth="3" fill="rgba(59, 130, 246, 0.1)"/>
+          <rect x="22" y="22" width="20" height="20" stroke="currentColor" strokeWidth="3" fill="rgba(59, 130, 246, 0.1)"/>
+          <path d="M27 47h10v8h-10z" stroke="currentColor" strokeWidth="3" fill="currentColor"/>
+        </svg>
+      ),
+      title: 'Innovation Gaming',
+      description: 'Toujours à la pointe des méta et techniques, nous adaptons constamment nos stratégies.'
     }
   ];
 
-  const featuredGames = [
-    { name: 'Counter-Strike 2', icon: '🔫', status: 'Actif' },
-    { name: 'World of Warcraft', icon: '⚔️', status: 'Actif' },
-    { name: 'League of Legends', icon: '🏟️', status: 'Actif' },
-    { name: 'StarCraft II', icon: '🚀', status: 'Actif' },
-    { name: 'Minecraft', icon: '⛏️', status: 'Actif' }
+  const games = [
+    { 
+      name: 'Counter-Strike 2', 
+      description: 'FPS Tactique Compétitif',
+      status: 'FOCUS PRINCIPAL',
+      gradient: 'from-orange-600 to-red-700'
+    },
+    { 
+      name: 'World of Warcraft', 
+      description: 'MMORPG Stratégique',
+      status: 'ÉQUIPE ACTIVE',
+      gradient: 'from-yellow-600 to-orange-600'
+    },
+    { 
+      name: 'League of Legends', 
+      description: 'MOBA Esports',
+      status: 'ÉQUIPE PRO',
+      gradient: 'from-blue-600 to-purple-600'
+    },
+    { 
+      name: 'StarCraft II', 
+      description: 'RTS Compétitif',
+      status: 'ÉLITE',
+      gradient: 'from-cyan-600 to-blue-600'
+    },
+    { 
+      name: 'Minecraft', 
+      description: 'Créatif & Compétitif',
+      status: 'COMMUNAUTÉ',
+      gradient: 'from-green-600 to-emerald-600'
+    }
   ];
 
   return (
-    <div className="page">
+    <div className="page-pro">
       {/* Hero Section */}
-      <section className="hero">
-        <div className="hero-background">
-          <div className="hero-overlay"></div>
+      <section className="hero-pro">
+        <div className="hero-bg-pro">
+          <div className="hero-overlay-pro"></div>
+          <div className="hero-grid-pattern"></div>
         </div>
-        <div className="hero-content">
-          <h1 className="hero-title">
-            Bienvenue dans la
-            <span className="hero-title-accent"> Oupafamilly</span>
+        <div className="hero-content-pro">
+          <div className="hero-badge">
+            <span className="hero-badge-text">ESPORTS COMMUNITY</span>
+          </div>
+          <h1 className="hero-title-pro">
+            <span className="hero-title-line1">BIENVENUE DANS LA</span>
+            <span className="hero-title-line2">OUPAFAMILLY</span>
           </h1>
-          <p className="hero-subtitle">
-            La communauté gaming où le <strong>fun</strong>, la <strong>compétition</strong> et l'<strong>esprit familial</strong> se rencontrent.
+          <p className="hero-subtitle-pro">
+            Communauté gaming d'élite où <strong>l'excellence compétitive</strong> rencontre <strong>l'esprit familial</strong>
           </p>
-          <div className="hero-buttons">
-            <Link to="/communaute" className="btn btn-primary">
-              Rejoindre la famille
+          <div className="hero-stats">
+            <div className="hero-stat">
+              <span className="stat-number">150+</span>
+              <span className="stat-label">Membres</span>
+            </div>
+            <div className="hero-stat">
+              <span className="stat-number">50+</span>
+              <span className="stat-label">Tournois</span>
+            </div>
+            <div className="hero-stat">
+              <span className="stat-number">5</span>
+              <span className="stat-label">Jeux Pro</span>
+            </div>
+          </div>
+          <div className="hero-buttons-pro">
+            <Link to="/communaute" className="btn-primary-pro">
+              <span>REJOINDRE L'ÉLITE</span>
+              <svg className="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
             </Link>
-            <Link to="/tournois" className="btn btn-secondary">
-              Voir les tournois
+            <Link to="/tournois" className="btn-secondary-pro">
+              <span>TOURNOIS CS2</span>
             </Link>
           </div>
         </div>
       </section>
 
       {/* Values Section */}
-      <section className="section">
-        <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">Nos Valeurs</h2>
-            <p className="section-subtitle">Ce qui fait la force de la Oupafamilly</p>
+      <section className="section-pro">
+        <div className="container-pro">
+          <div className="section-header-pro">
+            <div className="section-badge">
+              <span>NOS VALEURS</span>
+            </div>
+            <h2 className="section-title-pro">L'ADN Oupafamilly</h2>
+            <p className="section-subtitle-pro">Les piliers qui font notre force depuis 2023</p>
           </div>
-          <div className="values-grid">
+          <div className="values-grid-pro">
             {values.map((value, index) => (
-              <div key={index} className="value-card">
-                <div className="value-icon">{value.icon}</div>
-                <h3 className="value-title">{value.title}</h3>
-                <p className="value-description">{value.description}</p>
+              <div key={index} className="value-card-pro">
+                <div className="value-icon-container">
+                  {value.icon}
+                </div>
+                <h3 className="value-title-pro">{value.title}</h3>
+                <p className="value-description-pro">{value.description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Featured Games */}
-      <section className="section section-alt">
-        <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">Nos Jeux</h2>
-            <p className="section-subtitle">Les jeux où la famille excelle</p>
+      {/* Games Section */}
+      <section className="section-pro section-alt-pro">
+        <div className="container-pro">
+          <div className="section-header-pro">
+            <div className="section-badge">
+              <span>NOS DOMAINES</span>
+            </div>
+            <h2 className="section-title-pro">Excellence Multi-Gaming</h2>
+            <p className="section-subtitle-pro">5 jeux, 5 communautés d'élite</p>
           </div>
-          <div className="games-grid">
-            {featuredGames.map((game, index) => (
-              <div key={index} className="game-card">
-                <div className="game-icon">{game.icon}</div>
-                <h3 className="game-name">{game.name}</h3>
-                <span className="game-status">{game.status}</span>
+          <div className="games-grid-pro">
+            {games.map((game, index) => (
+              <div key={index} className="game-card-pro">
+                <div className={`game-gradient bg-gradient-to-br ${game.gradient}`}></div>
+                <div className="game-content">
+                  <div className="game-status">
+                    <span className="status-badge">{game.status}</span>
+                  </div>
+                  <h3 className="game-name-pro">{game.name}</h3>
+                  <p className="game-description-pro">{game.description}</p>
+                  <div className="game-actions">
+                    <button className="game-btn">
+                      <span>DÉCOUVRIR</span>
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
-          <div className="section-cta">
-            <Link to="/tutoriels" className="btn btn-primary">
-              Voir tous les tutoriels
+          <div className="section-cta-pro">
+            <Link to="/tutoriels" className="btn-primary-pro">
+              <span>VOIR TOUS LES TUTORIELS</span>
+              <svg className="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
             </Link>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="cta-section">
-        <div className="container">
-          <div className="cta-content">
-            <h2 className="cta-title">Prêt à rejoindre l'aventure ?</h2>
-            <p className="cta-subtitle">
-              Découvrez une communauté bienveillante où chaque joueur compte
+      <section className="cta-section-pro">
+        <div className="cta-bg">
+          <div className="cta-pattern"></div>
+        </div>
+        <div className="container-pro">
+          <div className="cta-content-pro">
+            <div className="cta-badge">
+              <span>REJOIGNEZ-NOUS</span>
+            </div>
+            <h2 className="cta-title-pro">Prêt à faire partie de l'élite ?</h2>
+            <p className="cta-subtitle-pro">
+              Intégrez une communauté d'exception où talent et passion se rencontrent
             </p>
-            <div className="cta-buttons">
-              <Link to="/communaute" className="btn btn-primary">
-                Rejoindre maintenant
+            <div className="cta-buttons-pro">
+              <Link to="/communaute" className="btn-primary-pro btn-large">
+                <span>CANDIDATER MAINTENANT</span>
+                <svg className="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
               </Link>
-              <Link to="/a-propos" className="btn btn-outline">
-                En savoir plus
+              <Link to="/a-propos" className="btn-outline-pro">
+                <span>NOTRE HISTOIRE</span>
               </Link>
             </div>
           </div>
