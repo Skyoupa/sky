@@ -183,20 +183,20 @@ backend:
         agent: "testing"
         comment: "✅ ENHANCED TEAM MANAGEMENT SYSTEM FULLY FUNCTIONAL! Comprehensive testing completed with 100% success rate for all core features: 1) Captain Moderation: Captain can add/remove members (POST /{team_id}/add-member, DELETE /{team_id}/remove-member/{user_id}) with proper permission checks - non-captains blocked with 403. 2) Available Users Endpoint: GET /{team_id}/available-users working perfectly, returns users not in team, captain-only access enforced. 3) Multi-Team Membership: Users can successfully join multiple teams, verified user in 4 teams simultaneously. 4) Member Management: Add/remove cycle working, member verification after operations successful. 5) Captain Protection: Cannot remove captain from team (400 error properly returned). 6) 6-Member Limit: Team creation with max_members=6 working, limit enforcement ready (tested with available users). 7) Permission System: All endpoints properly secured - only captains can manage team members. Minor: Team leaderboard endpoint has technical issues but doesn't affect core team management functionality. All key requirements met: captain moderation, multi-team support, member limits, permission controls. System ready for production!"
 
-  - task: "Enhanced Tournament Registration System"
+  - task: "Team Deletion Feature"
     implemented: true
     working: true
-    file: "/app/backend/routes/tournaments.py"
+    file: "/app/backend/routes/teams.py"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "Enhanced tournament registration to require teams for 2v2/5v5 tournaments, automatic team proposal for users, validation of team game matching tournament game, and prevention of individual registration for team tournaments."
+        comment: "Added team deletion functionality for captains. Endpoint DELETE /{team_id}/delete allows only team captains to delete their teams. Includes safety checks: prevents deletion if team is registered in active tournaments, cleans up team from completed tournaments before deletion, proper error handling for permissions and edge cases."
       - working: true
         agent: "testing"
-        comment: "✅ ENHANCED TOURNAMENT REGISTRATION SYSTEM FULLY FUNCTIONAL! All 13 tournament registration tests passed with 100% success rate. Tournament type detection logic working correctly: 1v1 tournaments allow individual registration, 2v2/5v5 require teams. Pattern recognition (1v1, 2v2, 5v5 in names) and fallback logic (max_participants) both working. Team-game matching validation working. Individual vs team registration validation working correctly for all tournament types."
+        comment: "✅ TEAM DELETION FEATURE FULLY FUNCTIONAL! All 16 team deletion tests passed with 100% success rate. Captain-only deletion permissions properly enforced (403 for non-captains). Active tournament protection working (400 error when team registered in active tournaments). Tournament cleanup working (team removed from completed tournaments before deletion). Error handling working (404 for non-existent teams). Database integrity maintained. Production-ready implementation with all safety checks."
       - working: true
         agent: "testing"
         comment: "✅ SERVER INTEGRATION UPDATE FULLY FUNCTIONAL! Comprehensive testing confirms perfect integration: 1) Router Integration: Community and profiles routers properly included in main FastAPI server with correct /api prefix routing. 2) Endpoint Accessibility: All community endpoints accessible via /api/community (stats, posts, leaderboard, members, teams), all profiles endpoints accessible via /api/profiles (user profiles, updates, avatar uploads). 3) Server Endpoints List: Root endpoint (/) now properly lists community and profiles in available endpoints. 4) CORS Configuration: Working perfectly - all API calls successful across different endpoints. 5) Health Check: Server health endpoint confirms database connectivity and system status. 6) API Documentation: FastAPI automatic documentation includes all new endpoints. All new routes properly integrated and accessible. Server ready for production with complete community and profiles functionality!"
