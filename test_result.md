@@ -396,9 +396,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Enhanced Tournament Registration System"
+    - "Tournament Deletion Feature"
   stuck_tasks:
-    - "Enhanced Tournament Registration System"
+    - "Tournament Deletion Feature"
   test_all: false
   test_priority: "high_first"
 
