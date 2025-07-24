@@ -202,6 +202,39 @@ class TutorialCreate(BaseModel):
     video_url: Optional[str] = None
     tags: List[str] = []
 
+# Community Models
+class CommunityPost(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    title: str
+    content: str
+    author_id: str
+    author_name: Optional[str] = None  # Will be populated from user
+    is_published: bool = False
+    is_pinned: bool = False
+    tags: List[str] = []
+    likes: List[str] = []  # user_ids who liked
+    views: int = 0
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class CommunityPostCreate(BaseModel):
+    title: str
+    content: str
+    tags: List[str] = []
+    is_pinned: bool = False
+
+# Team Statistics for ranking
+class TeamStats(BaseModel):
+    team_id: str
+    total_tournaments: int = 0
+    tournaments_won: int = 0
+    total_matches: int = 0
+    matches_won: int = 0
+    win_rate: float = 0.0
+    points: int = 0
+    rank: Optional[int] = None
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
 # News/Announcements Models
 class News(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
