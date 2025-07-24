@@ -2366,6 +2366,9 @@ class OupafamillyTester:
             # NEW ENHANCEMENTS 2025 - PRIMARY FOCUS
             await self.test_new_enhancements_2025()
             
+            # NEW: User Account Management Testing (PRIORITY)
+            await self.test_user_account_management()
+            
         except Exception as e:
             print(f"❌ Critical error during testing: {e}")
             self.log_test("Critical Error", False, str(e))
