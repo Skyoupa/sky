@@ -81,7 +81,7 @@ const Tutoriels = () => {
       name: 'Minecraft',
       description: 'Créatif & Compétitif',
       color: '#27AE60',
-      bgGradient: 'from-green-500 via-emerald-600 to-green-700',
+      backgroundImage: 'https://images.unsplash.com/photo-1593280359364-5242f1958068?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHw0fHxnYW1pbmd8ZW58MHx8fGJsdWV8MTc1MzM0MTQxMXww&ixlib=rb-4.1.0&q=85',
       tutorials: [
         { title: 'Survie première nuit', level: 'Débutant', duration: '20 min', type: 'Survival' },
         { title: 'Crafting et outils', level: 'Débutant', duration: '25 min', type: 'Crafting' },
