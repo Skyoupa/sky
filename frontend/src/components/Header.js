@@ -70,7 +70,11 @@ const Header = () => {
                   <span className="welcome-text">Salut, {user?.username}!</span>
                 </Link>
                 {user?.role === 'admin' && (
-                  <span className="admin-badge">ADMIN</span>
+                  <>
+                    <Link to="/admin" className="admin-link">
+                      <span className="admin-badge">ADMIN</span>
+                    </Link>
+                  </>
                 )}
                 <button className="logout-btn" onClick={handleLogout}>
                   Déconnexion
