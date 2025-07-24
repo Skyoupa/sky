@@ -182,7 +182,20 @@ const AdminDashboard = () => {
           </div>
 
           {/* Gestion des équipes */}
-          <AdminTeamsManagement />
+          {showTeamsManagement && (
+            <div className="admin-section">
+              <div className="section-header">
+                <h2>🛡️ Gestion des équipes</h2>
+                <button 
+                  className="close-section-btn"
+                  onClick={() => setShowTeamsManagement(false)}
+                >
+                  ✕ Fermer
+                </button>
+              </div>
+              <AdminTeamsManagement />
+            </div>
+          )}
 
           {/* Santé de la communauté */}
           <div className="admin-section">
