@@ -705,10 +705,11 @@ const TournamentDetail = () => {
         .detail-item {
           margin-bottom: 1rem;
           line-height: 1.6;
+          color: #1a1a1a;
         }
 
         .detail-item strong {
-          color: #60a5fa;
+          color: #1e3a8a;
         }
 
         .rules-content {
