@@ -342,6 +342,21 @@ backend:
         agent: "testing"
         comment: "✅ FRONTEND CS2 FOCUS TESTING COMPLETED SUCCESSFULLY! Comprehensive testing confirms perfect CS2 integration: 1) Admin Tournaments Page (/admin/tournaments): All 6 CS2 templates display correctly with names 'CS2 Quick Match 1v1', 'CS2 Team Deathmatch 5v5', 'CS2 Competitive 5v5', 'CS2 Retake Masters', 'CS2 Aim Challenge', 'CS2 Pistol Only Tournament'. 2) Detailed rules display working perfectly with collapsible sections (200-500+ characters each with CS2-specific content and emojis). 3) Game dropdown shows only 'Counter-Strike 2' option. 4) Template usage functionality working - forms populate correctly with template data. 5) Tournament creation successful with CS2 templates. 6) Public Tournaments Page (/tournois): Perfect '🏆 Tournois CS2' title display. 7) Tab functionality working (À venir, En cours, Terminés). 8) All tournaments display CS2 game badges exclusively. 9) Tournament registration system functional. 10) Mobile responsiveness excellent. 11) Navigation between admin and public pages working. 12) Authentication system integrated properly. Frontend is 100% CS2-focused as required for Oupafamilly community. Ready for production!"
 
+  - task: "Team Deletion Feature"
+    implemented: true
+    working: true
+    file: "/app/backend/routes/teams.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented team deletion functionality with DELETE /{team_id}/delete endpoint. Captain can delete their own team with proper validation: only captain can delete, team cannot be deleted if registered in active tournaments, team is cleaned up from completed tournaments before deletion, proper error handling for non-existent teams."
+      - working: true
+        agent: "testing"
+        comment: "✅ TEAM DELETION FEATURE FULLY FUNCTIONAL! Comprehensive testing completed with 100% success rate (16/16 tests passed). All user requirements met: 1) Team Deletion Endpoint (/api/teams/{team_id}/delete): Working perfectly - captain can delete their own team. 2) Permission Validation: Only captain can delete team (403 for non-captain users), proper authentication required. 3) Active Tournament Protection: Team deletion properly blocked when registered in active tournaments (400 error with clear message). 4) Tournament Cleanup: Team properly removed from completed tournament participants before deletion. 5) Error Handling: 404 for non-existent teams, proper validation throughout. 6) Database Integrity: Team properly removed from database, tournament participants cleaned up correctly. 7) Security: All endpoints properly secured, unauthorized access blocked. Team deletion system is production-ready for Oupafamilly platform with all safety checks and cleanup operations working correctly."
+
   - task: "Public Tournament Page CS2 Integration"
     implemented: true
     working: true
