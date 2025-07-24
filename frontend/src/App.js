@@ -9,6 +9,8 @@ import Tournois from './pages/Tournois';
 import Communaute from './pages/Communaute';
 import APropos from './pages/APropos';
 import Profil from './pages/Profil';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminTournaments from './pages/AdminTournaments';
 import './App.css';
 
 function App() {
@@ -25,6 +27,8 @@ function App() {
               <Route path="/communaute" element={<Communaute />} />
               <Route path="/a-propos" element={<APropos />} />
               <Route path="/profil" element={<Profil />} />
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/tournaments" element={<AdminTournaments />} />
             </Routes>
           </main>
           <Footer />
