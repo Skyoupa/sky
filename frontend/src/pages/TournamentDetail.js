@@ -818,6 +818,7 @@ const TournamentDetail = () => {
           padding: 20px;
           border: 2px solid #e5e7eb;
           border-radius: 12px;
+          background: #f8fafc;
         }
 
         .radio-option {
@@ -827,6 +828,7 @@ const TournamentDetail = () => {
           cursor: pointer;
           font-weight: 600;
           color: #1a1a1a;
+          font-size: 16px;
         }
 
         .radio-option input[type="radio"] {
@@ -842,11 +844,13 @@ const TournamentDetail = () => {
         }
 
         .no-teams {
-          color: #64748b;
+          color: #dc2626;
           font-style: italic;
           padding: 15px;
-          background: #f8fafc;
+          background: #fef2f2;
+          border: 1px solid #fecaca;
           border-radius: 8px;
+          font-weight: 500;
         }
 
         .team-select {
@@ -856,6 +860,8 @@ const TournamentDetail = () => {
           border-radius: 8px;
           font-size: 16px;
           background: white;
+          color: #1a1a1a;
+          font-weight: 500;
         }
 
         .team-select:focus {
@@ -876,6 +882,9 @@ const TournamentDetail = () => {
           border-radius: 8px;
           font-size: 16px;
           margin-bottom: 10px;
+          background: white;
+          color: #1a1a1a;
+          font-weight: 500;
         }
 
         .team-name-input:focus {
@@ -883,10 +892,20 @@ const TournamentDetail = () => {
           border-color: #3b82f6;
         }
 
+        .team-name-input::placeholder {
+          color: #9ca3af;
+          font-weight: 400;
+        }
+
         .form-help {
-          color: #64748b;
+          color: #059669;
           font-size: 14px;
           margin: 0;
+          font-weight: 500;
+          background: #ecfdf5;
+          padding: 10px;
+          border-radius: 6px;
+          border: 1px solid #a7f3d0;
         }
 
         .modal-footer {
