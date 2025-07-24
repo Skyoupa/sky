@@ -20,7 +20,7 @@ const Tutoriels = () => {
       name: 'Counter-Strike 2',
       description: 'FPS Tactique Compétitif',
       color: '#FF6B35',
-      backgroundImage: 'https://images.unsplash.com/photo-1580234811497-9df7fd2f357e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwxfHxnYW1pbmd8ZW58MHx8fGJsdWV8MTc1MzM0MTQxMXww&ixlib=rb-4.1.0&q=85',
+      backgroundImage: 'https://c4.wallpaperflare.com/wallpaper/361/922/362/counter-strike-2-valve-weapon-men-ultrawide-hd-wallpaper-preview.jpg',
       tutorials: [
         // === NIVEAU DÉBUTANT (15 tutoriels) ===
         { title: 'Interface et contrôles de base', level: 'Débutant', duration: '15 min', type: 'Fundamentals' },
