@@ -501,10 +501,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Enhanced Tournament Templates 2025"
-    - "Tournament Registration Validation Multiples"
-    - "Content Management Deletion Enhancements"
-    - "Admin Team Management Enhancement"
+    - "User Account Management (Deletion & Password Reset)"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
