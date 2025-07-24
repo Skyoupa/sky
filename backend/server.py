@@ -48,7 +48,9 @@ async def root():
             "teams": "/api/teams",
             "matches": "/api/matches",
             "content": "/api/content",
-            "admin": "/api/admin"
+            "admin": "/api/admin",
+            "community": "/api/community",
+            "profiles": "/api/profiles"
         }
     }
 
