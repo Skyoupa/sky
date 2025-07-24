@@ -11,6 +11,8 @@ import APropos from './pages/APropos';
 import Profil from './pages/Profil';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminTournaments from './pages/AdminTournaments';
+import AdminUsers from './pages/AdminUsers';
+import AdminContent from './pages/AdminContent';
 import './App.css';
 
 function App() {
@@ -29,6 +31,8 @@ function App() {
               <Route path="/profil" element={<Profil />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/tournaments" element={<AdminTournaments />} />
+              <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/admin/content" element={<AdminContent />} />
             </Routes>
           </main>
           <Footer />
