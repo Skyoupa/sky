@@ -96,7 +96,7 @@ class Team(BaseModel):
     captain_id: str
     members: List[str] = []  # user_ids
     game: Game
-    max_members: int = 5
+    max_members: int = 6  # Maximum 6 members as requested
     is_open: bool = True
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
