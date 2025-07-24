@@ -353,7 +353,7 @@ const Profil = () => {
         .form-group label {
           display: block;
           margin-bottom: 5px;
-          color: #374151;
+          color: #1a1a1a;
           font-weight: 500;
         }
 
@@ -366,6 +366,7 @@ const Profil = () => {
           font-size: 16px;
           transition: border-color 0.3s;
           box-sizing: border-box;
+          color: #1a1a1a;
         }
 
         .form-group input:focus,
@@ -392,6 +393,7 @@ const Profil = () => {
           gap: 10px;
           cursor: pointer;
           font-weight: 500;
+          color: #1a1a1a;
         }
 
         .game-checkbox input[type="checkbox"] {
@@ -423,6 +425,7 @@ const Profil = () => {
           align-items: center;
           gap: 5px;
           cursor: pointer;
+          color: #1a1a1a;
         }
 
         .experience-radio input[type="radio"] {
