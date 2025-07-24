@@ -86,7 +86,47 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
     setLoading(false);
   };
 
-  const toggleMode = () => {
+  const handleForgotPassword = async () => {
+    if (!formData.email) {
+      setError('Veuillez saisir votre adresse email');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/request-password-reset?email=${encodeURIComponent(formData.email)}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setSuccess(
+          `📧 ${result.message}\n\n` +
+          "Un lien de réinitialisation a été envoyé à votre adresse email. " +
+          "Vérifiez votre boîte de réception et suivez les instructions pour changer votre mot de passe."
+        );
+        if (result.reset_link) {
+          // In development, also show the reset link
+          console.log('Reset link (dev):', result.reset_link);
+          setSuccess(prev => prev + `\n\n🔗 Lien de développement: ${result.reset_link}`);
+        }
+      } else {
+        const errorData = await response.json();
+        setError(errorData.detail || 'Erreur lors de la demande de réinitialisation');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la demande:', error);
+      setError('Erreur lors de la demande de réinitialisation du mot de passe');
+    } finally {
+      setLoading(false);
+    }
+  };
     setMode(mode === 'login' ? 'register' : 'login');
     setError('');
     setFormData({
