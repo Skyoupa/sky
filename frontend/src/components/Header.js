@@ -126,7 +126,9 @@ const Header = () => {
                 {isAuthenticated ? (
                   <div className="user-menu-mobile">
                     <div className="user-info-mobile">
-                      <span className="welcome-text-mobile">Connecté : {user?.username}</span>
+                      <Link to="/profil" className="profile-link-mobile" onClick={() => setIsMenuOpen(false)}>
+                        <span className="welcome-text-mobile">Connecté : {user?.username}</span>
+                      </Link>
                       {user?.role === 'admin' && (
                         <span className="admin-badge-mobile">ADMIN</span>
                       )}
