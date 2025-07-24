@@ -372,3 +372,112 @@ async def get_community_members():
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error fetching community members"
         )
+
+@router.get("/teams")
+async def get_community_teams():
+    """Get community teams with rankings."""
+    try:
+        teams = await db.teams.find({}).to_list(100)
+        
+        enriched_teams = []
+        for team_data in teams:
+            team = Team(**team_data)
+            
+            # Calculate team statistics
+            team_stats = await calculate_team_statistics(team.id)
+            
+            # Get team member names
+            member_names = []
+            for member_id in team.members:
+                member = await db.users.find_one({"id": member_id})
+                if member:
+                    member_names.append(member["username"])
+            
+            # Get captain name
+            captain = await db.users.find_one({"id": team.captain_id})
+            captain_name = captain["username"] if captain else "Unknown"
+            
+            enriched_teams.append({
+                "id": team.id,
+                "name": team.name,
+                "game": team.game,
+                "captain": captain_name,
+                "members": member_names,
+                "member_count": len(team.members),
+                "max_members": team.max_members,
+                "is_open": team.is_open,
+                "statistics": team_stats,
+                "created_at": team.created_at
+            })
+        
+        # Sort by total points descending
+        enriched_teams.sort(key=lambda x: x["statistics"]["total_points"], reverse=True)
+        
+        # Add ranks
+        for i, team in enumerate(enriched_teams):
+            team["rank"] = i + 1
+        
+        return {"teams": enriched_teams}
+        
+    except Exception as e:
+        logger.error(f"Error getting community teams: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error fetching community teams"
+        )
+
+async def calculate_team_statistics(team_id: str) -> dict:
+    """Calculate comprehensive statistics for a team."""
+    try:
+        # Find tournaments where this team participated
+        tournaments_participated = await db.tournaments.find({
+            "participants": {"$in": [team_id]}
+        }).to_list(100)
+        
+        # Find tournaments won by this team
+        tournaments_won = await db.tournaments.find({
+            "winner_id": team_id,
+            "status": "completed"
+        }).to_list(100)
+        
+        # Calculate statistics
+        total_tournaments = len(tournaments_participated)
+        total_victories = len(tournaments_won)
+        
+        # Calculate points (similar to user system)
+        total_points = 0
+        victories_by_type = {"1v1": 0, "2v2": 0, "5v5": 0}
+        
+        for tournament in tournaments_won:
+            max_participants = tournament.get("max_participants", 2)
+            tournament_name = tournament.get("title", "").lower()
+            
+            if "1v1" in tournament_name or max_participants <= 2:
+                victories_by_type["1v1"] += 1
+                total_points += 100
+            elif "2v2" in tournament_name or max_participants <= 4:
+                victories_by_type["2v2"] += 1
+                total_points += 150
+            elif "5v5" in tournament_name or max_participants >= 5:
+                victories_by_type["5v5"] += 1
+                total_points += 200
+        
+        win_rate = (total_victories / total_tournaments * 100) if total_tournaments > 0 else 0
+        
+        return {
+            "total_tournaments": total_tournaments,
+            "tournaments_won": total_victories,
+            "win_rate": round(win_rate, 1),
+            "total_points": total_points,
+            "victories_by_type": victories_by_type
+        }
+        
+    except Exception as e:
+        logger.error(f"Error calculating team statistics for {team_id}: {str(e)}")
+        return {
+            "total_tournaments": 0,
+            "tournaments_won": 0,
+            "win_rate": 0.0,
+            "total_points": 0,
+            "victories_by_type": {"1v1": 0, "2v2": 0, "5v5": 0}
+        }
