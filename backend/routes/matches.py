@@ -171,10 +171,7 @@ def generate_bracket_tournament(tournament_id: str, participants: List[str]) -> 
 @router.put("/{match_id}/result")
 async def update_match_result(
     match_id: str,
-    winner_id: str,
-    player1_score: int = 0,
-    player2_score: int = 0,
-    notes: Optional[str] = None,
+    request_data: dict,
     current_user: User = Depends(get_current_active_user)
 ):
     """Update match result (admin only)."""
@@ -183,6 +180,18 @@ async def update_match_result(
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Only moderators and admins can update match results"
+            )
+
+        # Extract data from request body
+        winner_id = request_data.get("winner_id")
+        player1_score = request_data.get("player1_score", 0)
+        player2_score = request_data.get("player2_score", 0)
+        notes = request_data.get("notes")
+
+        if not winner_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Winner ID is required"
             )
 
         # Get match
@@ -208,8 +217,8 @@ async def update_match_result(
             {
                 "$set": {
                     "winner_id": winner_id,
-                    "player1_score": player1_score,
-                    "player2_score": player2_score,
+                    "player1_score": int(player1_score),
+                    "player2_score": int(player2_score),
                     "status": MatchStatus.COMPLETED,
                     "completed_at": datetime.utcnow(),
                     "notes": notes,
