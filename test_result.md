@@ -414,9 +414,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Tournament Deletion Feature"
-  stuck_tasks:
-    - "Tournament Deletion Feature"
+    - "Team Deletion Feature"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
