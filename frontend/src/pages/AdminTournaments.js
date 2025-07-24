@@ -24,11 +24,7 @@ const AdminTournaments = () => {
   const [success, setSuccess] = useState('');
 
   const games = [
-    { id: 'cs2', name: 'Counter-Strike 2' },
-    { id: 'lol', name: 'League of Legends' },
-    { id: 'wow', name: 'World of Warcraft' },
-    { id: 'sc2', name: 'StarCraft II' },
-    { id: 'minecraft', name: 'Minecraft' }
+    { id: 'cs2', name: 'Counter-Strike 2' }
   ];
 
   const tournamentTypes = [
