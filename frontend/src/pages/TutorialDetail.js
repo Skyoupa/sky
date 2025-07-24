@@ -50,7 +50,7 @@ Counter-Strike 2 représente l'évolution majeure de la série culte, avec une i
 - bind shift "+speed"
 
 3. **Crouch optimisé** : 
-   - \`bind ctrl "+duck"\`
+- bind ctrl "+duck"
    - Éviter le toggle pour un meilleur contrôle
 
 4. **Use bind amélioré** : 
