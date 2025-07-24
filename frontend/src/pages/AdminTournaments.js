@@ -895,6 +895,24 @@ const AdminTournaments = () => {
           color: #dc2626;
         }
 
+        .btn-action.delete {
+          background: #7f1d1d;
+          color: #fecaca;
+          border: 1px solid #dc2626;
+        }
+
+        .btn-action.delete:hover:not(:disabled) {
+          background: #991b1b;
+          color: white;
+        }
+
+        .btn-action.delete:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+          background: #f3f4f6;
+          color: #9ca3af;
+        }
+
         .btn-action:hover {
           transform: translateY(-1px);
           opacity: 0.9;
