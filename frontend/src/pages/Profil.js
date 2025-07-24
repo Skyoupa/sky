@@ -526,6 +526,67 @@ const Profil = () => {
         </div>
       </form>
 
+      {/* Account Management Section */}
+      <div className="account-management-section">
+        <div className="account-management-header">
+          <h2>⚙️ Gestion du compte</h2>
+          <button 
+            onClick={() => setShowAccountSettings(!showAccountSettings)}
+            className="toggle-settings-button"
+          >
+            {showAccountSettings ? '▼ Masquer' : '▶ Afficher'}
+          </button>
+        </div>
+
+        {showAccountSettings && (
+          <div className="account-settings-content">
+            {error && <div className="error-message">{error}</div>}
+            {success && <div className="success-message">{success}</div>}
+
+            {/* Password Reset Section */}
+            <div className="account-action-section">
+              <div className="action-info">
+                <h3>🔐 Modification du mot de passe</h3>
+                <p>
+                  Recevez un lien par email pour changer votre mot de passe de manière sécurisée.
+                </p>
+              </div>
+              <button 
+                onClick={handlePasswordReset}
+                disabled={requestingReset}
+                className="password-reset-button"
+              >
+                {requestingReset ? '📧 Envoi en cours...' : '📧 Envoyer le lien de réinitialisation'}
+              </button>
+            </div>
+
+            {/* Account Deletion Section */}
+            <div className="account-action-section danger-section">
+              <div className="action-info">
+                <h3>⚠️ Suppression du compte</h3>
+                <p>
+                  <strong>Action irréversible!</strong> Supprime définitivement votre compte, profil, équipes, 
+                  contenu et toutes vos données associées.
+                </p>
+                <ul className="deletion-details">
+                  <li>• Suppression de votre profil et statistiques</li>
+                  <li>• Retrait de toutes les équipes</li>
+                  <li>• Suppression de votre contenu créé</li>
+                  <li>• Perte de tous vos trophées</li>
+                </ul>
+              </div>
+              <button 
+                onClick={handleDeleteAccount}
+                disabled={deleting}
+                className="delete-account-button"
+              >
+                {deleting ? '🗑️ Suppression en cours...' : '🗑️ Supprimer mon compte'}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
       <style jsx>{`
         .profile-container {
           max-width: 800px;
