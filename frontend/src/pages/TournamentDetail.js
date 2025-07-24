@@ -810,7 +810,7 @@ const TournamentDetail = () => {
 
         .team-members {
           font-size: 0.9rem;
-          color: #94a3b8;
+          color: #6b7280;
         }
 
         .btn-manage-team {
