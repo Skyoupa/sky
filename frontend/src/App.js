@@ -33,6 +33,7 @@ function App() {
               <Route path="/tournois/:id/bracket" element={<TournamentBracket />} />
               <Route path="/communaute" element={<Communaute />} />
               <Route path="/a-propos" element={<APropos />} />
+              <Route path="/news" element={<News />} />
               <Route path="/profil" element={<Profil />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/tournaments" element={<AdminTournaments />} />
