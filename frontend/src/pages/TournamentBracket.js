@@ -250,7 +250,10 @@ const TournamentBracket = () => {
                     
                     <div className="match-players">
                       <div className={`player ${match.winner_id === match.player1_id ? 'winner' : ''}`}>
-                        <span className="player-name">{getPlayerName(match.player1_id)}</span>
+                        <div className="player-info">
+                          <span className="player-icon">{getPlayerTypeIcon(match, true)}</span>
+                          <span className="player-name">{getPlayerName(match, true)}</span>
+                        </div>
                         {match.status === 'completed' && (
                           <span className="player-score">{match.player1_score}</span>
                         )}
@@ -259,7 +262,10 @@ const TournamentBracket = () => {
                       <div className="vs-divider">VS</div>
                       
                       <div className={`player ${match.winner_id === match.player2_id ? 'winner' : ''}`}>
-                        <span className="player-name">{getPlayerName(match.player2_id)}</span>
+                        <div className="player-info">
+                          <span className="player-icon">{getPlayerTypeIcon(match, false)}</span>
+                          <span className="player-name">{getPlayerName(match, false)}</span>
+                        </div>
                         {match.status === 'completed' && (
                           <span className="player-score">{match.player2_score}</span>
                         )}
