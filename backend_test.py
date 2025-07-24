@@ -594,6 +594,7 @@ class OupafamillyTester:
             await self.test_server_health()
             await self.test_authentication_system()
             await self.test_tournament_system()
+            await self.test_cs2_tournament_templates()  # New CS2 specific tests
             await self.test_content_management()
             await self.test_admin_dashboard()
             await self.test_protected_endpoints()
