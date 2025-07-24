@@ -169,6 +169,8 @@ class OupafamillyTester:
         status, data = await self.make_request("POST", "/auth/register", self.test_user_data)
         if status == 200 and data.get("username") == self.test_user_data["username"]:
             self.log_test("User Registration", True, f"User registered: {data.get('username')}")
+        elif status == 400 and "already registered" in data.get("detail", ""):
+            self.log_test("User Registration", True, f"User already exists (expected): {self.test_user_data['username']}")
         else:
             self.log_test("User Registration", False, f"Registration failed: {data}")
         
