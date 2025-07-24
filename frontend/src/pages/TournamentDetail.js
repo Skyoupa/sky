@@ -786,9 +786,9 @@ const TournamentDetail = () => {
           justify-content: space-between;
           align-items: center;
           padding: 1rem;
-          background: rgba(255, 255, 255, 0.05);
+          background: #f8fafc;
           border-radius: 8px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          border: 1px solid #e5e7eb;
         }
 
         .team-info {
