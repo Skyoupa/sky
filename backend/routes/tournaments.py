@@ -655,24 +655,27 @@ async def get_popular_tournament_templates():
 🏆 FINALE: BO3 sur maps différentes"""
         },
         {
-            "name": "CS2 Competitive 5v5",
-            "description": "Tournoi compétitif officiel format Matchmaking",
+            "name": "CS2 Championship 5v5",
+            "description": "Tournoi compétitif officiel format Major avec maps Active Duty 2025",
             "game": "cs2",
             "tournament_type": "bracket",
-            "max_participants": 32,
+            "max_participants": 20,  # Multiple de 5 pour 5v5
             "suggested_duration_hours": 8,
             "rules": """🎯 FORMAT: Double élimination bracket 5v5
-🗺️ MAPS: Pool compétitif officiel (Mirage, Inferno, Dust2, Cache, Overpass, Vertigo, Ancient)
+🗺️ MAPS Active Duty 2025: Ancient, Dust2, Inferno, Mirage, Nuke, Overpass, Train
 ⏱️ DURÉE: MR12 (Premier à 13 rounds)
-🔫 ARMES: Règles compétitives officielles
+🔫 ARMES: Règles compétitives officielles CS2 2025
 💰 ÉCONOMIE: Système d'économie standard CS2
 📋 RÈGLES COMPÉTITIVES:
-- Ban/Pick de maps (BO1 phases, BO3 finale)
-- Équipes fixes de 5 joueurs + 2 remplaçants
-- Overtime en MR3 (premier à 4 rounds)
-- Pause technique autorisée (30 sec max)
-- Anti-cheat requis (screenshot + démo)
-🏆 STRUCTURE: Phases de groupe puis playoffs"""
+- Ban/Pick de maps système Veto (Ban-Ban-Pick-Pick-Ban-Ban-Decider)
+- Équipes fixes de 5 joueurs + 2 remplaçants maximum
+- Overtime en MR3 (premier à 4 rounds) avec switch sides
+- Time-out: 4 par équipe (30 secondes chacun)
+- Anti-cheat requis + enregistrement démo obligatoire
+🎮 NOUVEAUTÉS 2025:
+- Overpass de retour (remplace Anubis)
+- Train ajouté au pool officiel
+🏆 STRUCTURE: Phases de groupe puis playoffs BO3"""
         },
         {
             "name": "CS2 Retake Masters",
