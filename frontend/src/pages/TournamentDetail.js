@@ -945,7 +945,7 @@ const TournamentDetail = () => {
           background: #fef2f2;
           border: 1px solid #fecaca;
           border-radius: 8px;
-          font-weight: 500;
+          font-weight: 600;
         }
 
         .team-select {
@@ -956,12 +956,17 @@ const TournamentDetail = () => {
           font-size: 16px;
           background: white;
           color: #1a1a1a;
-          font-weight: 500;
+          font-weight: 600;
         }
 
         .team-select:focus {
           outline: none;
           border-color: #3b82f6;
+        }
+
+        .team-select option {
+          color: #1a1a1a;
+          font-weight: 500;
         }
 
         .new-team-form {
@@ -979,7 +984,7 @@ const TournamentDetail = () => {
           margin-bottom: 10px;
           background: white;
           color: #1a1a1a;
-          font-weight: 500;
+          font-weight: 600;
         }
 
         .team-name-input:focus {
@@ -988,18 +993,18 @@ const TournamentDetail = () => {
         }
 
         .team-name-input::placeholder {
-          color: #9ca3af;
-          font-weight: 400;
+          color: #6b7280;
+          font-weight: 500;
         }
 
         .form-help {
-          color: #059669;
+          color: #047857;
           font-size: 14px;
           margin: 0;
-          font-weight: 500;
+          font-weight: 600;
           background: #ecfdf5;
-          padding: 10px;
-          border-radius: 6px;
+          padding: 12px 15px;
+          border-radius: 8px;
           border: 1px solid #a7f3d0;
         }
 
