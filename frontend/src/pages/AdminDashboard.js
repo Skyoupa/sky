@@ -143,9 +143,6 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          {/* Gestion des équipes */}
-          <AdminTeamsManagement />
-
           {/* Actions rapides */}
           <div className="admin-section">
             <h2>⚡ Actions rapides</h2>
@@ -168,6 +165,9 @@ const AdminDashboard = () => {
               >
                 📝 Gérer le contenu
               </a>
+              <div className="action-btn secondary teams-management-card">
+                🛡️ Gérer les équipes
+              </div>
               <button 
                 className="action-btn tertiary"
                 onClick={fetchDashboardData}
@@ -176,6 +176,9 @@ const AdminDashboard = () => {
               </button>
             </div>
           </div>
+
+          {/* Gestion des équipes */}
+          <AdminTeamsManagement />
 
           {/* Santé de la communauté */}
           <div className="admin-section">
