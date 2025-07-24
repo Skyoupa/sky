@@ -557,7 +557,7 @@ const AdminContent = () => {
         .stat-content p {
           margin: 0 0 3px 0;
           font-weight: 600;
-          color: #374151;
+          color: #1a1a1a;
         }
 
         .growth .stat-content p {
@@ -566,7 +566,7 @@ const AdminContent = () => {
 
         .stat-content span {
           font-size: 12px;
-          color: #6b7280;
+          color: #333333;
         }
 
         .growth .stat-content span {
@@ -589,7 +589,7 @@ const AdminContent = () => {
 
         .tab-btn {
           background: #f1f5f9;
-          color: #374151;
+          color: #1a1a1a;
           border: 2px solid #e2e8f0;
           padding: 10px 20px;
           border-radius: 10px;
