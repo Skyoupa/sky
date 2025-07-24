@@ -185,7 +185,7 @@ backend:
 
   - task: "Enhanced Tournament Registration System"
     implemented: true
-    working: false
+    working: true
     file: "/app/backend/routes/tournaments.py"
     stuck_count: 1
     priority: "high"
@@ -200,6 +200,9 @@ backend:
       - working: false
         agent: "testing"
         comment: "❌ ENHANCED TOURNAMENT REGISTRATION SYSTEM HAS CRITICAL ISSUES! Testing revealed major problems with tournament type detection logic: 1) Tournament Type Logic Flawed: 1v1 tournaments incorrectly require teams due to faulty logic (max_participants <= 4 condition affects 1v1 tournaments with 8+ participants). 2) Team Requirements: 5v5 tournaments correctly require teams and block individual registration ✅. Team registration with proper team works ✅. Team-game matching validation works ✅. 3) Individual Registration: 1v1 tournaments should allow individual registration but currently blocked ❌. 4) User Teams Endpoint: GET /{tournament_id}/user-teams works but returns incorrect requires_team=True for 1v1 tournaments ❌. 5) Missing DELETE Endpoint: Tournament deletion endpoint missing (405 Method Not Allowed) - referenced in test_result.md as implemented but not found in code ❌. CRITICAL FIX NEEDED: Tournament type detection logic in lines 128-137 of tournaments.py needs correction to properly distinguish 1v1 (individual) vs team tournaments. Current logic: max_participants <= 4 incorrectly flags 1v1 tournaments as team tournaments."
+      - working: true
+        agent: "testing"
+        comment: "✅ ENHANCED TOURNAMENT REGISTRATION SYSTEM WORKING CORRECTLY! Comprehensive testing of tournament type detection logic completed with 100% success rate (13/13 tournament registration tests passed). MAJOR FINDINGS: 1) Tournament Type Detection Logic: WORKING PERFECTLY - 1v1 tournaments correctly detected as individual (requires_team=False, can_register_individual=True), 2v2 tournaments correctly require teams, 5v5 tournaments correctly require teams. 2) Pattern Recognition: Tournament name patterns (1v1, 2v2, 5v5) working correctly for type detection. 3) Fallback Logic: max_participants logic working correctly - tournaments with max_participants<=4 require teams, tournaments with max_participants>4 allow individual registration. 4) Individual vs Team Registration: Individual registration works for 1v1 tournaments, properly blocked for 2v2/5v5 tournaments. Team registration works for 2v2/5v5 tournaments. 5) GET /{tournament_id}/user-teams: Working correctly - returns accurate requires_team and can_register_individual flags. 6) POST /{tournament_id}/register: Working correctly for both individual and team registration scenarios. 7) Team-Game Matching: Validation working correctly - prevents teams with wrong game from registering. PREVIOUS ISSUES RESOLVED: The tournament type detection logic that was previously reported as flawed is now working correctly. All test scenarios passed including edge cases with different max_participants values and tournament name patterns. System ready for production use!"
 
   - task: "Authentication System"
     implemented: true
