@@ -185,11 +185,11 @@ backend:
 
   - task: "Enhanced Tournament Registration System"
     implemented: true
-    working: true
+    working: false
     file: "/app/backend/routes/tournaments.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
@@ -197,6 +197,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ SERVER INTEGRATION UPDATE FULLY FUNCTIONAL! Comprehensive testing confirms perfect integration: 1) Router Integration: Community and profiles routers properly included in main FastAPI server with correct /api prefix routing. 2) Endpoint Accessibility: All community endpoints accessible via /api/community (stats, posts, leaderboard, members, teams), all profiles endpoints accessible via /api/profiles (user profiles, updates, avatar uploads). 3) Server Endpoints List: Root endpoint (/) now properly lists community and profiles in available endpoints. 4) CORS Configuration: Working perfectly - all API calls successful across different endpoints. 5) Health Check: Server health endpoint confirms database connectivity and system status. 6) API Documentation: FastAPI automatic documentation includes all new endpoints. All new routes properly integrated and accessible. Server ready for production with complete community and profiles functionality!"
+      - working: false
+        agent: "testing"
+        comment: "❌ ENHANCED TOURNAMENT REGISTRATION SYSTEM HAS CRITICAL ISSUES! Testing revealed major problems with tournament type detection logic: 1) Tournament Type Logic Flawed: 1v1 tournaments incorrectly require teams due to faulty logic (max_participants <= 4 condition affects 1v1 tournaments with 8+ participants). 2) Team Requirements: 5v5 tournaments correctly require teams and block individual registration ✅. Team registration with proper team works ✅. Team-game matching validation works ✅. 3) Individual Registration: 1v1 tournaments should allow individual registration but currently blocked ❌. 4) User Teams Endpoint: GET /{tournament_id}/user-teams works but returns incorrect requires_team=True for 1v1 tournaments ❌. 5) Missing DELETE Endpoint: Tournament deletion endpoint missing (405 Method Not Allowed) - referenced in test_result.md as implemented but not found in code ❌. CRITICAL FIX NEEDED: Tournament type detection logic in lines 128-137 of tournaments.py needs correction to properly distinguish 1v1 (individual) vs team tournaments. Current logic: max_participants <= 4 incorrectly flags 1v1 tournaments as team tournaments."
 
   - task: "Authentication System"
     implemented: true
