@@ -92,9 +92,10 @@ async def get_tournament(tournament_id: str):
 @router.post("/{tournament_id}/register")
 async def register_for_tournament(
     tournament_id: str,
+    team_id: Optional[str] = None,
     current_user: User = Depends(get_current_active_user)
 ):
-    """Register current user for a tournament."""
+    """Register current user (or their team) for a tournament."""
     try:
         # Get tournament
         tournament_data = await db.tournaments.find_one({"id": tournament_id})
@@ -120,8 +121,33 @@ async def register_for_tournament(
                 detail="Registration period has ended"
             )
         
-        # Check if user is already registered
-        if current_user.id in tournament.participants:
+        participant_id = current_user.id
+        
+        # If team_id is provided, register the team instead
+        if team_id:
+            # Verify the team exists and user is captain or member
+            team_data = await db.teams.find_one({"id": team_id})
+            if not team_data:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Team not found"
+                )
+            
+            from models import Team
+            team = Team(**team_data)
+            
+            # Check if user is captain or member
+            if current_user.id not in team.members:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="You must be a member of the team to register it"
+                )
+            
+            # Use team ID as participant
+            participant_id = team_id
+        
+        # Check if already registered (user or team)
+        if participant_id in tournament.participants:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Already registered for this tournament"
@@ -134,10 +160,10 @@ async def register_for_tournament(
                 detail="Tournament is full"
             )
         
-        # Register user
+        # Register participant (user or team)
         await db.tournaments.update_one(
             {"id": tournament_id},
-            {"$push": {"participants": current_user.id}}
+            {"$push": {"participants": participant_id}}
         )
         
         # Update user profile tournament count
@@ -146,9 +172,10 @@ async def register_for_tournament(
             {"$inc": {"total_tournaments": 1}}
         )
         
-        logger.info(f"User {current_user.username} registered for tournament {tournament.title}")
+        registration_type = "team" if team_id else "individual"
+        logger.info(f"User {current_user.username} registered for tournament {tournament.title} as {registration_type}")
         
-        return {"message": "Successfully registered for tournament"}
+        return {"message": "Successfully registered for tournament", "type": registration_type}
         
     except HTTPException:
         raise
