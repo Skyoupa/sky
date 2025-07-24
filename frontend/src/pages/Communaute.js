@@ -444,7 +444,8 @@ const Communaute = () => {
                     )}
                   </div>
                 </div>
-              ))}
+              ))
+              )}
             </div>
           )}
 
