@@ -627,9 +627,22 @@ const TournamentBracket = () => {
           font-weight: 700;
         }
 
+        .player-info {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex: 1;
+        }
+
+        .player-icon {
+          font-size: 14px;
+          min-width: 16px;
+        }
+
         .player-name {
           font-size: 14px;
           color: #1a1a1a;
+          flex: 1;
         }
 
         .player-score {
