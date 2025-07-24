@@ -67,6 +67,90 @@ const AdminContent = () => {
     }
   };
 
+  const handleDeleteNews = async (newsId, title) => {
+    const confirmDelete = window.confirm(
+      `⚠️ ATTENTION ⚠️\n\nVoulez-vous vraiment supprimer cet article ?\n\n"${title}"\n\nCette action est IRRÉVERSIBLE.`
+    );
+
+    if (!confirmDelete) return;
+
+    const confirmText = window.prompt(
+      `Pour confirmer la suppression de l'article "${title}", tapez exactement : SUPPRIMER`
+    );
+
+    if (confirmText !== 'SUPPRIMER') {
+      if (confirmText !== null) {
+        alert('Confirmation incorrecte. Suppression annulée.');
+      }
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/content/news/${newsId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSuccess(data.message || 'Article supprimé avec succès');
+        setError('');
+        fetchContent(); // Refresh the list
+      } else {
+        const errorData = await response.json();
+        setError(errorData.detail || 'Erreur lors de la suppression de l\'article');
+      }
+    } catch (error) {
+      console.error('Erreur suppression news:', error);
+      setError('Erreur de connexion lors de la suppression');
+    }
+  };
+
+  const handleDeleteTutorial = async (tutorialId, title) => {
+    const confirmDelete = window.confirm(
+      `⚠️ ATTENTION ⚠️\n\nVoulez-vous vraiment supprimer ce tutoriel ?\n\n"${title}"\n\nCette action est IRRÉVERSIBLE.`
+    );
+
+    if (!confirmDelete) return;
+
+    const confirmText = window.prompt(
+      `Pour confirmer la suppression du tutoriel "${title}", tapez exactement : SUPPRIMER`
+    );
+
+    if (confirmText !== 'SUPPRIMER') {
+      if (confirmText !== null) {
+        alert('Confirmation incorrecte. Suppression annulée.');
+      }
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/content/tutorials/${tutorialId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSuccess(data.message || 'Tutoriel supprimé avec succès');
+        setError('');
+        fetchContent(); // Refresh the list
+      } else {
+        const errorData = await response.json();
+        setError(errorData.detail || 'Erreur lors de la suppression du tutoriel');
+      }
+    } catch (error) {
+      console.error('Erreur suppression tutorial:', error);
+      setError('Erreur de connexion lors de la suppression');
+    }
+  };
+
   const fetchContentStats = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/content/stats/content`, {
