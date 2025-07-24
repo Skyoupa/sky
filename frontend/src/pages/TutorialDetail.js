@@ -116,10 +116,10 @@ cl_crosshaircolor_b 255
 5. **Cohérence** : Gardez les mêmes settings sur tous les PC
 
 ## 📚 Commandes console essentielles
-- \`fps_max 400\` : Limite FPS
-- \`net_graph 1\` : Affichage des stats réseau
-- \`cl_showfps 1\` : Compteur FPS
-- \`developer 1\` : Mode développeur pour debug
+- fps_max 400 : Limite FPS
+- net_graph 1 : Affichage des stats réseau
+- cl_showfps 1 : Compteur FPS
+- developer 1 : Mode développeur pour debug
         `,
         links: [
           { name: '🎯 Guide configs pro Liquipedia', url: 'https://liquipedia.net/counterstrike/List_of_player_binds' },
