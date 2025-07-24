@@ -303,43 +303,124 @@ async def get_tournament_stats():
 
 @router.get("/templates/popular")
 async def get_popular_tournament_templates():
-    """Get popular tournament templates for easy creation - helpful for new communities."""
+    """Get popular CS2 tournament templates for Oupafamilly community."""
     templates = [
         {
-            "name": "CS2 Quick Match",
-            "description": "Tournoi rapide Counter-Strike 2 en élimination directe",
+            "name": "CS2 Quick Match 1v1",
+            "description": "Duels rapides Counter-Strike 2 en 1v1",
             "game": "cs2",
             "tournament_type": "elimination",
             "max_participants": 16,
-            "suggested_duration_hours": 4,
-            "rules": "Format BO1 jusqu'aux demi-finales, BO3 pour la finale. Maps: Mirage, Inferno, Dust2, Cache."
+            "suggested_duration_hours": 3,
+            "rules": """🎯 FORMAT: Élimination directe 1v1
+🗺️ MAPS: aim_botz, aim_map (maps d'aim officielles)
+⏱️ DURÉE: First to 16 frags par match
+🔫 ARMES: AK47/M4A4 uniquement, pas d'AWP
+💰 ÉCONOMIE: Argent illimité pour achats
+📋 RÈGLES SPÉCIALES:
+- Pas de camping (max 10 secondes statique)
+- Restart possible si problème technique
+- Screenshot obligatoire du score final"""
         },
         {
-            "name": "WoW Arena Championship",
-            "description": "Championnat d'arène World of Warcraft",
-            "game": "wow",
-            "tournament_type": "bracket",
-            "max_participants": 8,
-            "suggested_duration_hours": 6,
-            "rules": "Format 3v3 Arena, double élimination. Compositions variées encouragées."
+            "name": "CS2 Team Deathmatch 5v5",
+            "description": "Affrontement classique 5v5 en mode Team Deathmatch",
+            "game": "cs2",
+            "tournament_type": "elimination",
+            "max_participants": 32,
+            "suggested_duration_hours": 5,
+            "rules": """🎯 FORMAT: Élimination directe 5v5 Teams
+🗺️ MAPS: Mirage, Inferno, Dust2, Cache (vote par équipe)
+⏱️ DURÉE: First to 75 frags par équipe
+🔫 ARMES: Toutes armes autorisées
+💰 ÉCONOMIE: Argent illimité
+📋 RÈGLES D'ÉQUIPE:
+- Équipes fixes de 5 joueurs + 1 remplaçant
+- Communication Discord obligatoire
+- Capitaine d'équipe désigné
+- Timeout autorisé (2 par équipe max)
+🏆 FINALE: BO3 sur maps différentes"""
         },
         {
-            "name": "LoL Community Cup",
-            "description": "Coupe communautaire League of Legends",
-            "game": "lol",
+            "name": "CS2 Competitive 5v5",
+            "description": "Tournoi compétitif officiel format Matchmaking",
+            "game": "cs2",
             "tournament_type": "bracket",
             "max_participants": 32,
             "suggested_duration_hours": 8,
-            "rules": "Format 5v5 Rift, draft pick. BO1 phases de groupe, BO3 playoffs."
+            "rules": """🎯 FORMAT: Double élimination bracket 5v5
+🗺️ MAPS: Pool compétitif officiel (Mirage, Inferno, Dust2, Cache, Overpass, Vertigo, Ancient)
+⏱️ DURÉE: MR12 (Premier à 13 rounds)
+🔫 ARMES: Règles compétitives officielles
+💰 ÉCONOMIE: Système d'économie standard CS2
+📋 RÈGLES COMPÉTITIVES:
+- Ban/Pick de maps (BO1 phases, BO3 finale)
+- Équipes fixes de 5 joueurs + 2 remplaçants
+- Overtime en MR3 (premier à 4 rounds)
+- Pause technique autorisée (30 sec max)
+- Anti-cheat requis (screenshot + démo)
+🏆 STRUCTURE: Phases de groupe puis playoffs"""
         },
         {
-            "name": "Minecraft Building Contest",
-            "description": "Concours de construction Minecraft",
-            "game": "minecraft",
+            "name": "CS2 Retake Masters",
+            "description": "Spécialité mode Retake - défense de sites",
+            "game": "cs2",
             "tournament_type": "round_robin",
             "max_participants": 20,
-            "suggested_duration_hours": 48,
-            "rules": "Thème surprise, 2h de construction, vote communautaire pour le gagnant."
+            "suggested_duration_hours": 4,
+            "rules": """🎯 FORMAT: Round Robin mode Retake
+🗺️ MAPS: Sites A et B de Mirage, Inferno, Dust2
+⏱️ DURÉE: 10 rounds par adversaire (5 en T, 5 en CT)
+🔫 ARMES: Kit de retake prédéfini (AK/M4, utilitaires)
+💰 ÉCONOMIE: Équipement standardisé
+📋 RÈGLES RETAKE:
+- Spawn T déjà sur site avec bombe posée
+- CT doivent reprendre le site ou désamorcer
+- 45 secondes par round maximum
+- Points: +3 défuse, +2 élimination équipe T, +1 kill
+🏆 CLASSEMENT: Cumul des points sur tous les matchs"""
+        },
+        {
+            "name": "CS2 Aim Challenge",
+            "description": "Compétition pure d'adresse et de précision",
+            "game": "cs2",
+            "tournament_type": "round_robin",
+            "max_participants": 24,
+            "suggested_duration_hours": 2,
+            "rules": """🎯 FORMAT: Round Robin - Challenges d'aim
+🗺️ MAPS: aim_botz, training_aim_csgo2
+⏱️ ÉPREUVES:
+1. Precision Test: 100 targets statiques (temps limité 2min)
+2. Spray Control: Pattern AK47 et M4A4 (10 essais chacun)
+3. Flick Shots: 50 targets aléatoires (3min max)
+4. Tracking: Targets mobiles (5min)
+🔫 ARMES: AK47, M4A4, Desert Eagle selon l'épreuve
+📋 SCORING:
+- Précision: Points par hit + bonus vitesse
+- Spray: Distance moyenne du centre de mass
+- Flick: Précision + temps de réaction
+- Tracking: Pourcentage de temps sur cible
+🏆 CLASSEMENT: Cumul des 4 épreuves"""
+        },
+        {
+            "name": "CS2 Pistol Only Tournament",
+            "description": "Tournoi exclusivement aux armes de poing",
+            "game": "cs2",
+            "tournament_type": "elimination",
+            "max_participants": 16,
+            "suggested_duration_hours": 3,
+            "rules": """🎯 FORMAT: Élimination directe 5v5
+🗺️ MAPS: Mirage, Dust2, Cache (format réduit)
+⏱️ DURÉE: Premier à 10 rounds (MR9)
+🔫 ARMES: Pistolets uniquement (Glock, USP-S, P250, Desert Eagle, etc.)
+💰 ÉCONOMIE: 8000$ start money, +800$ par round
+📋 RÈGLES PISTOLET:
+- Aucune arme principale autorisée
+- Kevlar + casque autorisé
+- Grenades limitées: 1 par type max
+- Économie réduite pour encourager l'action
+- No-scope AWP interdit (pas d'AWP de toute façon!)
+🏆 SPÉCIFICITÉ: Met l'accent sur positioning et aim précis"""
         }
     ]
     
