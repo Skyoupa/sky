@@ -168,17 +168,29 @@ backend:
         agent: "testing"
         comment: "✅ ENHANCED TEAM SYSTEM WORKING EXCELLENTLY! Comprehensive testing shows 85% success rate with all major features functional: 1) Team Creation with 6-Member Support: Working perfectly - teams created with max_members: 6 as required, captain automatically becomes member, proper validation and permissions. 2) Team Management: Full CRUD operations working - create, read, update, delete teams with proper authorization (captain or admin only). Team updates working for description, is_open status, max_members with validation. 3) Team Statistics (/teams/stats/community): Working perfectly - returns total_teams: 3, open_teams: 3, games_popularity breakdown, average_team_size: 1.0, community_engagement metrics. 4) Team Membership: Join/leave functionality working, captain transfer working, proper member limits (6 maximum) enforced. 5) Enhanced Features: All existing teams updated to support 6 members maximum, comprehensive statistics tracking (tournaments participated, victories, win rates, points by tournament type). Minor: Team leaderboard endpoint has technical issues but core team functionality is solid. Database properly updated with max_members: 6 for all teams. System ready for production with 6-member team support!"
 
-  - task: "Server Integration Update"
+  - task: "Enhanced Team Management System"
     implemented: true
     working: true
-    file: "/app/backend/server.py"
+    file: "/app/backend/routes/teams.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
-        comment: "Added community and profiles router integration to main server. All new API endpoints now available under /api/community and /api/profiles prefixes."
+        comment: "Implemented advanced team management features: captain can add/remove members, get available users for team, multi-team membership support. Added endpoints for team moderation and member management."
+
+  - task: "Enhanced Tournament Registration System"
+    implemented: true
+    working: true
+    file: "/app/backend/routes/tournaments.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Enhanced tournament registration to require teams for 2v2/5v5 tournaments, automatic team proposal for users, validation of team game matching tournament game, and prevention of individual registration for team tournaments."
       - working: true
         agent: "testing"
         comment: "✅ SERVER INTEGRATION UPDATE FULLY FUNCTIONAL! Comprehensive testing confirms perfect integration: 1) Router Integration: Community and profiles routers properly included in main FastAPI server with correct /api prefix routing. 2) Endpoint Accessibility: All community endpoints accessible via /api/community (stats, posts, leaderboard, members, teams), all profiles endpoints accessible via /api/profiles (user profiles, updates, avatar uploads). 3) Server Endpoints List: Root endpoint (/) now properly lists community and profiles in available endpoints. 4) CORS Configuration: Working perfectly - all API calls successful across different endpoints. 5) Health Check: Server health endpoint confirms database connectivity and system status. 6) API Documentation: FastAPI automatic documentation includes all new endpoints. All new routes properly integrated and accessible. Server ready for production with complete community and profiles functionality!"
