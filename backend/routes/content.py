@@ -348,3 +348,97 @@ async def get_welcome_content():
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error fetching welcome content"
         )
+
+@router.delete("/news/{news_id}")
+async def delete_news(
+    news_id: str,
+    current_user: User = Depends(get_current_active_user)
+):
+    """Delete a news article. Only moderators, admins, or the author can delete."""
+    try:
+        # Get the news article
+        news_data = await db.news.find_one({"id": news_id})
+        if not news_data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="News article not found"
+            )
+        
+        news = News(**news_data)
+        
+        # Check permissions: admin, moderator, or author
+        if (current_user.role not in ["admin", "moderator"] and 
+            current_user.id != news.author_id):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only administrators, moderators, or the author can delete this news article"
+            )
+        
+        # Delete the news article
+        result = await db.news.delete_one({"id": news_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="News article not found"
+            )
+        
+        logger.info(f"News article '{news.title}' deleted by {current_user.username}")
+        
+        return {"message": f"News article '{news.title}' has been successfully deleted"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting news {news_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error deleting news article"
+        )
+
+@router.delete("/tutorials/{tutorial_id}")
+async def delete_tutorial(
+    tutorial_id: str,
+    current_user: User = Depends(get_current_active_user)
+):
+    """Delete a tutorial. Only moderators, admins, or the author can delete."""
+    try:
+        # Get the tutorial
+        tutorial_data = await db.tutorials.find_one({"id": tutorial_id})
+        if not tutorial_data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tutorial not found"
+            )
+        
+        tutorial = Tutorial(**tutorial_data)
+        
+        # Check permissions: admin, moderator, or author
+        if (current_user.role not in ["admin", "moderator"] and 
+            current_user.id != tutorial.author_id):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only administrators, moderators, or the author can delete this tutorial"
+            )
+        
+        # Delete the tutorial
+        result = await db.tutorials.delete_one({"id": tutorial_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tutorial not found"
+            )
+        
+        logger.info(f"Tutorial '{tutorial.title}' deleted by {current_user.username}")
+        
+        return {"message": f"Tutorial '{tutorial.title}' has been successfully deleted"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting tutorial {tutorial_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error deleting tutorial"
+        )
