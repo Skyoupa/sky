@@ -135,12 +135,24 @@ const Accueil = () => {
             </div>
           </div>
           <div className="hero-buttons-pro">
-            <Link to="/communaute" className="btn-primary-pro">
-              <span>REJOINDRE L'ÉLITE</span>
-              <svg className="btn-icon" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
-            </Link>
+            {isAuthenticated ? (
+              <Link to="/profil" className="btn-primary-pro">
+                <span>MON PROFIL</span>
+                <svg className="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                </svg>
+              </Link>
+            ) : (
+              <button 
+                className="btn-primary-pro" 
+                onClick={() => document.querySelector('.auth-btn.register-btn')?.click()}
+              >
+                <span>REJOINDRE L'ÉLITE</span>
+                <svg className="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+            )}
             <Link to="/tournois" className="btn-secondary-pro">
               <span>TOURNOIS CS2</span>
             </Link>
