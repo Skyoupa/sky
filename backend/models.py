@@ -147,16 +147,27 @@ class TournamentCreate(BaseModel):
 class Match(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     tournament_id: str
-    participant1_id: str
-    participant2_id: str
-    scheduled_time: datetime
-    status: str = "scheduled"  # scheduled, in_progress, completed, cancelled
-    score1: int = 0
-    score2: int = 0
+    round_number: int
+    match_number: int
+    player1_id: Optional[str] = None
+    player2_id: Optional[str] = None
     winner_id: Optional[str] = None
-    details: Dict[str, Any] = {}
+    player1_score: int = 0
+    player2_score: int = 0
+    status: MatchStatus = MatchStatus.SCHEDULED
+    scheduled_time: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+    notes: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class MatchCreate(BaseModel):
+    tournament_id: str
+    round_number: int
+    match_number: int
+    player1_id: Optional[str] = None
+    player2_id: Optional[str] = None
+    scheduled_time: Optional[datetime] = None
 
 # Tutorial Models
 class Tutorial(BaseModel):
