@@ -812,8 +812,16 @@ const TournamentDetail = () => {
           margin: 5px 0;
         }
 
-        .btn-bracket {
-          display: inline-block;
+        .bracket-card {
+          text-align: center;
+        }
+
+        .bracket-card p {
+          color: #1a1a1a;
+          margin-bottom: 20px;
+          font-size: 15px;
+          font-weight: 500;
+        }
           width: 100%;
           background: linear-gradient(45deg, #3b82f6, #1d4ed8);
           color: white;
