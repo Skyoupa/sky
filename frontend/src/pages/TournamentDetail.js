@@ -193,55 +193,6 @@ const TournamentDetail = () => {
     fetchUserTeamsForTournament(); // Refresh teams data
   };
 
-  if (loading) {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            name: newTeamName.trim(),
-            game: tournament.game,
-            max_members: 5
-          })
-        });
-
-        if (teamResponse.ok) {
-          const newTeam = await teamResponse.json();
-          registrationData.team_id = newTeam.id;
-        } else {
-          alert('Erreur lors de la création de l\'équipe');
-          return;
-        }
-      } else if (registrationType === 'existing' && selectedTeam) {
-        registrationData.team_id = selectedTeam;
-      }
-
-      // Register for tournament
-      const response = await fetch(`${API_BASE_URL}/tournaments/${id}/register`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(registrationData)
-      });
-
-      if (response.ok) {
-        alert('Inscription réussie !');
-        setShowRegistrationModal(false);
-        fetchTournamentDetails(); // Refresh tournament data
-        fetchParticipantsInfo(); // Refresh participants info  
-        fetchUserTeams(); // Refresh teams
-      } else {
-        const errorData = await response.json();
-        alert(errorData.detail || 'Erreur lors de l\'inscription');
-      }
-    } catch (error) {
-      console.error('Erreur registration:', error);
-      alert('Erreur de connexion au serveur');
-    }
-  };
-
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('fr-FR', {
       day: '2-digit',
