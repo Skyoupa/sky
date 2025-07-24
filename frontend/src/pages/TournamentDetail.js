@@ -790,14 +790,26 @@ const TournamentDetail = () => {
           margin: 0;
         }
 
-        .bracket-card {
-          text-align: center;
+        .registration-card, .bracket-card {
+          background: white;
+          padding: 25px;
+          border-radius: 15px;
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+          border: 2px solid #e5e7eb;
         }
 
-        .bracket-card p {
-          color: #64748b;
-          margin-bottom: 20px;
-          font-size: 14px;
+        .registration-card h3, .bracket-card h3 {
+          color: #1e3a8a;
+          font-size: 18px;
+          font-weight: 700;
+          margin-bottom: 15px;
+        }
+
+        .registration-card p {
+          color: #1a1a1a;
+          font-size: 16px;
+          font-weight: 500;
+          margin: 5px 0;
         }
 
         .btn-bracket {
