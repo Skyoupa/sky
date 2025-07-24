@@ -835,9 +835,16 @@ const TournamentBracket = () => {
           height: 18px;
         }
 
-        .winner-option span {
+        .winner-info {
+          display: flex;
+          align-items: center;
+          gap: 8px;
           font-weight: 600;
           color: #1a1a1a;
+        }
+
+        .winner-icon {
+          font-size: 16px;
         }
 
         .notes-textarea {
