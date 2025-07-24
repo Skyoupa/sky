@@ -130,8 +130,20 @@ async def register_for_tournament(
             tournament_requires_team = False
         elif "2v2" in tournament_name or "2vs2" in tournament_name:
             tournament_requires_team = True
+            # Ensure max_participants is multiple of 2 for 2v2 tournaments
+            if tournament.max_participants % 2 != 0:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="For 2v2 tournaments, max_participants must be a multiple of 2"
+                )
         elif "5v5" in tournament_name or "5vs5" in tournament_name:
             tournament_requires_team = True
+            # Ensure max_participants is multiple of 5 for 5v5 tournaments
+            if tournament.max_participants % 5 != 0:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="For 5v5 tournaments, max_participants must be a multiple of 5"
+                )
         else:
             # Fallback to max_participants logic
             # For individual tournaments: max_participants typically 8, 16, 32, etc.
@@ -140,6 +152,12 @@ async def register_for_tournament(
             # If max_participants is larger (8+), it's likely individual
             if tournament.max_participants <= 4:
                 tournament_requires_team = True
+                # For small numbers, assume 2v2 and validate multiple of 2
+                if tournament.max_participants % 2 != 0:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail="For team tournaments with few participants, max_participants must be a multiple of 2"
+                    )
             else:
                 tournament_requires_team = False
         
