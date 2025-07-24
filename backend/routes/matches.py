@@ -278,33 +278,34 @@ async def update_next_round_match(tournament_id: str, current_round: int, curren
 async def check_tournament_completion(tournament_id: str):
     """Check if tournament is complete and update winner."""
     try:
-        # Find the final match (highest round number)
-        final_match = await db.matches.find_one(
-            {"tournament_id": tournament_id, "status": MatchStatus.COMPLETED},
-            sort=[("round_number", -1)]
-        )
+        # Get all matches for the tournament
+        all_matches = await db.matches.find({"tournament_id": tournament_id}).to_list(100)
         
-        if final_match:
-            # Check if this is the last match
-            remaining_matches = await db.matches.count_documents({
-                "tournament_id": tournament_id,
-                "status": {"$ne": MatchStatus.COMPLETED}
-            })
-            
-            if remaining_matches == 0:
-                # Tournament is complete
-                await db.tournaments.update_one(
-                    {"id": tournament_id},
-                    {
-                        "$set": {
-                            "status": "completed",
-                            "winner_id": final_match["winner_id"],
-                            "tournament_end": datetime.utcnow(),
-                            "updated_at": datetime.utcnow()
-                        }
+        if not all_matches:
+            return
+        
+        # Check if all matches are completed
+        completed_matches = [m for m in all_matches if m["status"] == MatchStatus.COMPLETED]
+        if len(completed_matches) != len(all_matches):
+            return  # Tournament not complete yet
+        
+        # Find the final match (highest round number)
+        final_match = max(all_matches, key=lambda x: x["round_number"])
+        
+        if final_match and final_match["status"] == MatchStatus.COMPLETED and final_match["winner_id"]:
+            # Tournament is complete - update with winner
+            await db.tournaments.update_one(
+                {"id": tournament_id},
+                {
+                    "$set": {
+                        "status": "completed",
+                        "winner_id": final_match["winner_id"],
+                        "tournament_end": datetime.utcnow(),
+                        "updated_at": datetime.utcnow()
                     }
-                )
-                logger.info(f"Tournament {tournament_id} completed - Winner: {final_match['winner_id']}")
+                }
+            )
+            logger.info(f"Tournament {tournament_id} completed - Winner: {final_match['winner_id']}")
         
     except Exception as e:
         logger.error(f"Error checking tournament completion: {str(e)}")
