@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Body
 from typing import List, Optional
 from models import (
     Tournament, TournamentCreate, User, TournamentStatus, 
