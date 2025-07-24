@@ -450,6 +450,18 @@ backend:
         agent: "testing"
         comment: "✅ ADMIN TEAM MANAGEMENT ENHANCEMENT WORKING PERFECTLY! Comprehensive testing shows 100% success: 1) Admin Force Delete: Admin can successfully delete any team regardless of captain status. 2) Permission Override: Admin permissions properly override captain-only restrictions for team deletion. 3) Database Cleanup: Teams properly removed from database after admin deletion. 4) Verification: Team deletion verification confirms proper removal from system. All admin team management capabilities working as designed for administrative oversight!"
 
+  - task: "User Account Management (Deletion & Password Reset)"
+    implemented: true
+    working: false
+    file: "/app/backend/routes/auth.py,/app/frontend/src/pages/Profil.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented user account deletion and password modification via email. Backend: DELETE /auth/delete-account endpoint with comprehensive cleanup (teams, tournaments, content), POST /auth/request-password-reset and POST /auth/reset-password endpoints. Frontend: Added collapsible account management section in Profil.js with deletion confirmation (double confirmation with 'SUPPRIMER' text) and password reset request functionality. Includes proper error handling, loading states, and responsive design."
+
 frontend:
   - task: "Comprehensive Frontend Testing 2025 Enhancements"
     implemented: true
