@@ -26,10 +26,15 @@ const TournamentDetail = () => {
   const fetchTournamentDetails = async () => {
     try {
       setLoading(true);
+      console.log('Fetching tournament details for ID:', id);
+      console.log('API URL:', `${API_BASE_URL}/tournaments/${id}`);
+      
       const response = await fetch(`${API_BASE_URL}/tournaments/${id}`);
+      console.log('Response status:', response.status);
       
       if (response.ok) {
         const data = await response.json();
+        console.log('Tournament data received:', data);
         setTournament(data);
         
         // Fetch participant details
@@ -37,9 +42,11 @@ const TournamentDetail = () => {
           fetchParticipants(data.participants);
         }
       } else if (response.status === 404) {
+        console.log('Tournament not found (404)');
         setError('Tournoi non trouvé');
         setTimeout(() => navigate('/tournois'), 3000);
       } else {
+        console.log('Error response status:', response.status);
         setError('Erreur lors du chargement du tournoi');
       }
     } catch (error) {
