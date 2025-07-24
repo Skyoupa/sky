@@ -705,7 +705,7 @@ const TournamentDetail = () => {
           gap: 20px;
         }
 
-        .registration-card, .organizer-card {
+        .registration-card, .organizer-card, .bracket-card {
           background: white;
           padding: 25px;
           border-radius: 15px;
@@ -713,11 +713,50 @@ const TournamentDetail = () => {
           border: 2px solid #e5e7eb;
         }
 
-        .registration-card h3, .organizer-card h3 {
+        .registration-card h3, .organizer-card h3, .bracket-card h3 {
           color: #1e3a8a;
           font-size: 18px;
           font-weight: 700;
           margin-bottom: 15px;
+        }
+
+        .bracket-card {
+          text-align: center;
+        }
+
+        .bracket-card p {
+          color: #64748b;
+          margin-bottom: 20px;
+          font-size: 14px;
+        }
+
+        .btn-bracket {
+          display: inline-block;
+          width: 100%;
+          background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+          color: white;
+          text-decoration: none;
+          padding: 15px 20px;
+          border-radius: 12px;
+          font-weight: 600;
+          font-size: 16px;
+          text-align: center;
+          transition: all 0.3s;
+        }
+
+        .btn-bracket:hover {
+          background: linear-gradient(45deg, #2563eb, #1e40af);
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-bracket.admin {
+          background: linear-gradient(45deg, #10b981, #059669);
+        }
+
+        .btn-bracket.admin:hover {
+          background: linear-gradient(45deg, #059669, #047857);
+          box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
         }
 
         .registration-status {
