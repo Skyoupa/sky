@@ -120,6 +120,14 @@ const Accueil = () => {
           <p className="hero-subtitle-pro">
             Communauté gaming d'élite où <strong>l'excellence compétitive</strong> rencontre <strong>l'esprit familial</strong>
           </p>
+          {isAuthenticated && (
+            <div className="welcome-message">
+              <p>🎮 Bienvenue, <strong>{user?.username}</strong>!</p>
+              {user?.role === 'admin' && (
+                <p className="admin-notice">⚡ Vous êtes connecté en tant qu'administrateur</p>
+              )}
+            </div>
+          )}
           <div className="hero-stats">
             <div className="hero-stat">
               <span className="stat-number">150+</span>
