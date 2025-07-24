@@ -429,9 +429,9 @@ const AdminDashboard = () => {
         }
 
         .action-btn.secondary {
-          background: #f1f5f9;
-          color: #1e3a8a;
-          border: 2px solid #e2e8f0;
+          background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+          color: white;
+          border: none;
         }
 
         .action-btn.secondary:hover {
