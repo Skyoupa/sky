@@ -63,7 +63,7 @@ const Tutoriels = () => {
       name: 'StarCraft II',
       description: 'RTS Stratégique',
       color: '#9B59B6',
-      bgGradient: 'from-purple-500 via-cyan-600 to-blue-700',
+      backgroundImage: 'https://images.unsplash.com/photo-1504370164829-8c6ef0c41d06?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwyfHxnYW1pbmd8ZW58MHx8fGJsdWV8MTc1MzM0MTQxMXww&ixlib=rb-4.1.0&q=85',
       tutorials: [
         { title: 'Les trois races', level: 'Débutant', duration: '25 min', type: 'Races' },
         { title: 'Économie et ressources', level: 'Débutant', duration: '20 min', type: 'Economy' },
