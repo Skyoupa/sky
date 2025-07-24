@@ -14,7 +14,7 @@ const TournamentDetail = () => {
   const [selectedTeamForManagement, setSelectedTeamForManagement] = useState(null);
   const [selectedTeamForRegistration, setSelectedTeamForRegistration] = useState('');
   const [newTeamName, setNewTeamName] = useState('');
-  const [registrationType, setRegistrationType] = useState('existing'); // 'existing' or 'new'
+  const [registrationType, setRegistrationType] = useState('existing');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [registrationLoading, setRegistrationLoading] = useState(false);
@@ -203,39 +203,38 @@ const TournamentDetail = () => {
     });
   };
 
-  const getStatusBadge = (status) => {
-    switch(status) {
-      case 'draft':
-        return <span className="status-badge draft">📝 Brouillon</span>;
-      case 'open':
-        return <span className="status-badge open">🟢 Inscriptions ouvertes</span>;
-      case 'in_progress':
-        return <span className="status-badge progress">⏳ En cours</span>;
-      case 'completed':
-        return <span className="status-badge completed">✅ Terminé</span>;
-      default:
-        return <span className="status-badge">❓ Inconnu</span>;
-    }
+  const formatGameName = (game) => {
+    const gameNames = {
+      'cs2': 'Counter-Strike 2',
+      'lol': 'League of Legends',
+      'wow': 'World of Warcraft',
+      'sc2': 'StarCraft II',
+      'minecraft': 'Minecraft'
+    };
+    return gameNames[game] || game;
   };
 
-  const getTournamentTypeName = (type) => {
-    switch(type) {
-      case 'elimination':
-        return 'Élimination Directe';
-      case 'bracket':
-        return 'Bracket';
-      case 'round_robin':
-        return 'Round Robin';
-      default:
-        return type;
-    }
+  const getStatusBadge = (status) => {
+    const statusConfig = {
+      'open': { text: 'Inscriptions ouvertes', class: 'status-open' },
+      'in_progress': { text: 'En cours', class: 'status-progress' },
+      'completed': { text: 'Terminé', class: 'status-completed' },
+      'cancelled': { text: 'Annulé', class: 'status-cancelled' }
+    };
+    
+    const config = statusConfig[status] || { text: status, class: 'status-default' };
+    return (
+      <span className={`status-badge ${config.class}`}>
+        {config.text}
+      </span>
+    );
   };
 
   if (loading) {
     return (
-      <div className="tournament-detail-container">
-        <div className="loading-state">
-          <div className="spinner"></div>
+      <div className="page-container">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
           <p>Chargement du tournoi...</p>
         </div>
       </div>
@@ -244,13 +243,12 @@ const TournamentDetail = () => {
 
   if (error) {
     return (
-      <div className="tournament-detail-container">
-        <div className="error-state">
-          <div className="error-icon">❌</div>
-          <h3>Erreur</h3>
+      <div className="page-container">
+        <div className="error-container">
+          <h2>Erreur</h2>
           <p>{error}</p>
-          <Link to="/tournois" className="btn-back">
-            ← Retour aux tournois
+          <Link to="/tournois" className="btn-primary">
+            Retour aux tournois
           </Link>
         </div>
       </div>
@@ -259,685 +257,571 @@ const TournamentDetail = () => {
 
   if (!tournament) {
     return (
-      <div className="tournament-detail-container">
-        <div className="error-state">
-          <div className="error-icon">🏆</div>
-          <h3>Tournoi non trouvé</h3>
-          <p>Le tournoi demandé n'existe pas ou a été supprimé.</p>
-          <Link to="/tournois" className="btn-back">
-            ← Retour aux tournois
+      <div className="page-container">
+        <div className="error-container">
+          <h2>Tournoi non trouvé</h2>
+          <Link to="/tournois" className="btn-primary">
+            Retour aux tournois
           </Link>
         </div>
       </div>
     );
   }
 
-  const isRegistered = user && tournament.participants.includes(user.id);
-  const canRegister = tournament.status === 'open' && 
-                     new Date() < new Date(tournament.registration_end) &&
-                     tournament.participants.length < tournament.max_participants;
+  const userIsRegistered = user && tournament.participants.includes(user.id);
+  const isRegistrationOpen = tournament.status === 'open' && new Date() < new Date(tournament.registration_end);
 
   return (
-    <div className="tournament-detail-container">
-      <div className="tournament-detail-header">
-        <Link to="/tournois" className="btn-back-small">
-          ← Retour aux tournois
-        </Link>
-        <div className="tournament-badges">
-          {getStatusBadge(tournament.status)}
-          <span className="game-badge">{tournament.game === 'cs2' ? 'Counter-Strike 2' : tournament.game}</span>
-          {tournament.status === 'completed' && tournament.winner_id && (
-            <span className="winner-badge-detail">
-              🏆 Vainqueur: {
-                participantsInfo.find(p => p.id === tournament.winner_id)?.display_name || 
-                `Participant ${tournament.winner_id.substring(0, 8)}`
-              }
-            </span>
-          )}
+    <div className="page-container">
+      {/* Header */}
+      <div className="tournament-header">
+        <div className="header-content">
+          <div className="tournament-info">
+            <h1 className="tournament-title">{tournament.title}</h1>
+            <div className="tournament-meta">
+              <span className="game-badge">
+                🎮 {formatGameName(tournament.game)}
+              </span>
+              {getStatusBadge(tournament.status)}
+              <span className="participants-count">
+                👥 {tournament.participants.length}/{tournament.max_participants}
+              </span>
+            </div>
+            <p className="tournament-description">{tournament.description}</p>
+          </div>
+          
+          <div className="tournament-actions">
+            {user && !userIsRegistered && isRegistrationOpen && (
+              <button 
+                className="btn-primary btn-register"
+                onClick={handleOpenRegistrationModal}
+              >
+                🎯 S'inscrire
+              </button>
+            )}
+            {userIsRegistered && (
+              <div className="registered-badge">
+                ✅ Inscrit
+              </div>
+            )}
+            {tournament.status === 'in_progress' && (
+              <Link 
+                to={`/tournois/${id}/bracket`} 
+                className="btn-secondary"
+              >
+                🏆 Voir le bracket
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="tournament-detail-content">
-        <div className="tournament-main-info">
-          <h1>{tournament.title}</h1>
-          <p className="tournament-description">{tournament.description}</p>
-
-          <div className="tournament-details-grid">
-            <div className="detail-card">
-              <h3>📊 Informations générales</h3>
-              <div className="detail-row">
-                <span>Type:</span>
-                <span>{getTournamentTypeName(tournament.tournament_type)}</span>
+      {/* Main Content */}
+      <div className="tournament-content">
+        <div className="content-grid">
+          {/* Left Column - Details */}
+          <div className="tournament-details">
+            <div className="details-card">
+              <h3>📋 Informations</h3>
+              <div className="detail-item">
+                <strong>Type :</strong> {tournament.tournament_type}
               </div>
-              <div className="detail-row">
-                <span>Participants:</span>
-                <span>{tournament.participants.length}/{tournament.max_participants}</span>
+              <div className="detail-item">
+                <strong>Participants max :</strong> {tournament.max_participants}
               </div>
-              <div className="detail-row">
-                <span>Frais d'entrée:</span>
-                <span>{tournament.entry_fee > 0 ? `${tournament.entry_fee}€` : 'Gratuit'}</span>
+              <div className="detail-item">
+                <strong>Prix :</strong> {tournament.entry_fee === 0 ? 'Gratuit' : `${tournament.entry_fee}€`}
               </div>
-              <div className="detail-row">
-                <span>Prize Pool:</span>
-                <span>{tournament.prize_pool > 0 ? `${tournament.prize_pool}€` : 'Aucun'}</span>
+              <div className="detail-item">
+                <strong>Organisateur :</strong> {tournament.organizer_name}
               </div>
             </div>
 
-            <div className="detail-card">
-              <h3>📅 Dates importantes</h3>
-              <div className="detail-row">
-                <span>Début inscriptions:</span>
-                <span>{formatDate(tournament.registration_start)}</span>
+            <div className="details-card">
+              <h3>📅 Planning</h3>
+              <div className="detail-item">
+                <strong>Inscriptions :</strong>
+                <br />
+                Du {formatDate(tournament.registration_start)}
+                <br />
+                Au {formatDate(tournament.registration_end)}
               </div>
-              <div className="detail-row">
-                <span>Fin inscriptions:</span>
-                <span>{formatDate(tournament.registration_end)}</span>
+              <div className="detail-item">
+                <strong>Début du tournoi :</strong>
+                <br />
+                {formatDate(tournament.tournament_start)}
               </div>
-              <div className="detail-row">
-                <span>Début tournoi:</span>
-                <span>{formatDate(tournament.tournament_start)}</span>
+            </div>
+
+            {tournament.rules && (
+              <div className="details-card">
+                <h3>📜 Règles</h3>
+                <div 
+                  className="rules-content"
+                  dangerouslySetInnerHTML={{ __html: tournament.rules.replace(/\n/g, '<br>') }}
+                />
               </div>
-              {tournament.tournament_end && (
-                <div className="detail-row">
-                  <span>Fin tournoi:</span>
-                  <span>{formatDate(tournament.tournament_end)}</span>
+            )}
+          </div>
+
+          {/* Right Column - Participants */}
+          <div className="tournament-sidebar">
+            <div className="participants-card">
+              <h3>👥 Participants ({participantsInfo.length}/{tournament.max_participants})</h3>
+              
+              {participantsInfo.length === 0 ? (
+                <p className="no-participants">Aucun participant pour le moment</p>
+              ) : (
+                <div className="participants-list">
+                  {participantsInfo.map((participant, index) => (
+                    <div key={participant.id} className="participant-item">
+                      <div className="participant-info">
+                        <span className="participant-rank">#{index + 1}</span>
+                        <span className="participant-name">
+                          {participant.is_team ? (
+                            <>
+                              <span className="team-icon">👥</span>
+                              {participant.name}
+                              <span className="member-count">({participant.member_count})</span>
+                            </>
+                          ) : (
+                            <>
+                              <span className="user-icon">👤</span>
+                              {participant.name}
+                            </>
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
-          </div>
 
-          <div className="tournament-rules">
-            <h3>📋 Règles du tournoi</h3>
-            <div className="rules-content">
-              {tournament.rules.split('\n').map((rule, index) => (
-                <p key={index}>{rule}</p>
-              ))}
-            </div>
-          </div>
-
-          <div className="tournament-participants">
-            <h3>👥 Participants ({tournament.participants.length})</h3>
-            {tournament.participants.length === 0 ? (
-              <p className="no-participants">Aucun participant inscrit pour le moment</p>
-            ) : (
-              <div className="participants-list">
-                {participantsInfo.map((participant, index) => (
-                  <div key={participant.id} className={`participant-card ${participant.type}`}>
-                    <span className="participant-number">#{index + 1}</span>
-                    <div className="participant-info">
-                      <span className="participant-name">{participant.display_name}</span>
-                      {participant.type === 'team' && (
-                        <span className="participant-type">👥 Équipe</span>
-                      )}
-                      {participant.type === 'user' && (
-                        <span className="participant-type">👤 Joueur</span>
+            {/* User's Teams for Management (if any) */}
+            {user && userTeamsForTournament?.eligible_teams && userTeamsForTournament.eligible_teams.length > 0 && (
+              <div className="user-teams-card">
+                <h3>⚡ Mes équipes pour ce tournoi</h3>
+                <div className="teams-list">
+                  {userTeamsForTournament.eligible_teams.map(team => (
+                    <div key={team.id} className="team-item">
+                      <div className="team-info">
+                        <span className="team-name">{team.name}</span>
+                        {team.is_captain && <span className="captain-badge">👑 Capitaine</span>}
+                        <span className="team-members">({team.member_count}/{team.max_members})</span>
+                      </div>
+                      {team.is_captain && (
+                        <button 
+                          className="btn-manage-team"
+                          onClick={() => handleTeamManagement(team)}
+                        >
+                          ⚙️ Gérer
+                        </button>
                       )}
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             )}
-          </div>
-        </div>
-
-        <div className="tournament-sidebar">
-          <div className="registration-card">
-            <h3>🎮 Inscription</h3>
-            {!user ? (
-              <p>Connectez-vous pour vous inscrire au tournoi</p>
-            ) : isRegistered ? (
-              <div className="registration-status registered">
-                <div className="status-icon">✅</div>
-                <p>Vous êtes inscrit à ce tournoi</p>
-              </div>
-            ) : !canRegister ? (
-              <div className="registration-status closed">
-                <div className="status-icon">❌</div>
-                <p>
-                  {tournament.status !== 'open' 
-                    ? 'Les inscriptions ne sont pas ouvertes'
-                    : new Date() > new Date(tournament.registration_end)
-                    ? 'Les inscriptions sont fermées'
-                    : 'Le tournoi est complet'
-                  }
-                </p>
-              </div>
-            ) : (
-              <div className="registration-actions">
-                <button 
-                  className="btn-register-main"
-                  onClick={() => setShowRegistrationModal(true)}
-                >
-                  📝 S'inscrire au tournoi
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Tournament Bracket Link */}
-          {tournament.status === 'in_progress' || tournament.status === 'completed' ? (
-            <div className="bracket-card">
-              <h3>🏆 Bracket du Tournoi</h3>
-              <p>Suivez les matches et résultats en temps réel</p>
-              <Link to={`/tournois/${tournament.id}/bracket`} className="btn-bracket">
-                📊 Voir le Bracket
-              </Link>
-            </div>
-          ) : tournament.status === 'open' && tournament.participants.length >= 2 && (user?.role === 'admin' || user?.role === 'moderator') ? (
-            <div className="bracket-card">
-              <h3>⚙️ Gestion Admin</h3>  
-              <p>Prêt à générer le bracket pour démarrer le tournoi</p>
-              <Link to={`/tournois/${tournament.id}/bracket`} className="btn-bracket admin">
-                🎲 Générer le Bracket
-              </Link>
-            </div>
-          ) : null}
-
-          <div className="organizer-card">
-            <h3>👤 Organisateur</h3>
-            <p>Organisé par: {tournament.organizer_id.substring(0, 8)}</p>
           </div>
         </div>
       </div>
 
       {/* Registration Modal */}
       {showRegistrationModal && (
-        <div className="modal-overlay" onClick={() => setShowRegistrationModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay">
+          <div className="modal-content">
             <div className="modal-header">
-              <h2>S'inscrire au tournoi</h2>
-              <button 
-                className="modal-close"
-                onClick={() => setShowRegistrationModal(false)}
-              >
-                ×
-              </button>
+              <h2>🎯 Inscription au tournoi</h2>
+              <button className="modal-close" onClick={handleCloseRegistrationModal}>×</button>
             </div>
-
+            
             <div className="modal-body">
-              <div className="registration-options">
-                <h3>Choisissez votre équipe</h3>
-                
-                <div className="option-group">
-                  <label className="radio-option">
-                    <input
-                      type="radio"
-                      name="registrationType"
-                      value="existing"
-                      checked={registrationType === 'existing'}
-                      onChange={(e) => setRegistrationType(e.target.value)}
-                    />
-                    <span>Utiliser une équipe existante</span>
-                  </label>
-                  
-                  {registrationType === 'existing' && (
-                    <div className="team-selection">
-                      {teams.length === 0 ? (
-                        <p className="no-teams">
-                          Vous n'avez pas d'équipe pour {tournament.game === 'cs2' ? 'CS2' : tournament.game}.
-                          Créez-en une nouvelle ci-dessous.
-                        </p>
-                      ) : (
-                        <select 
-                          value={selectedTeam} 
-                          onChange={(e) => setSelectedTeam(e.target.value)}
-                          className="team-select"
-                        >
-                          <option value="">Sélectionner une équipe</option>
-                          {teams.map(team => (
-                            <option key={team.id} value={team.id}>
-                              {team.name} ({team.members.length}/{team.max_members} membres)
-                            </option>
-                          ))}
-                        </select>
-                      )}
-                    </div>
-                  )}
-                </div>
+              {registrationError && (
+                <div className="error-message">{registrationError}</div>
+              )}
 
-                <div className="option-group">
-                  <label className="radio-option">
-                    <input
-                      type="radio"
-                      name="registrationType"
-                      value="new"
-                      checked={registrationType === 'new'}
-                      onChange={(e) => setRegistrationType(e.target.value)}
-                    />
-                    <span>Créer une nouvelle équipe</span>
-                  </label>
-                  
-                  {registrationType === 'new' && (
-                    <div className="new-team-form">
-                      <input
-                        type="text"
-                        placeholder="Nom de votre équipe"
-                        value={newTeamName}
-                        onChange={(e) => setNewTeamName(e.target.value)}
-                        className="team-name-input"
-                        maxLength={50}
-                      />
-                      <p className="form-help">
-                        Une nouvelle équipe sera créée automatiquement avec vous comme capitaine.
-                      </p>
+              <div className="tournament-info-summary">
+                <h3>{tournament.title}</h3>
+                <p><strong>Jeu :</strong> {formatGameName(tournament.game)}</p>
+                {userTeamsForTournament?.requires_team ? (
+                  <p className="team-required">⚠️ Ce tournoi nécessite une équipe</p>
+                ) : (
+                  <p className="individual-allowed">✅ Inscription individuelle autorisée</p>
+                )}
+              </div>
+
+              {/* Team Selection for Team Tournaments */}
+              {userTeamsForTournament?.requires_team && (
+                <div className="registration-options">
+                  {userTeamsForTournament.eligible_teams && userTeamsForTournament.eligible_teams.length > 0 ? (
+                    <>
+                      <div className="option-group">
+                        <label>
+                          <input
+                            type="radio"
+                            name="registrationType"
+                            value="existing"
+                            checked={registrationType === 'existing'}
+                            onChange={(e) => setRegistrationType(e.target.value)}
+                          />
+                          Utiliser une équipe existante
+                        </label>
+                        
+                        {registrationType === 'existing' && (
+                          <select
+                            value={selectedTeamForRegistration}
+                            onChange={(e) => setSelectedTeamForRegistration(e.target.value)}
+                            className="team-select"
+                          >
+                            <option value="">Sélectionner une équipe</option>
+                            {userTeamsForTournament.eligible_teams.map(team => (
+                              <option key={team.id} value={team.id}>
+                                {team.name} ({team.member_count}/{team.max_members}) 
+                                {team.is_captain ? ' - Capitaine' : ' - Membre'}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                      </div>
+
+                      <div className="option-group">
+                        <label>
+                          <input
+                            type="radio"
+                            name="registrationType"
+                            value="new"
+                            checked={registrationType === 'new'}
+                            onChange={(e) => setRegistrationType(e.target.value)}
+                          />
+                          Créer une nouvelle équipe
+                        </label>
+                        
+                        {registrationType === 'new' && (
+                          <input
+                            type="text"
+                            placeholder="Nom de la nouvelle équipe"
+                            value={newTeamName}
+                            onChange={(e) => setNewTeamName(e.target.value)}
+                            className="team-name-input"
+                          />
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="no-teams-message">
+                      <p>❌ Vous n'avez aucune équipe éligible pour ce tournoi.</p>
+                      <p>Vous devez créer ou rejoindre une équipe pour le jeu <strong>{formatGameName(tournament.game)}</strong>.</p>
+                      
+                      <div className="option-group">
+                        <label>
+                          <input
+                            type="radio"
+                            name="registrationType"
+                            value="new"
+                            checked={registrationType === 'new'}
+                            onChange={(e) => setRegistrationType(e.target.value)}
+                          />
+                          Créer une nouvelle équipe maintenant
+                        </label>
+                        
+                        {registrationType === 'new' && (
+                          <input
+                            type="text"
+                            placeholder="Nom de la nouvelle équipe"
+                            value={newTeamName}
+                            onChange={(e) => setNewTeamName(e.target.value)}
+                            className="team-name-input"
+                          />
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
-              </div>
+              )}
+
+              {/* Individual Registration Info */}
+              {!userTeamsForTournament?.requires_team && (
+                <div className="individual-registration-info">
+                  <p>✅ Vous vous inscrivez en tant qu'individu à ce tournoi 1v1.</p>
+                </div>
+              )}
             </div>
 
             <div className="modal-footer">
-              <button 
-                className="btn-cancel"
-                onClick={() => setShowRegistrationModal(false)}
-              >
+              <button className="btn-secondary" onClick={handleCloseRegistrationModal}>
                 Annuler
               </button>
-              <button 
-                className="btn-confirm"
+              <button
+                className="btn-primary"
                 onClick={handleRegistration}
-                disabled={
-                  (registrationType === 'existing' && !selectedTeam) ||
-                  (registrationType === 'new' && !newTeamName.trim())
-                }
+                disabled={registrationLoading || (
+                  userTeamsForTournament?.requires_team &&
+                  registrationType === 'existing' &&
+                  !selectedTeamForRegistration
+                ) || (
+                  registrationType === 'new' &&
+                  !newTeamName.trim()
+                )}
               >
-                Confirmer l'inscription
+                {registrationLoading ? 'Inscription...' : 'S\'inscrire'}
               </button>
             </div>
           </div>
         </div>
       )}
 
+      {/* Team Management Modal */}
+      <TeamManagementModal
+        isOpen={showTeamManagementModal}
+        onClose={() => setShowTeamManagementModal(false)}
+        team={selectedTeamForManagement}
+        onTeamUpdated={handleTeamUpdated}
+      />
+
       <style jsx>{`
-        .tournament-detail-container {
+        .page-container {
+          min-height: 100vh;
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+          color: white;
+        }
+
+        .tournament-header {
+          background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+          padding: 2rem 0;
+        }
+
+        .header-content {
           max-width: 1200px;
-          margin: 40px auto;
-          padding: 0 20px;
-        }
-
-        .tournament-detail-header {
+          margin: 0 auto;
+          padding: 0 1rem;
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 30px;
+          gap: 2rem;
         }
 
-        .btn-back-small {
-          background: #f1f5f9;
-          color: #1e3a8a;
-          padding: 10px 20px;
-          rounded: 10px;
-          text-decoration: none;
-          font-weight: 600;
-          transition: all 0.3s;
-          border-radius: 10px;
+        .tournament-info {
+          flex: 1;
         }
 
-        .btn-back-small:hover {
-          background: #e2e8f0;
-          transform: translateY(-1px);
+        .tournament-title {
+          font-size: 2.5rem;
+          font-weight: 700;
+          margin: 0 0 1rem 0;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
-        .tournament-badges {
+        .tournament-meta {
           display: flex;
-          gap: 10px;
+          gap: 1rem;
+          margin-bottom: 1rem;
+          flex-wrap: wrap;
         }
 
-        .status-badge {
-          padding: 8px 15px;
+        .game-badge,
+        .status-badge,
+        .participants-count {
+          padding: 0.5rem 1rem;
           border-radius: 20px;
-          font-size: 14px;
-          font-weight: 600;
-        }
-
-        .status-badge.draft {
-          background: #fef3c7;
-          color: #92400e;
-        }
-
-        .status-badge.open {
-          background: #dcfce7;
-          color: #166534;
-        }
-
-        .status-badge.progress {
-          background: #dbeafe;
-          color: #1e40af;
-        }
-
-        .status-badge.completed {
-          background: #f3e8ff;
-          color: #7c3aed;
-        }
-
-        .game-badge {
-          background: #3b82f6;
-          color: white;
-          padding: 8px 15px;
-          border-radius: 20px;
-          font-size: 14px;
-          font-weight: 600;
-        }
-
-        .winner-badge {
-          background: linear-gradient(45deg, #fbbf24, #f59e0b);
-          color: white;
-          padding: 8px 15px;
-          border-radius: 15px;
-          font-weight: 700;
-          font-size: 14px;
-        }
-
-        .winner-badge-detail {
-          background: linear-gradient(45deg, #10b981, #059669);
-          color: white;
-          padding: 8px 15px;
-          border-radius: 15px;
-          font-weight: 700;
-          font-size: 14px;
-        }
-
-        .tournament-detail-content {
-          display: grid;
-          grid-template-columns: 1fr 350px;
-          gap: 40px;
-        }
-
-        .tournament-main-info h1 {
-          color: #1e3a8a;
-          font-size: 36px;
-          font-weight: 800;
-          margin-bottom: 15px;
-        }
-
-        .tournament-description {
-          color: #64748b;
-          font-size: 18px;
-          line-height: 1.6;
-          margin-bottom: 30px;
-        }
-
-        .tournament-details-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 20px;
-          margin-bottom: 30px;
-        }
-
-        .detail-card {
-          background: white;
-          padding: 25px;
-          border-radius: 15px;
-          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-          border: 2px solid #e5e7eb;
-        }
-
-        .detail-card h3 {
-          color: #1e3a8a;
-          font-size: 18px;
-          font-weight: 700;
-          margin-bottom: 20px;
-        }
-
-        .detail-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 12px;
-          padding-bottom: 8px;
-          border-bottom: 1px solid #f1f5f9;
-        }
-
-        .detail-row:last-child {
-          margin-bottom: 0;
-          border-bottom: none;
-          padding-bottom: 0;
-        }
-
-        .detail-row span:first-child {
-          color: #64748b;
-          font-weight: 600;
-        }
-
-        .detail-row span:last-child {
-          color: #1a1a1a;
+          font-size: 0.9rem;
           font-weight: 500;
         }
 
-        .tournament-rules {
-          background: white;
-          padding: 25px;
-          border-radius: 15px;
-          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-          border: 2px solid #e5e7eb;
-          margin-bottom: 30px;
+        .game-badge {
+          background: rgba(255, 255, 255, 0.2);
         }
 
-        .tournament-rules h3 {
-          color: #1e3a8a;
-          font-size: 18px;
-          font-weight: 700;
-          margin-bottom: 20px;
+        .status-open { background: #10b981; }
+        .status-progress { background: #f59e0b; }
+        .status-completed { background: #6b7280; }
+        .status-cancelled { background: #ef4444; }
+
+        .participants-count {
+          background: rgba(255, 255, 255, 0.15);
         }
 
-        .rules-content p {
-          color: #1a1a1a;
+        .tournament-description {
+          font-size: 1.1rem;
+          opacity: 0.9;
           line-height: 1.6;
-          margin-bottom: 8px;
+          margin: 0;
         }
 
-        .tournament-participants {
-          background: white;
-          padding: 25px;
-          border-radius: 15px;
-          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-          border: 2px solid #e5e7eb;
+        .tournament-actions {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          align-items: center;
         }
 
-        .tournament-participants h3 {
-          color: #1e3a8a;
-          font-size: 18px;
-          font-weight: 700;
-          margin-bottom: 20px;
+        .btn-register {
+          font-size: 1.1rem;
+          padding: 1rem 2rem;
+          white-space: nowrap;
         }
 
-        .no-participants {
-          color: #64748b;
-          font-style: italic;
-          text-align: center;
-          padding: 20px;
+        .registered-badge {
+          background: #10b981;
+          color: white;
+          padding: 1rem 2rem;
+          border-radius: 8px;
+          font-weight: 600;
+          font-size: 1.1rem;
+        }
+
+        .tournament-content {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 2rem 1rem;
+        }
+
+        .content-grid {
+          display: grid;
+          grid-template-columns: 2fr 1fr;
+          gap: 2rem;
+        }
+
+        .details-card,
+        .participants-card,
+        .user-teams-card {
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 12px;
+          padding: 1.5rem;
+          margin-bottom: 1.5rem;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .details-card h3,
+        .participants-card h3,
+        .user-teams-card h3 {
+          margin: 0 0 1rem 0;
+          color: #3b82f6;
+          font-size: 1.2rem;
+          font-weight: 600;
+        }
+
+        .detail-item {
+          margin-bottom: 1rem;
+          line-height: 1.6;
+        }
+
+        .detail-item strong {
+          color: #60a5fa;
+        }
+
+        .rules-content {
+          line-height: 1.7;
+          color: #e2e8f0;
         }
 
         .participants-list {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-          gap: 10px;
+          max-height: 400px;
+          overflow-y: auto;
         }
 
-        .participant-card {
-          background: #f8fafc;
-          padding: 12px 15px;
-          border-radius: 10px;
+        .participant-item {
           display: flex;
+          justify-content: space-between;
           align-items: center;
-          gap: 10px;
-          border: 1px solid #e2e8f0;
-          transition: all 0.3s;
-        }
-
-        .participant-card:hover {
-          border-color: #3b82f6;
-          transform: translateY(-1px);
-        }
-
-        .participant-card.team {
-          border-left: 4px solid #10b981;
-        }
-
-        .participant-card.user {
-          border-left: 4px solid #3b82f6;
-        }
-
-        .participant-number {
-          background: #3b82f6;
-          color: white;
-          padding: 4px 8px;
-          border-radius: 6px;
-          font-size: 12px;
-          font-weight: 600;
-          min-width: 30px;
-          text-align: center;
+          padding: 0.75rem;
+          margin-bottom: 0.5rem;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 8px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .participant-info {
           display: flex;
-          flex-direction: column;
-          flex: 1;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .participant-rank {
+          color: #60a5fa;
+          font-weight: 600;
+          font-size: 0.9rem;
         }
 
         .participant-name {
-          color: #1a1a1a;
-          font-weight: 600;
-          font-size: 14px;
-        }
-
-        .participant-type {
-          color: #64748b;
-          font-size: 11px;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
           font-weight: 500;
-          margin-top: 2px;
         }
 
-        .tournament-sidebar {
+        .team-icon,
+        .user-icon {
+          font-size: 1.1rem;
+        }
+
+        .member-count {
+          color: #94a3b8;
+          font-size: 0.9rem;
+        }
+
+        .no-participants {
+          text-align: center;
+          color: #94a3b8;
+          font-style: italic;
+          padding: 2rem;
+        }
+
+        .teams-list {
           display: flex;
           flex-direction: column;
-          gap: 20px;
+          gap: 0.75rem;
         }
 
-        .organizer-card {
-          background: white;
-          padding: 25px;
-          border-radius: 15px;
-          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-          border: 2px solid #e5e7eb;
+        .team-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1rem;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 8px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .organizer-card h3 {
-          color: #1e3a8a;
-          font-size: 18px;
-          font-weight: 700;
-          margin-bottom: 15px;
+        .team-info {
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
         }
 
-        .organizer-card p {
-          color: #1a1a1a;
-          font-size: 16px;
+        .team-name {
           font-weight: 600;
-          margin: 0;
+          color: #e2e8f0;
         }
 
-        .registration-card, .bracket-card {
-          background: white;
-          padding: 25px;
-          border-radius: 15px;
-          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-          border: 2px solid #e5e7eb;
-        }
-
-        .registration-card h3, .bracket-card h3 {
-          color: #1e3a8a;
-          font-size: 18px;
-          font-weight: 700;
-          margin-bottom: 15px;
-        }
-
-        .registration-card p {
-          color: #1a1a1a;
-          font-size: 16px;
-          font-weight: 500;
-          margin: 5px 0;
-        }
-
-        .bracket-card {
-          text-align: center;
-        }
-
-        .bracket-card p {
-          color: #1a1a1a;
-          margin-bottom: 20px;
-          font-size: 15px;
+        .captain-badge {
+          font-size: 0.8rem;
+          color: #fbbf24;
           font-weight: 500;
         }
-        .btn-bracket {
-          display: inline-block;
-          width: 100%;
-          background: linear-gradient(45deg, #3b82f6, #1d4ed8);
-          color: white;
-          text-decoration: none;
-          padding: 15px 20px;
-          border-radius: 12px;
-          font-weight: 600;
-          font-size: 16px;
-          text-align: center;
-          transition: all 0.3s;
+
+        .team-members {
+          font-size: 0.9rem;
+          color: #94a3b8;
         }
 
-        .btn-bracket:hover {
-          background: linear-gradient(45deg, #2563eb, #1e40af);
-          transform: translateY(-2px);
-          box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
-        }
-
-        .btn-bracket.admin {
-          background: linear-gradient(45deg, #10b981, #059669);
-        }
-
-        .btn-bracket.admin:hover {
-          background: linear-gradient(45deg, #059669, #047857);
-          box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
-        }
-
-        .registration-status {
-          text-align: center;
-          padding: 20px;
-        }
-
-        .registration-status.registered {
-          background: #dcfce7;
-          border-radius: 10px;
-          color: #166534;
-        }
-
-        .registration-status.closed {
-          background: #fee2e2;
-          border-radius: 10px;
-          color: #dc2626;
-        }
-
-        .status-icon {
-          font-size: 40px;
-          margin-bottom: 10px;
-        }
-
-        .btn-register-main {
-          width: 100%;
-          background: linear-gradient(45deg, #10b981, #059669);
+        .btn-manage-team {
+          background: #3b82f6;
           color: white;
           border: none;
-          padding: 15px 20px;
-          border-radius: 12px;
-          font-weight: 600;
-          font-size: 16px;
+          padding: 0.5rem 1rem;
+          border-radius: 6px;
+          font-size: 0.9rem;
+          font-weight: 500;
           cursor: pointer;
-          transition: all 0.3s;
+          transition: background-color 0.3s;
         }
 
-        .btn-register-main:hover {
-          background: linear-gradient(45deg, #059669, #047857);
-          transform: translateY(-2px);
-          box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        .btn-manage-team:hover {
+          background: #2563eb;
         }
 
+        /* Modal Styles */
         .modal-overlay {
           position: fixed;
           top: 0;
@@ -946,230 +830,211 @@ const TournamentDetail = () => {
           bottom: 0;
           background: rgba(0, 0, 0, 0.7);
           display: flex;
-          justify-content: center;
           align-items: center;
+          justify-content: center;
           z-index: 1000;
         }
 
         .modal-content {
           background: white;
-          border-radius: 20px;
+          border-radius: 15px;
           width: 90%;
           max-width: 600px;
           max-height: 90vh;
           overflow-y: auto;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+          color: #1a1a1a;
         }
 
         .modal-header {
-          padding: 25px 25px 0;
           display: flex;
           justify-content: space-between;
           align-items: center;
-          border-bottom: 2px solid #f1f5f9;
-          margin-bottom: 25px;
+          padding: 1.5rem;
+          border-bottom: 1px solid #e5e7eb;
+          background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+          color: white;
+          border-radius: 15px 15px 0 0;
         }
 
         .modal-header h2 {
-          color: #1e3a8a;
-          font-size: 24px;
-          font-weight: 700;
           margin: 0;
+          font-size: 1.25rem;
+          font-weight: 600;
         }
 
         .modal-close {
           background: none;
           border: none;
-          font-size: 30px;
-          color: #64748b;
+          font-size: 2rem;
+          color: white;
           cursor: pointer;
           padding: 0;
           width: 40px;
           height: 40px;
-          border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: all 0.3s;
+          border-radius: 50%;
+          transition: background-color 0.3s;
         }
 
         .modal-close:hover {
-          background: #f1f5f9;
-          color: #1a1a1a;
+          background: rgba(255, 255, 255, 0.2);
         }
 
         .modal-body {
-          padding: 0 25px;
+          padding: 1.5rem;
         }
 
-        .registration-options h3 {
+        .tournament-info-summary {
+          margin-bottom: 1.5rem;
+          padding: 1rem;
+          background: #f8fafc;
+          border-radius: 8px;
+          border: 1px solid #e5e7eb;
+        }
+
+        .tournament-info-summary h3 {
+          margin: 0 0 0.5rem 0;
           color: #1e3a8a;
-          font-size: 18px;
-          font-weight: 700;
-          margin-bottom: 20px;
+        }
+
+        .team-required {
+          color: #dc2626;
+          font-weight: 600;
+          margin: 0.5rem 0 0 0;
+        }
+
+        .individual-allowed {
+          color: #16a34a;
+          font-weight: 600;
+          margin: 0.5rem 0 0 0;
+        }
+
+        .registration-options {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
         }
 
         .option-group {
-          margin-bottom: 25px;
-          padding: 20px;
-          border: 2px solid #e5e7eb;
-          border-radius: 12px;
-          background: #f8fafc;
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
         }
 
-        .radio-option {
+        .option-group label {
           display: flex;
           align-items: center;
-          gap: 10px;
-          cursor: pointer;
-          font-weight: 600;
-          color: #1a1a1a;
-          font-size: 16px;
-        }
-
-        .radio-option input[type="radio"] {
-          width: 18px;
-          height: 18px;
-          cursor: pointer;
-        }
-
-        .team-selection {
-          margin-top: 15px;
-          padding-top: 15px;
-          border-top: 1px solid #e5e7eb;
-        }
-
-        .no-teams {
-          color: #dc2626;
-          font-style: italic;
-          padding: 15px;
-          background: #fef2f2;
-          border: 1px solid #fecaca;
-          border-radius: 8px;
-          font-weight: 600;
-        }
-
-        .team-select {
-          width: 100%;
-          padding: 12px 15px;
-          border: 2px solid #e5e7eb;
-          border-radius: 8px;
-          font-size: 16px;
-          background: white;
-          color: #1a1a1a;
-          font-weight: 600;
-        }
-
-        .team-select:focus {
-          outline: none;
-          border-color: #3b82f6;
-        }
-
-        .team-select option {
-          color: #1a1a1a;
+          gap: 0.5rem;
           font-weight: 500;
+          cursor: pointer;
         }
 
-        .new-team-form {
-          margin-top: 15px;
-          padding-top: 15px;
-          border-top: 1px solid #e5e7eb;
-        }
-
+        .team-select,
         .team-name-input {
-          width: 100%;
-          padding: 12px 15px;
+          padding: 0.75rem;
           border: 2px solid #e5e7eb;
           border-radius: 8px;
-          font-size: 16px;
-          margin-bottom: 10px;
-          background: white;
-          color: #1a1a1a;
-          font-weight: 600;
+          font-size: 1rem;
+          margin-left: 1.5rem;
         }
 
+        .team-select:focus,
         .team-name-input:focus {
           outline: none;
           border-color: #3b82f6;
         }
 
-        .team-name-input::placeholder {
-          color: #6b7280;
-          font-weight: 500;
+        .no-teams-message {
+          padding: 1rem;
+          background: #fee2e2;
+          border: 1px solid #fecaca;
+          border-radius: 8px;
+          color: #991b1b;
+          margin-bottom: 1rem;
         }
 
-        .form-help {
-          color: #047857;
-          font-size: 14px;
-          margin: 0;
-          font-weight: 600;
-          background: #ecfdf5;
-          padding: 12px 15px;
-          border-radius: 8px;
+        .individual-registration-info {
+          padding: 1rem;
+          background: #d1fae5;
           border: 1px solid #a7f3d0;
+          border-radius: 8px;
+          color: #065f46;
         }
 
         .modal-footer {
-          padding: 25px;
+          padding: 1rem 1.5rem;
+          border-top: 1px solid #e5e7eb;
           display: flex;
-          gap: 15px;
           justify-content: flex-end;
-          border-top: 2px solid #f1f5f9;
-          margin-top: 25px;
+          gap: 1rem;
         }
 
-        .btn-cancel {
-          background: #f1f5f9;
-          color: #64748b;
-          border: 2px solid #e5e7eb;
-          padding: 12px 25px;
-          border-radius: 10px;
-          font-weight: 600;
+        .btn-primary,
+        .btn-secondary {
+          padding: 0.75rem 1.5rem;
+          border-radius: 8px;
+          font-size: 1rem;
+          font-weight: 500;
           cursor: pointer;
           transition: all 0.3s;
-        }
-
-        .btn-cancel:hover {
-          background: #e2e8f0;
-          color: #1a1a1a;
-        }
-
-        .btn-confirm {
-          background: linear-gradient(45deg, #10b981, #059669);
-          color: white;
           border: none;
-          padding: 12px 25px;
-          border-radius: 10px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.3s;
         }
 
-        .btn-confirm:hover:not(:disabled) {
-          background: linear-gradient(45deg, #059669, #047857);
+        .btn-primary {
+          background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+          color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+          background: linear-gradient(45deg, #2563eb, #1e40af);
           transform: translateY(-1px);
-          box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3);
         }
 
-        .btn-confirm:disabled {
-          opacity: 0.5;
+        .btn-primary:disabled {
+          opacity: 0.6;
           cursor: not-allowed;
           transform: none;
         }
 
-        .loading-state, .error-state {
-          text-align: center;
-          padding: 60px 20px;
+        .btn-secondary {
+          background: #6b7280;
+          color: white;
         }
 
-        .spinner {
-          width: 50px;
-          height: 50px;
-          border: 4px solid #e5e7eb;
-          border-top: 4px solid #3b82f6;
+        .btn-secondary:hover {
+          background: #4b5563;
+        }
+
+        .error-message {
+          background-color: rgba(239, 68, 68, 0.1);
+          color: #dc2626;
+          padding: 0.75rem;
+          border-radius: 8px;
+          margin-bottom: 1rem;
+          border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .loading-container,
+        .error-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 50vh;
+          padding: 2rem;
+          text-align: center;
+        }
+
+        .loading-spinner {
+          width: 40px;
+          height: 40px;
+          border: 4px solid rgba(255, 255, 255, 0.3);
+          border-left: 4px solid #3b82f6;
           border-radius: 50%;
           animation: spin 1s linear infinite;
-          margin: 0 auto 20px;
+          margin-bottom: 1rem;
         }
 
         @keyframes spin {
@@ -1177,45 +1042,38 @@ const TournamentDetail = () => {
           100% { transform: rotate(360deg); }
         }
 
-        .error-icon {
-          font-size: 80px;
-          margin-bottom: 20px;
-        }
-
-        .btn-back {
-          background: linear-gradient(45deg, #3b82f6, #1d4ed8);
-          color: white;
-          padding: 15px 30px;
-          border-radius: 15px;
-          text-decoration: none;
-          font-weight: 600;
-          transition: all 0.3s;
-          display: inline-block;
-          margin-top: 20px;
-        }
-
-        .btn-back:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
-        }
-
+        /* Responsive Design */
         @media (max-width: 768px) {
-          .tournament-detail-content {
-            grid-template-columns: 1fr;
-            gap: 20px;
+          .header-content {
+            flex-direction: column;
+            text-align: center;
           }
 
-          .tournament-details-grid {
+          .tournament-title {
+            font-size: 2rem;
+          }
+
+          .content-grid {
             grid-template-columns: 1fr;
           }
 
-          .participants-list {
-            grid-template-columns: 1fr;
+          .tournament-meta {
+            justify-content: center;
           }
 
           .modal-content {
             width: 95%;
-            margin: 20px;
+            margin: 1rem;
+          }
+
+          .option-group {
+            gap: 0.5rem;
+          }
+
+          .team-select,
+          .team-name-input {
+            margin-left: 0;
+            margin-top: 0.5rem;
           }
         }
       `}</style>
