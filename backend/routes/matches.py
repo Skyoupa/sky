@@ -302,7 +302,7 @@ async def check_tournament_completion(tournament_id: str):
 
 @router.get("/tournament/{tournament_id}/bracket")
 async def get_tournament_bracket(tournament_id: str):
-    """Get tournament bracket structure."""
+    """Get tournament bracket structure with participant names."""
     try:
         # Get all matches for the tournament
         matches = await db.matches.find(
@@ -312,7 +312,43 @@ async def get_tournament_bracket(tournament_id: str):
         if not matches:
             return {"rounds": [], "tournament_status": "no_bracket"}
 
-        # Organize matches by rounds
+        # Get tournament info
+        tournament = await db.tournaments.find_one({"id": tournament_id})
+        tournament_status = tournament["status"] if tournament else "unknown"
+        tournament_type = tournament.get("tournament_type", "elimination") if tournament else "elimination"
+
+        # Get participant names mapping
+        participants_map = {}
+        if tournament:
+            for participant_id in tournament.get("participants", []):
+                # Try to find as user first
+                user_data = await db.users.find_one({"id": participant_id})
+                if user_data:
+                    participants_map[participant_id] = {
+                        "type": "user",
+                        "name": user_data["username"],
+                        "display_name": user_data["username"]
+                    }
+                    continue
+                
+                # Try to find as team
+                team_data = await db.teams.find_one({"id": participant_id})
+                if team_data:
+                    participants_map[participant_id] = {
+                        "type": "team",
+                        "name": team_data["name"],
+                        "display_name": f"{team_data['name']} ({len(team_data['members'])}/{team_data['max_members']})"
+                    }
+                    continue
+                
+                # Fallback
+                participants_map[participant_id] = {
+                    "type": "unknown", 
+                    "name": f"Participant {participant_id[:8]}",
+                    "display_name": f"Participant {participant_id[:8]}"
+                }
+
+        # Organize matches by rounds and enrich with participant names
         rounds = {}
         for match_data in matches:
             match = Match(**match_data)
@@ -321,15 +357,49 @@ async def get_tournament_bracket(tournament_id: str):
             if round_num not in rounds:
                 rounds[round_num] = []
             
-            rounds[round_num].append(match.dict())
-
-        # Get tournament info
-        tournament = await db.tournaments.find_one({"id": tournament_id})
-        tournament_status = tournament["status"] if tournament else "unknown"
+            # Enrich match with participant names
+            match_dict = match.dict()
+            
+            # Add participant names
+            if match.player1_id and match.player1_id in participants_map:
+                match_dict["player1_name"] = participants_map[match.player1_id]["display_name"]
+                match_dict["player1_type"] = participants_map[match.player1_id]["type"]
+            elif match.player1_id:
+                if match.player1_id.startswith("Winner of"):
+                    match_dict["player1_name"] = match.player1_id
+                    match_dict["player1_type"] = "placeholder"
+                else:
+                    match_dict["player1_name"] = f"Joueur {match.player1_id[:8]}"
+                    match_dict["player1_type"] = "unknown"
+            else:
+                match_dict["player1_name"] = "TBD"
+                match_dict["player1_type"] = "tbd"
+            
+            if match.player2_id and match.player2_id in participants_map:
+                match_dict["player2_name"] = participants_map[match.player2_id]["display_name"]
+                match_dict["player2_type"] = participants_map[match.player2_id]["type"]
+            elif match.player2_id:
+                if match.player2_id.startswith("Winner of"):
+                    match_dict["player2_name"] = match.player2_id
+                    match_dict["player2_type"] = "placeholder"
+                else:
+                    match_dict["player2_name"] = f"Joueur {match.player2_id[:8]}"
+                    match_dict["player2_type"] = "unknown"
+            else:
+                match_dict["player2_name"] = "TBD"
+                match_dict["player2_type"] = "tbd"
+            
+            # Add winner name
+            if match.winner_id and match.winner_id in participants_map:
+                match_dict["winner_name"] = participants_map[match.winner_id]["display_name"]
+            
+            rounds[round_num].append(match_dict)
 
         return {
             "rounds": [{"round_number": k, "matches": v} for k, v in sorted(rounds.items())],
-            "tournament_status": tournament_status
+            "tournament_status": tournament_status,
+            "tournament_type": tournament_type,
+            "participants_map": participants_map
         }
         
     except Exception as e:
