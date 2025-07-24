@@ -532,6 +532,14 @@ const AdminTournaments = () => {
                   >
                     ❌ Annuler
                   </button>
+                  <button 
+                    className="btn-action delete"
+                    onClick={() => deleteTournament(tournament.id, tournament.title)}
+                    disabled={tournament.status === 'in_progress'}
+                    title={tournament.status === 'in_progress' ? 'Impossible de supprimer un tournoi en cours' : 'Supprimer définitivement ce tournoi'}
+                  >
+                    🗑️ Supprimer
+                  </button>
                 </div>
               </div>
             ))}
