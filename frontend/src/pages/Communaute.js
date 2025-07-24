@@ -285,8 +285,12 @@ const Communaute = () => {
                   </div>
 
                   <div className="member-actions-pro">
-                    <button className="btn-outline-pro btn-sm">PROFIL</button>
-                    <button className="btn-primary-pro btn-sm">MESSAGE</button>
+                    <Link 
+                      to={`/profil/${member.id}`} 
+                      className="btn-outline-pro btn-sm"
+                    >
+                      PROFIL
+                    </Link>
                   </div>
                 </div>
               ))}
