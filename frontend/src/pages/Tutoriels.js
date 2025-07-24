@@ -2,7 +2,17 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const Tutoriels = () => {
-  const [selectedGame, setSelectedGame] = useState('all');
+  const [selectedGame, setSelectedGame] = useState('cs2');
+
+  // Fonction pour convertir le titre en slug URL
+  const slugify = (text) => {
+    return text
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '') // Supprimer les caractères spéciaux
+      .replace(/\s+/g, '-') // Remplacer les espaces par des tirets
+      .replace(/-+/g, '-') // Supprimer les tirets multiples
+      .trim();
+  };
 
   const games = [
     {
