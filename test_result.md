@@ -474,7 +474,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Team Deletion Feature"
+    - "Enhanced Tournament Templates 2025"
+    - "Tournament Registration Validation Multiples"
+    - "Content Management Deletion Enhancements"
+    - "Admin Team Management Enhancement"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
