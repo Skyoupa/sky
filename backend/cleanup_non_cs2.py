@@ -17,8 +17,8 @@ async def cleanup_non_cs2_tournaments():
     """Supprime tous les tournois qui ne sont pas CS2 et les stats associées"""
     
     # Configuration MongoDB
-    MONGO_URL = os.getenv('MONGO_URL', 'mongodb://mongo:27017')
-    DB_NAME = os.getenv('DB_NAME', 'oupafamilly_db')
+    MONGO_URL = os.getenv('MONGO_URL', 'mongodb://localhost:27017')
+    DB_NAME = os.getenv('DB_NAME', 'test_database')
     
     client = AsyncIOMotorClient(MONGO_URL)
     db = client[DB_NAME]
