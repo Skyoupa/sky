@@ -714,7 +714,7 @@ const TournamentDetail = () => {
 
         .rules-content {
           line-height: 1.7;
-          color: #e2e8f0;
+          color: #4b5563;
         }
 
         .participants-list {
