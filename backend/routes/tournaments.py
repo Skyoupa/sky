@@ -694,26 +694,28 @@ async def get_popular_tournament_templates():
 🏆 CLASSEMENT: Cumul des points sur tous les matchs"""
         },
         {
-            "name": "CS2 Aim Challenge",
-            "description": "Compétition pure d'adresse et de précision",
+            "name": "CS2 Competitive 2v2",
+            "description": "Format compétitif 2v2 sur les maps officielles Active Duty 2025",
             "game": "cs2",
-            "tournament_type": "round_robin",
-            "max_participants": 24,
-            "suggested_duration_hours": 2,
-            "rules": """🎯 FORMAT: Round Robin - Challenges d'aim
-🗺️ MAPS: aim_botz, training_aim_csgo2
-⏱️ ÉPREUVES:
-1. Precision Test: 100 targets statiques (temps limité 2min)
-2. Spray Control: Pattern AK47 et M4A4 (10 essais chacun)
-3. Flick Shots: 50 targets aléatoires (3min max)
-4. Tracking: Targets mobiles (5min)
-🔫 ARMES: AK47, M4A4, Desert Eagle selon l'épreuve
-📋 SCORING:
-- Précision: Points par hit + bonus vitesse
-- Spray: Distance moyenne du centre de mass
-- Flick: Précision + temps de réaction
-- Tracking: Pourcentage de temps sur cible
-🏆 CLASSEMENT: Cumul des 4 épreuves"""
+            "tournament_type": "elimination",
+            "max_participants": 8,  # Multiple de 2 pour 2v2
+            "suggested_duration_hours": 4,
+            "rules": """🎯 FORMAT: Élimination directe 2v2
+🗺️ MAPS Active Duty 2025: Ancient, Dust2, Inferno, Mirage, Nuke, Overpass, Train
+⏱️ DURÉE: MR12 (premier à 13 rounds)
+🔫 ARMES: Toutes armes autorisées selon les règles compétitives
+💰 ÉCONOMIE: Standard CS2 ($800 départ)
+📋 RÈGLES ÉQUIPE:
+- Équipes fixes de 2 joueurs exactement
+- Substitution interdite en cours de match
+- Pause technique: 2 minutes maximum par équipe
+- Ban/Pick maps: Ban-Ban-Pick par équipe
+🎮 CONFIGURATION 2025:
+- Friendly fire: ON
+- Buy time: 20 secondes
+- Round time: 1:55 minutes
+- Overtime: MR3 si égalité 12-12
+🏆 AVANTAGE 2v2: Communication simplifiée, stratégies duo"""
         },
         {
             "name": "CS2 Pistol Only Tournament",
