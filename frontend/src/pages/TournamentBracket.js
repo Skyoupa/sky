@@ -769,6 +769,17 @@ const TournamentBracket = () => {
           align-items: center;
         }
 
+        .participant-header {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          text-align: center;
+        }
+
+        .participant-icon {
+          font-size: 16px;
+        }
+
         .participant-name {
           font-weight: 600;
           color: #1a1a1a;
