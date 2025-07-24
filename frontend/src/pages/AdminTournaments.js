@@ -745,7 +745,7 @@ const AdminTournaments = () => {
           gap: 20px;
           margin-bottom: 8px;
           font-size: 14px;
-          color: #6b7280;
+          color: #333333;
         }
 
         .tournament-actions {
@@ -810,7 +810,7 @@ const AdminTournaments = () => {
         .loading, .empty-state {
           text-align: center;
           padding: 40px;
-          color: #6b7280;
+          color: #333333;
         }
 
         .access-denied {
