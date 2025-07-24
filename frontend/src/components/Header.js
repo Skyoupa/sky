@@ -66,7 +66,9 @@ const Header = () => {
           <div className="auth-section-desktop">
             {isAuthenticated ? (
               <div className="user-menu">
-                <span className="welcome-text">Salut, {user?.username}!</span>
+                <Link to="/profil" className="profile-link">
+                  <span className="welcome-text">Salut, {user?.username}!</span>
+                </Link>
                 {user?.role === 'admin' && (
                   <span className="admin-badge">ADMIN</span>
                 )}
