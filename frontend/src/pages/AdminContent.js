@@ -672,7 +672,7 @@ const AdminContent = () => {
         .form-group label {
           margin-bottom: 8px;
           font-weight: 600;
-          color: #374151;
+          color: #1a1a1a;
         }
 
         .form-group input,
@@ -683,6 +683,7 @@ const AdminContent = () => {
           border-radius: 8px;
           font-size: 14px;
           transition: border-color 0.3s;
+          color: #1a1a1a;
         }
 
         .form-group input:focus,
@@ -703,6 +704,7 @@ const AdminContent = () => {
           gap: 8px;
           cursor: pointer;
           font-weight: 600;
+          color: #1a1a1a;
         }
 
         .btn-create {
