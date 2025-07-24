@@ -20,6 +20,11 @@ const Profil = () => {
     gaming_experience: {}
   });
 
+  // Account management states
+  const [showAccountSettings, setShowAccountSettings] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [requestingReset, setRequestingReset] = useState(false);
+
   const games = [
     { id: 'cs2', name: 'Counter-Strike 2' },
     { id: 'lol', name: 'League of Legends' },
