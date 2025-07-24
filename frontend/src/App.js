@@ -29,6 +29,7 @@ function App() {
               <Route path="/tutoriels" element={<Tutoriels />} />
               <Route path="/tournois" element={<Tournois />} />
               <Route path="/tournois/:id" element={<TournamentDetail />} />
+              <Route path="/tournois/:id/bracket" element={<TournamentBracket />} />
               <Route path="/communaute" element={<Communaute />} />
               <Route path="/a-propos" element={<APropos />} />
               <Route path="/profil" element={<Profil />} />
