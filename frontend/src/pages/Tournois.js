@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const Tournois = () => {
-  const [activeTab, setActiveTab] = useState('en-cours');
+  const [activeTab, setActiveTab] = useState('a-venir');
   const [tournaments, setTournaments] = useState({
     'en-cours': [],
     'a-venir': [],
