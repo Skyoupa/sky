@@ -1046,6 +1046,178 @@ const Profil = () => {
             grid-template-columns: 1fr;
           }
         }
+
+        /* Account Management Styles */
+        .account-management-section {
+          background: white;
+          border-radius: 15px;
+          padding: 30px;
+          margin-top: 30px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+          border: 2px solid #f3f4f6;
+        }
+
+        .account-management-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+          padding-bottom: 15px;
+          border-bottom: 2px solid #e5e7eb;
+        }
+
+        .account-management-header h2 {
+          color: #1e3a8a;
+          font-size: 20px;
+          margin: 0;
+        }
+
+        .toggle-settings-button {
+          background: #f3f4f6;
+          color: #4b5563;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 8px;
+          font-size: 14px;
+          cursor: pointer;
+          transition: all 0.3s;
+        }
+
+        .toggle-settings-button:hover {
+          background: #e5e7eb;
+          color: #1f2937;
+        }
+
+        .account-settings-content {
+          margin-top: 20px;
+        }
+
+        .account-action-section {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 2rem;
+          padding: 20px;
+          margin-bottom: 20px;
+          border-radius: 10px;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+        }
+
+        .account-action-section.danger-section {
+          background: #fef2f2;
+          border-color: #fecaca;
+        }
+
+        .action-info {
+          flex: 1;
+        }
+
+        .action-info h3 {
+          margin: 0 0 10px 0;
+          font-size: 18px;
+          color: #1a1a1a;
+        }
+
+        .danger-section .action-info h3 {
+          color: #dc2626;
+        }
+
+        .action-info p {
+          margin: 0 0 10px 0;
+          color: #4b5563;
+          line-height: 1.5;
+        }
+
+        .deletion-details {
+          margin: 10px 0 0 0;
+          padding: 0;
+          color: #6b7280;
+          font-size: 14px;
+        }
+
+        .deletion-details li {
+          margin-bottom: 5px;
+        }
+
+        .password-reset-button {
+          background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+          color: white;
+          border: none;
+          padding: 12px 24px;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s;
+          white-space: nowrap;
+          min-width: 200px;
+        }
+
+        .password-reset-button:hover:not(:disabled) {
+          background: linear-gradient(45deg, #2563eb, #1e40af);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .password-reset-button:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: none;
+        }
+
+        .delete-account-button {
+          background: linear-gradient(45deg, #dc2626, #b91c1c);
+          color: white;
+          border: none;
+          padding: 12px 24px;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s;
+          white-space: nowrap;
+          min-width: 200px;
+        }
+
+        .delete-account-button:hover:not(:disabled) {
+          background: linear-gradient(45deg, #b91c1c, #991b1b);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+
+        .delete-account-button:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: none;
+        }
+
+        @media (max-width: 768px) {
+          .account-management-section {
+            padding: 20px;
+            margin-top: 20px;
+          }
+
+          .account-management-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+          }
+
+          .account-action-section {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+          }
+
+          .password-reset-button,
+          .delete-account-button {
+            min-width: auto;
+            width: 100%;
+          }
+        }
       `}</style>
     </div>
   );
