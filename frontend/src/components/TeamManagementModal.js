@@ -234,9 +234,21 @@ const TeamManagementModal = ({ isOpen, onClose, team, onTeamUpdated }) => {
         </div>
 
         <div className="modal-footer">
-          <button className="btn-secondary" onClick={onClose}>
-            Fermer
-          </button>
+          <div className="footer-left">
+            <button 
+              className="btn-danger-team" 
+              onClick={handleDeleteTeam}
+              disabled={loading}
+              title="Supprimer définitivement cette équipe"
+            >
+              🗑️ Supprimer l'équipe
+            </button>
+          </div>
+          <div className="footer-right">
+            <button className="btn-secondary" onClick={onClose}>
+              Fermer
+            </button>
+          </div>
         </div>
 
         <style jsx>{`
