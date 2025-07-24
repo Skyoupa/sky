@@ -452,15 +452,18 @@ backend:
 
   - task: "User Account Management (Deletion & Password Reset)"
     implemented: true
-    working: false
+    working: true
     file: "/app/backend/routes/auth.py,/app/frontend/src/pages/Profil.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented user account deletion and password modification via email. Backend: DELETE /auth/delete-account endpoint with comprehensive cleanup (teams, tournaments, content), POST /auth/request-password-reset and POST /auth/reset-password endpoints. Frontend: Added collapsible account management section in Profil.js with deletion confirmation (double confirmation with 'SUPPRIMER' text) and password reset request functionality. Includes proper error handling, loading states, and responsive design."
+      - working: true
+        agent: "testing"
+        comment: "✅ USER ACCOUNT MANAGEMENT FEATURES FULLY FUNCTIONAL! Comprehensive testing completed with 100% success rate for all account management features: 1) PASSWORD RESET SYSTEM: Request password reset working perfectly - generates secure tokens with 1-hour expiry, stores in password_resets collection, returns same success message for existing/non-existing emails (security). Password reset completion working - validates tokens, rejects expired/used tokens, enforces minimum 6-character password requirement, updates user password hash, marks tokens as used. Login with new password verified working. 2) ACCOUNT DELETION SYSTEM: Admin account deletion properly blocked (403 error), unauthenticated requests properly blocked (401/403), regular user account deletion working perfectly with comprehensive cleanup - removes user from teams, transfers team captaincy or deletes single-member teams, removes from tournament participants, deletes user profile, deletes user-created content (news/tutorials), provides detailed cleanup information. Account verification confirms complete removal - deleted account tokens invalid, login blocked, all associated data cleaned up. 3) SECURITY MEASURES: All authentication requirements enforced, proper error handling for invalid tokens/weak passwords, comprehensive data integrity maintained during cleanup operations. 4) INTEGRATION TESTING: Complete user lifecycle tested - account creation, password reset, login with new password, account deletion with data cleanup verification. All 15 account management tests passed successfully. System ready for production with robust account management capabilities!"
 
 frontend:
   - task: "Comprehensive Frontend Testing 2025 Enhancements"
