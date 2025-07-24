@@ -375,6 +375,16 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
           border: 1px solid rgba(239, 68, 68, 0.3);
         }
 
+        .success-message {
+          background-color: rgba(34, 197, 94, 0.2);
+          color: #86efac;
+          padding: 10px;
+          border-radius: 8px;
+          margin-bottom: 20px;
+          border: 1px solid rgba(34, 197, 94, 0.3);
+          white-space: pre-line;
+        }
+
         .submit-button {
           width: 100%;
           padding: 12px;
