@@ -362,7 +362,7 @@ const AdminUsers = () => {
         }
 
         .user-stats {
-          color: #6b7280;
+          color: #333333;
           font-weight: 600;
         }
 
@@ -381,7 +381,7 @@ const AdminUsers = () => {
 
         .filter-group label {
           font-weight: 600;
-          color: #374151;
+          color: #1a1a1a;
           font-size: 14px;
         }
 
@@ -391,6 +391,7 @@ const AdminUsers = () => {
           border-radius: 8px;
           background: white;
           min-width: 150px;
+          color: #1a1a1a;
         }
 
         .btn-refresh {
@@ -455,7 +456,7 @@ const AdminUsers = () => {
         }
 
         .user-email {
-          color: #6b7280;
+          color: #333333 !important;
           font-size: 14px;
         }
 
@@ -469,6 +470,7 @@ const AdminUsers = () => {
           font-size: 14px;
           cursor: pointer;
           transition: all 0.3s;
+          color: #1a1a1a;
         }
 
         .role-select:focus,
