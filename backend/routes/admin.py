@@ -9,8 +9,8 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/admin", tags=["Administration"])
 
-# Get database from main server
-from server import db
+# Get database from database module
+from database import db
 
 @router.get("/dashboard")
 async def get_admin_dashboard(current_user: User = Depends(get_admin_user)):
