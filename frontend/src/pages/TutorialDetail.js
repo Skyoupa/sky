@@ -54,8 +54,8 @@ Counter-Strike 2 représente l'évolution majeure de la série culte, avec une i
    - Éviter le toggle pour un meilleur contrôle
 
 4. **Use bind amélioré** : 
-   - \`bind e "+use"\`
-   - \`bind f "+use"\` (backup)
+- bind e "+use"
+- bind f "+use" (backup)
 
 ## 🖥️ Interface utilisateur professionnelle
 
