@@ -2132,6 +2132,208 @@ class OupafamillyTester:
         else:
             self.log_test("Team Deletion Verification", False, "Team still exists after admin deletion")
 
+    async def test_user_account_management(self):
+        """Test user account management features (deletion & password reset)"""
+        print("\n🔐 Testing User Account Management Features...")
+        
+        if not self.admin_token or not self.test_user_token:
+            self.log_test("Account Management Setup", False, "Missing required tokens for testing")
+            return
+        
+        # Create a test user specifically for account management testing
+        test_account_data = {
+            "username": "account_test_user",
+            "email": "account.test@oupafamilly.com",
+            "password": "TestPassword123!",
+            "display_name": "Account Test User"
+        }
+        
+        # Register test user
+        status, data = await self.make_request("POST", "/auth/register", test_account_data)
+        test_account_token = None
+        if status == 200:
+            self.log_test("Test Account Creation", True, f"Test account created: {data.get('username')}")
+            
+            # Login to get token
+            login_data = {
+                "email": test_account_data["email"],
+                "password": test_account_data["password"]
+            }
+            status, login_response = await self.make_request("POST", "/auth/login", login_data)
+            if status == 200:
+                test_account_token = login_response["access_token"]
+                self.log_test("Test Account Login", True, "Test account login successful")
+            else:
+                self.log_test("Test Account Login", False, f"Test account login failed: {login_response}")
+                return
+        elif status == 400 and "already registered" in data.get("detail", ""):
+            # User already exists, try to login
+            login_data = {
+                "email": test_account_data["email"],
+                "password": test_account_data["password"]
+            }
+            status, login_response = await self.make_request("POST", "/auth/login", login_data)
+            if status == 200:
+                test_account_token = login_response["access_token"]
+                self.log_test("Existing Test Account Login", True, "Existing test account login successful")
+            else:
+                self.log_test("Test Account Setup", False, "Could not setup test account")
+                return
+        else:
+            self.log_test("Test Account Creation", False, f"Failed to create test account: {data}")
+            return
+        
+        # === PASSWORD RESET TESTING ===
+        
+        # Test 1: Request password reset with existing email
+        status, data = await self.make_request("POST", "/auth/request-password-reset?email=" + test_account_data["email"])
+        reset_token = None
+        if status == 200 and "message" in data:
+            self.log_test("Password Reset Request (Valid Email)", True, f"Reset request successful: {data.get('message')}")
+            
+            # Extract reset token from response (in production this would be sent via email)
+            if "reset_link" in data:
+                reset_link = data["reset_link"]
+                if "token=" in reset_link:
+                    reset_token = reset_link.split("token=")[1]
+                    self.log_test("Reset Token Generation", True, f"Reset token generated: {reset_token[:10]}...")
+        else:
+            self.log_test("Password Reset Request (Valid Email)", False, f"Reset request failed: {data}")
+        
+        # Test 2: Request password reset with non-existing email
+        status, data = await self.make_request("POST", "/auth/request-password-reset?email=nonexistent@example.com")
+        if status == 200 and "message" in data:
+            # Should return same message for security (don't reveal if email exists)
+            self.log_test("Password Reset Request (Invalid Email)", True, "Same success message returned for security")
+        else:
+            self.log_test("Password Reset Request (Invalid Email)", False, f"Unexpected response: {data}")
+        
+        # Test 3: Complete password reset with valid token
+        if reset_token:
+            new_password = "NewPassword456!"
+            status, data = await self.make_request("POST", f"/auth/reset-password?token={reset_token}&new_password={new_password}")
+            if status == 200 and "message" in data:
+                self.log_test("Password Reset Completion (Valid Token)", True, f"Password reset successful: {data.get('message')}")
+                
+                # Test 4: Verify login with new password
+                new_login_data = {
+                    "email": test_account_data["email"],
+                    "password": new_password
+                }
+                status, login_response = await self.make_request("POST", "/auth/login", new_login_data)
+                if status == 200 and "access_token" in login_response:
+                    test_account_token = login_response["access_token"]  # Update token
+                    self.log_test("Login with New Password", True, "Login successful with new password")
+                else:
+                    self.log_test("Login with New Password", False, f"Login failed with new password: {login_response}")
+            else:
+                self.log_test("Password Reset Completion (Valid Token)", False, f"Password reset failed: {data}")
+        
+        # Test 5: Try to reset password with invalid token
+        status, data = await self.make_request("POST", "/auth/reset-password?token=invalid_token&new_password=TestPassword789!")
+        if status == 400:
+            self.log_test("Password Reset (Invalid Token)", True, "Invalid token properly rejected")
+        else:
+            self.log_test("Password Reset (Invalid Token)", False, f"Invalid token not properly rejected: {status}")
+        
+        # Test 6: Try to reset password with weak password
+        if reset_token:
+            # Request new reset token first
+            status, reset_data = await self.make_request("POST", "/auth/request-password-reset?email=" + test_account_data["email"])
+            if status == 200 and "reset_link" in reset_data:
+                new_reset_token = reset_data["reset_link"].split("token=")[1]
+                
+                status, data = await self.make_request("POST", f"/auth/reset-password?token={new_reset_token}&new_password=123")
+                if status == 400:
+                    self.log_test("Password Reset (Weak Password)", True, "Weak password properly rejected")
+                else:
+                    self.log_test("Password Reset (Weak Password)", False, f"Weak password not rejected: {status}")
+        
+        # Test 7: Try to use already used token
+        if reset_token:
+            status, data = await self.make_request("POST", f"/auth/reset-password?token={reset_token}&new_password=AnotherPassword789!")
+            if status == 400:
+                self.log_test("Password Reset (Used Token)", True, "Used token properly rejected")
+            else:
+                self.log_test("Password Reset (Used Token)", False, f"Used token not properly rejected: {status}")
+        
+        # === ACCOUNT DELETION TESTING ===
+        
+        # Test 8: Try to delete admin account (should fail)
+        status, data = await self.make_request("DELETE", "/auth/delete-account", auth_token=self.admin_token)
+        if status == 403:
+            self.log_test("Admin Account Deletion Block", True, "Admin account deletion properly blocked")
+        else:
+            self.log_test("Admin Account Deletion Block", False, f"Admin account deletion not blocked: {status}")
+        
+        # Test 9: Try to delete account without authentication
+        status, data = await self.make_request("DELETE", "/auth/delete-account")
+        if status in [401, 403]:
+            self.log_test("Unauthenticated Account Deletion", True, "Unauthenticated deletion properly blocked")
+        else:
+            self.log_test("Unauthenticated Account Deletion", False, f"Unauthenticated deletion not blocked: {status}")
+        
+        # Test 10: Create some data for the test user before deletion
+        if test_account_token:
+            # Create a team
+            team_data = {
+                "name": "Test User Team",
+                "description": "Team created by test user for deletion testing",
+                "game": "cs2",
+                "max_members": 6
+            }
+            status, team_response = await self.make_request("POST", "/teams/", team_data, auth_token=test_account_token)
+            team_created = status == 200
+            
+            # Create a tutorial
+            tutorial_data = {
+                "title": "Test User Tutorial",
+                "description": "Tutorial created by test user for deletion testing",
+                "game": "cs2",
+                "level": "beginner",
+                "content": "This is test content for deletion testing",
+                "tags": ["test", "deletion"]
+            }
+            status, tutorial_response = await self.make_request("POST", "/content/tutorials", tutorial_data, auth_token=test_account_token)
+            tutorial_created = status == 200
+            
+            if team_created or tutorial_created:
+                self.log_test("Test Data Creation", True, f"Created test data - Team: {team_created}, Tutorial: {tutorial_created}")
+        
+        # Test 11: Delete regular user account (comprehensive cleanup)
+        if test_account_token:
+            status, data = await self.make_request("DELETE", "/auth/delete-account", auth_token=test_account_token)
+            if status == 200 and "message" in data:
+                self.log_test("Regular Account Deletion", True, f"Account deleted successfully: {data.get('message')}")
+                
+                # Verify account is actually deleted
+                status, verify_data = await self.make_request("GET", "/auth/me", auth_token=test_account_token)
+                if status in [401, 403]:
+                    self.log_test("Account Deletion Verification", True, "Deleted account token no longer valid")
+                else:
+                    self.log_test("Account Deletion Verification", False, f"Deleted account still accessible: {status}")
+                
+                # Verify user cannot login
+                login_attempt = {
+                    "email": test_account_data["email"],
+                    "password": "NewPassword456!"  # The password we set during reset
+                }
+                status, login_data = await self.make_request("POST", "/auth/login", login_attempt)
+                if status == 401:
+                    self.log_test("Deleted Account Login Block", True, "Cannot login to deleted account")
+                else:
+                    self.log_test("Deleted Account Login Block", False, f"Deleted account login not blocked: {status}")
+                
+                # Check if cleanup information is provided
+                if "deleted_data" in data:
+                    deleted_info = data["deleted_data"]
+                    self.log_test("Account Deletion Cleanup Info", True, f"Cleanup info provided: {deleted_info}")
+                else:
+                    self.log_test("Account Deletion Cleanup Info", False, "No cleanup information provided")
+                    
+            else:
+                self.log_test("Regular Account Deletion", False, f"Account deletion failed: {data}")
+
     async def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Oupafamilly Backend Tests...")
