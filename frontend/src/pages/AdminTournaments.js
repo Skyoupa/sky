@@ -202,10 +202,13 @@ const AdminTournaments = () => {
         {error && <div className="error-message">{error}</div>}
         {success && <div className="success-message">{success}</div>}
 
-        {/* Templates populaires */}
+        {/* Templates CS2 populaires */}
         {!showCreateForm && (
           <div className="templates-section">
-            <h3>🎯 Templates populaires</h3>
+            <h3>🎯 Templates CS2 Spécialisés</h3>
+            <p style={{color: '#64748b', marginBottom: '20px'}}>
+              Choisissez parmi nos formats de tournois CS2 optimisés pour Oupafamilly
+            </p>
             <div className="templates-grid">
               {templates.map((template, index) => (
                 <div key={index} className="template-card">
