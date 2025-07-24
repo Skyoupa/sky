@@ -7,6 +7,7 @@ const AdminDashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showTeamsManagement, setShowTeamsManagement] = useState(false);
 
   useEffect(() => {
     if (user?.role === 'admin') {
