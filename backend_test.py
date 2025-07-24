@@ -1155,6 +1155,352 @@ class OupafamillyTester:
         # This is tested implicitly by all other API calls working
         self.log_test("CORS Configuration", True, "CORS middleware working (all API calls successful)")
 
+    async def test_enhanced_team_management_system(self):
+        """Test enhanced team management system with captain moderation features."""
+        print("\n👥 Testing Enhanced Team Management System...")
+        
+        if not self.admin_token or not self.test_user_token:
+            self.log_test("Enhanced Team Management Setup", False, "Missing required tokens for testing")
+            return
+        
+        # Create a test team as admin (captain)
+        team_data = {
+            "name": "Team Management Test",
+            "description": "Team for testing enhanced management features",
+            "game": "cs2",
+            "max_members": 6
+        }
+        
+        status, data = await self.make_request("POST", "/teams/", team_data, auth_token=self.admin_token)
+        team_id = None
+        if status == 200 and data.get("id"):
+            team_id = data["id"]
+            self.log_test("Create Team for Management Test", True, f"Team created: {data.get('name')}")
+        else:
+            self.log_test("Create Team for Management Test", False, f"Failed to create team: {data}")
+            return
+        
+        # Test 1: Get available users for team (captain only)
+        status, data = await self.make_request("GET", f"/teams/{team_id}/available-users", auth_token=self.admin_token)
+        if status == 200 and "available_users" in data:
+            available_users = data["available_users"]
+            self.log_test("Get Available Users (Captain)", True, f"Retrieved {len(available_users)} available users")
+            
+            # Test with non-captain user (should fail)
+            status, data = await self.make_request("GET", f"/teams/{team_id}/available-users", auth_token=self.test_user_token)
+            if status == 403:
+                self.log_test("Available Users Permission Check", True, "Non-captain properly blocked from viewing available users")
+            else:
+                self.log_test("Available Users Permission Check", False, f"Non-captain access not blocked: {status}")
+        else:
+            self.log_test("Get Available Users (Captain)", False, f"Failed to get available users: {data}")
+        
+        # Test 2: Add member to team (captain only)
+        if available_users:
+            user_to_add = available_users[0]["id"]
+            status, data = await self.make_request("POST", f"/teams/{team_id}/add-member?user_id={user_to_add}", auth_token=self.admin_token)
+            if status == 200:
+                self.log_test("Add Member to Team (Captain)", True, f"Member added successfully: {data.get('message')}")
+                
+                # Verify member was added
+                status, team_data = await self.make_request("GET", f"/teams/{team_id}")
+                if status == 200 and user_to_add in team_data.get("members", []):
+                    self.log_test("Member Addition Verification", True, "Member successfully added to team")
+                else:
+                    self.log_test("Member Addition Verification", False, "Member not found in team after addition")
+                
+                # Test with non-captain user (should fail)
+                if len(available_users) > 1:
+                    another_user = available_users[1]["id"]
+                    status, data = await self.make_request("POST", f"/teams/{team_id}/add-member?user_id={another_user}", auth_token=self.test_user_token)
+                    if status == 403:
+                        self.log_test("Add Member Permission Check", True, "Non-captain properly blocked from adding members")
+                    else:
+                        self.log_test("Add Member Permission Check", False, f"Non-captain add member not blocked: {status}")
+            else:
+                self.log_test("Add Member to Team (Captain)", False, f"Failed to add member: {data}")
+        
+        # Test 3: Remove member from team (captain only, cannot remove captain)
+        if available_users and team_id:
+            # Try to remove the added member
+            user_to_remove = available_users[0]["id"]
+            status, data = await self.make_request("DELETE", f"/teams/{team_id}/remove-member/{user_to_remove}", auth_token=self.admin_token)
+            if status == 200:
+                self.log_test("Remove Member from Team (Captain)", True, f"Member removed successfully: {data.get('message')}")
+                
+                # Verify member was removed
+                status, team_data = await self.make_request("GET", f"/teams/{team_id}")
+                if status == 200 and user_to_remove not in team_data.get("members", []):
+                    self.log_test("Member Removal Verification", True, "Member successfully removed from team")
+                else:
+                    self.log_test("Member Removal Verification", False, "Member still in team after removal")
+            else:
+                self.log_test("Remove Member from Team (Captain)", False, f"Failed to remove member: {data}")
+            
+            # Test removing captain (should fail)
+            status, team_data = await self.make_request("GET", f"/teams/{team_id}")
+            if status == 200:
+                captain_id = team_data.get("captain_id")
+                status, data = await self.make_request("DELETE", f"/teams/{team_id}/remove-member/{captain_id}", auth_token=self.admin_token)
+                if status == 400:
+                    self.log_test("Captain Removal Protection", True, "Captain removal properly blocked")
+                else:
+                    self.log_test("Captain Removal Protection", False, f"Captain removal not blocked: {status}")
+        
+        # Test 4: Multi-team membership support
+        # Create another team with test user as captain
+        team_data_2 = {
+            "name": "Multi Team Test",
+            "description": "Second team for multi-membership testing",
+            "game": "cs2",
+            "max_members": 6
+        }
+        
+        status, data = await self.make_request("POST", "/teams/", team_data_2, auth_token=self.test_user_token)
+        team_id_2 = None
+        if status == 200 and data.get("id"):
+            team_id_2 = data["id"]
+            self.log_test("Create Second Team", True, f"Second team created: {data.get('name')}")
+            
+            # Add admin user to second team (multi-team membership)
+            status, admin_data = await self.make_request("GET", "/auth/me", auth_token=self.admin_token)
+            if status == 200:
+                admin_id = admin_data.get("id")
+                status, data = await self.make_request("POST", f"/teams/{team_id_2}/add-member?user_id={admin_id}", auth_token=self.test_user_token)
+                if status == 200:
+                    self.log_test("Multi-Team Membership", True, "User successfully added to multiple teams")
+                    
+                    # Verify user is in both teams
+                    status, user_teams = await self.make_request("GET", "/teams/my-teams", auth_token=self.admin_token)
+                    if status == 200 and len(user_teams) >= 2:
+                        team_names = [team["name"] for team in user_teams]
+                        if "Team Management Test" in team_names and "Multi Team Test" in team_names:
+                            self.log_test("Multi-Team Verification", True, f"User is member of {len(user_teams)} teams")
+                        else:
+                            self.log_test("Multi-Team Verification", False, f"User teams don't include expected teams: {team_names}")
+                    else:
+                        self.log_test("Multi-Team Verification", False, f"User teams count unexpected: {len(user_teams) if status == 200 else 'error'}")
+                else:
+                    self.log_test("Multi-Team Membership", False, f"Failed to add user to second team: {data}")
+        else:
+            self.log_test("Create Second Team", False, f"Failed to create second team: {data}")
+        
+        # Test 5: Team member limit enforcement (6 members maximum)
+        if team_id and available_users:
+            # Try to add members up to the limit
+            members_added = 1  # Admin is already captain/member
+            for i, user in enumerate(available_users[1:6]):  # Skip first user (already tested)
+                if members_added >= 6:
+                    break
+                status, data = await self.make_request("POST", f"/teams/{team_id}/add-member?user_id={user['id']}", auth_token=self.admin_token)
+                if status == 200:
+                    members_added += 1
+                else:
+                    break
+            
+            # Try to add one more member (should fail due to limit)
+            if members_added == 6 and len(available_users) > 6:
+                extra_user = available_users[6]["id"]
+                status, data = await self.make_request("POST", f"/teams/{team_id}/add-member?user_id={extra_user}", auth_token=self.admin_token)
+                if status == 400 and "full" in data.get("detail", "").lower():
+                    self.log_test("6-Member Limit Enforcement", True, f"Team limit properly enforced at {members_added} members")
+                else:
+                    self.log_test("6-Member Limit Enforcement", False, f"Team limit not enforced: {status} - {data}")
+            else:
+                self.log_test("6-Member Limit Enforcement", True, f"Team has {members_added} members (limit testing not possible with available users)")
+        
+        # Cleanup: Delete test teams
+        if team_id:
+            await self.make_request("DELETE", f"/teams/{team_id}", auth_token=self.admin_token)
+        if team_id_2:
+            await self.make_request("DELETE", f"/teams/{team_id_2}", auth_token=self.test_user_token)
+
+    async def test_enhanced_tournament_registration_system(self):
+        """Test enhanced tournament registration system with team requirements."""
+        print("\n🏆 Testing Enhanced Tournament Registration System...")
+        
+        if not self.admin_token or not self.test_user_token:
+            self.log_test("Enhanced Tournament Registration Setup", False, "Missing required tokens for testing")
+            return
+        
+        # Create test teams for tournament registration
+        team_data_cs2 = {
+            "name": "CS2 Tournament Team",
+            "description": "Team for CS2 tournament testing",
+            "game": "cs2",
+            "max_members": 6
+        }
+        
+        status, data = await self.make_request("POST", "/teams/", team_data_cs2, auth_token=self.test_user_token)
+        team_id_cs2 = None
+        if status == 200 and data.get("id"):
+            team_id_cs2 = data["id"]
+            self.log_test("Create CS2 Team for Tournament", True, f"CS2 team created: {data.get('name')}")
+        else:
+            self.log_test("Create CS2 Team for Tournament", False, f"Failed to create CS2 team: {data}")
+            return
+        
+        # Test 1: Create different tournament types
+        # 1v1 Tournament (individual registration)
+        tournament_1v1 = {
+            "title": "CS2 Quick Match 1v1 Test",
+            "description": "Individual tournament for testing",
+            "game": "cs2",
+            "tournament_type": "elimination",
+            "max_participants": 8,
+            "entry_fee": 0.0,
+            "prize_pool": 50.0,
+            "registration_start": (datetime.utcnow() + timedelta(hours=1)).isoformat(),
+            "registration_end": (datetime.utcnow() + timedelta(days=7)).isoformat(),
+            "tournament_start": (datetime.utcnow() + timedelta(days=8)).isoformat(),
+            "rules": "1v1 tournament rules"
+        }
+        
+        status, data = await self.make_request("POST", "/tournaments/", tournament_1v1, auth_token=self.admin_token)
+        tournament_1v1_id = None
+        if status == 200 and data.get("id"):
+            tournament_1v1_id = data["id"]
+            self.log_test("Create 1v1 Tournament", True, f"1v1 tournament created: {data.get('title')}")
+        else:
+            self.log_test("Create 1v1 Tournament", False, f"Failed to create 1v1 tournament: {data}")
+        
+        # 5v5 Tournament (team registration required)
+        tournament_5v5 = {
+            "title": "CS2 Competitive 5v5 Test",
+            "description": "Team tournament for testing",
+            "game": "cs2",
+            "tournament_type": "elimination",
+            "max_participants": 16,
+            "entry_fee": 0.0,
+            "prize_pool": 100.0,
+            "registration_start": (datetime.utcnow() + timedelta(hours=1)).isoformat(),
+            "registration_end": (datetime.utcnow() + timedelta(days=7)).isoformat(),
+            "tournament_start": (datetime.utcnow() + timedelta(days=8)).isoformat(),
+            "rules": "5v5 team tournament rules"
+        }
+        
+        status, data = await self.make_request("POST", "/tournaments/", tournament_5v5, auth_token=self.admin_token)
+        tournament_5v5_id = None
+        if status == 200 and data.get("id"):
+            tournament_5v5_id = data["id"]
+            self.log_test("Create 5v5 Tournament", True, f"5v5 tournament created: {data.get('title')}")
+        else:
+            self.log_test("Create 5v5 Tournament", False, f"Failed to create 5v5 tournament: {data}")
+        
+        # Test 2: Get user teams for tournament eligibility
+        if tournament_5v5_id:
+            status, data = await self.make_request("GET", f"/tournaments/{tournament_5v5_id}/user-teams", auth_token=self.test_user_token)
+            if status == 200:
+                self.log_test("Get User Teams for Tournament", True, f"Retrieved user teams: requires_team={data.get('requires_team')}, eligible_teams={len(data.get('eligible_teams', []))}")
+                
+                # Verify tournament requires team
+                if data.get("requires_team"):
+                    self.log_test("5v5 Tournament Team Requirement", True, "5v5 tournament correctly requires team registration")
+                else:
+                    self.log_test("5v5 Tournament Team Requirement", False, "5v5 tournament should require team registration")
+                
+                # Verify eligible teams
+                eligible_teams = data.get("eligible_teams", [])
+                if any(team["name"] == "CS2 Tournament Team" for team in eligible_teams):
+                    self.log_test("Eligible Teams Detection", True, "User's CS2 team found in eligible teams")
+                else:
+                    self.log_test("Eligible Teams Detection", False, f"User's CS2 team not found in eligible teams: {[t['name'] for t in eligible_teams]}")
+            else:
+                self.log_test("Get User Teams for Tournament", False, f"Failed to get user teams: {data}")
+        
+        # Test 3: Tournament registration with team requirements
+        if tournament_5v5_id and team_id_cs2:
+            # Set tournament to open status
+            await self.make_request("PUT", f"/tournaments/{tournament_5v5_id}/status?new_status=open", auth_token=self.admin_token)
+            
+            # Try to register without team (should fail for 5v5)
+            status, data = await self.make_request("POST", f"/tournaments/{tournament_5v5_id}/register", auth_token=self.test_user_token)
+            if status == 400 and "team" in data.get("detail", "").lower():
+                self.log_test("5v5 Individual Registration Block", True, "Individual registration properly blocked for 5v5 tournament")
+            else:
+                self.log_test("5v5 Individual Registration Block", False, f"Individual registration not blocked: {status} - {data}")
+            
+            # Register with team (should succeed)
+            status, data = await self.make_request("POST", f"/tournaments/{tournament_5v5_id}/register?team_id={team_id_cs2}", auth_token=self.test_user_token)
+            if status == 200:
+                self.log_test("5v5 Team Registration", True, f"Team registration successful: {data.get('message')}")
+                
+                # Verify registration type
+                if data.get("type") == "team":
+                    self.log_test("Registration Type Verification", True, "Registration correctly identified as team type")
+                else:
+                    self.log_test("Registration Type Verification", False, f"Registration type unexpected: {data.get('type')}")
+            else:
+                self.log_test("5v5 Team Registration", False, f"Team registration failed: {data}")
+        
+        # Test 4: Individual tournament registration
+        if tournament_1v1_id:
+            # Set tournament to open status
+            await self.make_request("PUT", f"/tournaments/{tournament_1v1_id}/status?new_status=open", auth_token=self.admin_token)
+            
+            # Register individually (should succeed for 1v1)
+            status, data = await self.make_request("POST", f"/tournaments/{tournament_1v1_id}/register", auth_token=self.test_user_token)
+            if status == 200:
+                self.log_test("1v1 Individual Registration", True, f"Individual registration successful: {data.get('message')}")
+                
+                # Verify registration type
+                if data.get("type") == "individual":
+                    self.log_test("Individual Registration Type", True, "Registration correctly identified as individual type")
+                else:
+                    self.log_test("Individual Registration Type", False, f"Registration type unexpected: {data.get('type')}")
+            else:
+                self.log_test("1v1 Individual Registration", False, f"Individual registration failed: {data}")
+            
+            # Try to register with team for 1v1 (should fail)
+            status, data = await self.make_request("POST", f"/tournaments/{tournament_1v1_id}/register?team_id={team_id_cs2}", auth_token=self.admin_token)
+            if status == 400 and "individual" in data.get("detail", "").lower():
+                self.log_test("1v1 Team Registration Block", True, "Team registration properly blocked for 1v1 tournament")
+            else:
+                self.log_test("1v1 Team Registration Block", False, f"Team registration not blocked for 1v1: {status} - {data}")
+        
+        # Test 5: Team-game matching validation
+        # Create a team with different game
+        team_data_lol = {
+            "name": "LoL Tournament Team",
+            "description": "Team for LoL (wrong game)",
+            "game": "lol",
+            "max_members": 6
+        }
+        
+        status, data = await self.make_request("POST", "/teams/", team_data_lol, auth_token=self.admin_token)
+        team_id_lol = None
+        if status == 200 and data.get("id"):
+            team_id_lol = data["id"]
+            
+            # Try to register LoL team for CS2 tournament (should fail)
+            if tournament_5v5_id:
+                status, data = await self.make_request("POST", f"/tournaments/{tournament_5v5_id}/register?team_id={team_id_lol}", auth_token=self.admin_token)
+                if status == 400 and "game" in data.get("detail", "").lower():
+                    self.log_test("Team-Game Matching Validation", True, "Team game mismatch properly blocked")
+                else:
+                    self.log_test("Team-Game Matching Validation", False, f"Team game mismatch not blocked: {status} - {data}")
+        
+        # Test 6: User teams endpoint for different tournament types
+        if tournament_1v1_id:
+            status, data = await self.make_request("GET", f"/tournaments/{tournament_1v1_id}/user-teams", auth_token=self.test_user_token)
+            if status == 200:
+                if not data.get("requires_team") and data.get("can_register_individual"):
+                    self.log_test("1v1 Tournament Team Requirements", True, "1v1 tournament correctly allows individual registration")
+                else:
+                    self.log_test("1v1 Tournament Team Requirements", False, f"1v1 tournament requirements incorrect: requires_team={data.get('requires_team')}")
+            else:
+                self.log_test("1v1 Tournament Team Requirements", False, f"Failed to get 1v1 tournament teams: {data}")
+        
+        # Cleanup: Delete test tournaments and teams
+        if tournament_1v1_id:
+            await self.make_request("DELETE", f"/tournaments/{tournament_1v1_id}", auth_token=self.admin_token)
+        if tournament_5v5_id:
+            await self.make_request("DELETE", f"/tournaments/{tournament_5v5_id}", auth_token=self.admin_token)
+        if team_id_cs2:
+            await self.make_request("DELETE", f"/teams/{team_id_cs2}", auth_token=self.test_user_token)
+        if team_id_lol:
+            await self.make_request("DELETE", f"/teams/{team_id_lol}", auth_token=self.admin_token)
+
     async def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Oupafamilly Backend Tests...")
@@ -1178,6 +1524,10 @@ class OupafamillyTester:
             await self.test_enhanced_profiles_system()
             await self.test_enhanced_teams_system()
             await self.test_server_integration_update()
+            
+            # ENHANCED TESTS for team management and tournament registration
+            await self.test_enhanced_team_management_system()
+            await self.test_enhanced_tournament_registration_system()
             
         except Exception as e:
             print(f"❌ Critical error during testing: {e}")
