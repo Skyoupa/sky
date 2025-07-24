@@ -224,6 +224,96 @@ async def upload_avatar(
             detail="Error uploading avatar"
         )
 
+@router.post("/upload-avatar-base64")
+async def upload_avatar_base64(
+    avatar_data: str,  # Base64 encoded image data
+    current_user: User = Depends(get_current_active_user)
+):
+    """Upload user avatar from base64 encoded image data."""
+    try:
+        import base64
+        import io
+        from PIL import Image
+        
+        # Extract the actual base64 data (remove data:image/...;base64, prefix if present)
+        if avatar_data.startswith('data:image'):
+            header, encoded = avatar_data.split(',', 1)
+            # Validate image type from header
+            if 'jpeg' not in header and 'jpg' not in header and 'png' not in header and 'webp' not in header:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Only JPEG, PNG, and WebP images are allowed"
+                )
+        else:
+            encoded = avatar_data
+        
+        # Decode base64
+        try:
+            image_data = base64.b64decode(encoded)
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid base64 image data"
+            )
+        
+        # Validate image and check size
+        try:
+            image = Image.open(io.BytesIO(image_data))
+            
+            # Check file size (max 5MB)
+            if len(image_data) > 5 * 1024 * 1024:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Image size must be less than 5MB"
+                )
+            
+            # Resize image if too large (max 800x800)
+            if image.width > 800 or image.height > 800:
+                image.thumbnail((800, 800), Image.Resampling.LANCZOS)
+                
+                # Save resized image to bytes
+                output = io.BytesIO()
+                image.save(output, format='PNG', optimize=True)
+                image_data = output.getvalue()
+                
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid image data"
+            )
+        
+        # Convert to base64 and store directly in database (for simplicity)
+        avatar_base64 = base64.b64encode(image_data).decode('utf-8')
+        avatar_url = f"data:image/png;base64,{avatar_base64}"
+        
+        # Update profile with avatar base64 data
+        await db.user_profiles.update_one(
+            {"user_id": current_user.id},
+            {
+                "$set": {
+                    "avatar_url": avatar_url,
+                    "updated_at": datetime.utcnow()
+                }
+            },
+            upsert=True
+        )
+        
+        logger.info(f"Base64 avatar uploaded for user {current_user.username}")
+        
+        return {
+            "message": "Avatar uploaded successfully",
+            "avatar_url": avatar_url
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error uploading base64 avatar for {current_user.id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error uploading avatar"
+        )
+
 async def get_user_tournament_stats(user_id: str) -> dict:
     """Get comprehensive tournament statistics for a user."""
     try:
