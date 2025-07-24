@@ -84,6 +84,7 @@ async def health_check():
 # Include route modules
 api_router.include_router(auth.router)
 api_router.include_router(tournaments.router)
+api_router.include_router(teams.router)
 api_router.include_router(content.router)
 api_router.include_router(admin.router)
 
