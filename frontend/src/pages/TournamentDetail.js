@@ -690,6 +690,20 @@ const TournamentDetail = () => {
           align-items: center;
           gap: 10px;
           border: 1px solid #e2e8f0;
+          transition: all 0.3s;
+        }
+
+        .participant-card:hover {
+          border-color: #3b82f6;
+          transform: translateY(-1px);
+        }
+
+        .participant-card.team {
+          border-left: 4px solid #10b981;
+        }
+
+        .participant-card.user {
+          border-left: 4px solid #3b82f6;
         }
 
         .participant-number {
@@ -699,11 +713,27 @@ const TournamentDetail = () => {
           border-radius: 6px;
           font-size: 12px;
           font-weight: 600;
+          min-width: 30px;
+          text-align: center;
+        }
+
+        .participant-info {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
         }
 
         .participant-name {
           color: #1a1a1a;
+          font-weight: 600;
+          font-size: 14px;
+        }
+
+        .participant-type {
+          color: #64748b;
+          font-size: 11px;
           font-weight: 500;
+          margin-top: 2px;
         }
 
         .tournament-sidebar {
