@@ -951,8 +951,19 @@ body {
   transition: opacity var(--transition-normal);
 }
 
+.game-background {
+  position: absolute;
+  inset: 0;
+  opacity: 0.3;
+  transition: opacity var(--transition-normal);
+}
+
 .game-card-pro:hover .game-gradient {
   opacity: 0.2;
+}
+
+.game-card-pro:hover .game-background {
+  opacity: 0.4;
 }
 
 .game-content {
