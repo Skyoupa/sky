@@ -1,11 +1,14 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const Accueil = () => {
+  const { isAuthenticated, user } = useAuth();
+
   // Test API connection
   useEffect(() => {
     const testApi = async () => {
