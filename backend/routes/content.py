@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import List, Optional
-from models import News, NewsCreate, User, Tutorial, TutorialCreate, Game
+from models import News, NewsCreate, User, Tutorial, TutorialCreate, Game, Tournament
 from auth import get_current_active_user, is_moderator_or_admin
 from datetime import datetime, timedelta
 import logging
