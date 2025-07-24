@@ -353,6 +353,25 @@ const TournamentDetail = () => {
             )}
           </div>
 
+          {/* Tournament Bracket Link */}
+          {tournament.status === 'in_progress' || tournament.status === 'completed' ? (
+            <div className="bracket-card">
+              <h3>🏆 Bracket du Tournoi</h3>
+              <p>Suivez les matches et résultats en temps réel</p>
+              <Link to={`/tournois/${tournament.id}/bracket`} className="btn-bracket">
+                📊 Voir le Bracket
+              </Link>
+            </div>
+          ) : tournament.status === 'open' && tournament.participants.length >= 2 && (user?.role === 'admin' || user?.role === 'moderator') ? (
+            <div className="bracket-card">
+              <h3>⚙️ Gestion Admin</h3>  
+              <p>Prêt à générer le bracket pour démarrer le tournoi</p>
+              <Link to={`/tournois/${tournament.id}/bracket`} className="btn-bracket admin">
+                🎲 Générer le Bracket
+              </Link>
+            </div>
+          ) : null}
+
           <div className="organizer-card">
             <h3>👤 Organisateur</h3>
             <p>Organisé par: {tournament.organizer_id.substring(0, 8)}</p>
