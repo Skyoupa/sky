@@ -42,8 +42,8 @@ Counter-Strike 2 représente l'évolution majeure de la série culte, avec une i
 
 ### 🔧 Optimisations recommandées par les pros
 1. **Jump bind sur molette** : 
-   - \`bind mwheelup +jump\`
-   - \`bind mwheeldown +jump\`
+- bind mwheelup +jump
+- bind mwheeldown +jump
    - Facilite les bunny hops et jump-peeks
 
 2. **Walk en hold** : Plus de contrôle tactique
