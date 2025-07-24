@@ -320,6 +320,71 @@ async def get_user_teams_for_tournament(
             detail="Error getting user teams for tournament"
         )
 
+@router.delete("/{tournament_id}")
+async def delete_tournament(
+    tournament_id: str,
+    current_user: User = Depends(get_current_active_user)
+):
+    """Delete a tournament (admin only). Cannot delete if tournament is in progress or completed."""
+    try:
+        # Check admin permissions
+        if current_user.role != "admin":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only administrators can delete tournaments"
+            )
+        
+        # Get tournament
+        tournament_data = await db.tournaments.find_one({"id": tournament_id})
+        if not tournament_data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tournament not found"
+            )
+        
+        tournament = Tournament(**tournament_data)
+        
+        # Check if tournament can be deleted (prevent deletion of in-progress tournaments)
+        if tournament.status == TournamentStatus.IN_PROGRESS:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Cannot delete tournament that is currently in progress"
+            )
+        
+        # Clean up participant registrations first
+        for participant_id in tournament.participants:
+            # Update user profile tournament count
+            await db.user_profiles.update_one(
+                {"user_id": participant_id},
+                {"$inc": {"total_tournaments": -1}},
+                upsert=True
+            )
+        
+        # Delete associated matches
+        await db.matches.delete_many({"tournament_id": tournament_id})
+        
+        # Delete the tournament
+        result = await db.tournaments.delete_one({"id": tournament_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tournament not found"
+            )
+        
+        logger.info(f"Tournament {tournament.title} deleted by admin {current_user.username}")
+        
+        return {"message": f"Tournament '{tournament.title}' has been successfully deleted"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting tournament {tournament_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error deleting tournament"
+        )
+
 @router.delete("/{tournament_id}/register")
 async def unregister_from_tournament(
     tournament_id: str,
