@@ -187,13 +187,16 @@ backend:
     implemented: true
     working: true
     file: "/app/backend/routes/tournaments.py"
-    stuck_count: 1
+    stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Enhanced tournament registration to require teams for 2v2/5v5 tournaments, automatic team proposal for users, validation of team game matching tournament game, and prevention of individual registration for team tournaments."
+      - working: true
+        agent: "testing"
+        comment: "✅ ENHANCED TOURNAMENT REGISTRATION SYSTEM FULLY FUNCTIONAL! All 13 tournament registration tests passed with 100% success rate. Tournament type detection logic working correctly: 1v1 tournaments allow individual registration, 2v2/5v5 require teams. Pattern recognition (1v1, 2v2, 5v5 in names) and fallback logic (max_participants) both working. Team-game matching validation working. Individual vs team registration validation working correctly for all tournament types."
       - working: true
         agent: "testing"
         comment: "✅ SERVER INTEGRATION UPDATE FULLY FUNCTIONAL! Comprehensive testing confirms perfect integration: 1) Router Integration: Community and profiles routers properly included in main FastAPI server with correct /api prefix routing. 2) Endpoint Accessibility: All community endpoints accessible via /api/community (stats, posts, leaderboard, members, teams), all profiles endpoints accessible via /api/profiles (user profiles, updates, avatar uploads). 3) Server Endpoints List: Root endpoint (/) now properly lists community and profiles in available endpoints. 4) CORS Configuration: Working perfectly - all API calls successful across different endpoints. 5) Health Check: Server health endpoint confirms database connectivity and system status. 6) API Documentation: FastAPI automatic documentation includes all new endpoints. All new routes properly integrated and accessible. Server ready for production with complete community and profiles functionality!"
