@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
 
-  const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001/api';
+  const API_BASE_URL = import.meta.env.REACT_APP_BACKEND_URL || process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001/api';
 
   // Vérifier si l'utilisateur est connecté au démarrage
   useEffect(() => {
