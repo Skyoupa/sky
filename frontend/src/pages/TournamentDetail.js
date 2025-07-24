@@ -6,7 +6,7 @@ const TournamentDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [tournament, setTournament] = useState(null);
-  const [participants, setParticipants] = useState([]);
+  const [participantsInfo, setParticipantsInfo] = useState([]);
   const [teams, setTeams] = useState([]);
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState('');
@@ -18,6 +18,7 @@ const TournamentDetail = () => {
 
   useEffect(() => {
     fetchTournamentDetails();
+    fetchParticipantsInfo();
     if (user) {
       fetchUserTeams();
     }
@@ -36,11 +37,6 @@ const TournamentDetail = () => {
         const data = await response.json();
         console.log('Tournament data received:', data);
         setTournament(data);
-        
-        // Fetch participant details
-        if (data.participants && data.participants.length > 0) {
-          fetchParticipants(data.participants);
-        }
       } else if (response.status === 404) {
         console.log('Tournament not found (404)');
         setError('Tournoi non trouvé');
@@ -57,13 +53,15 @@ const TournamentDetail = () => {
     }
   };
 
-  const fetchParticipants = async (participantIds) => {
+  const fetchParticipantsInfo = async () => {
     try {
-      // For now, just display participant IDs
-      // In a real implementation, you'd fetch user/team details
-      setParticipants(participantIds);
+      const response = await fetch(`${API_BASE_URL}/tournaments/${id}/participants-info`);
+      if (response.ok) {
+        const data = await response.json();
+        setParticipantsInfo(data.participants || []);
+      }
     } catch (error) {
-      console.error('Erreur fetch participants:', error);
+      console.error('Error fetching participants info:', error);
     }
   };
 
