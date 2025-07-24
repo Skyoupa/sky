@@ -426,6 +426,190 @@ async def update_team(
             detail="Error updating team"
         )
 
+@router.post("/{team_id}/add-member")
+async def add_member_to_team(
+    team_id: str,
+    user_id: str,
+    current_user: User = Depends(get_current_active_user)
+):
+    """Add a member to team (captain only)."""
+    try:
+        # Get team
+        team_data = await db.teams.find_one({"id": team_id})
+        if not team_data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Team not found"
+            )
+        
+        team = Team(**team_data)
+        
+        # Check permissions - only captain can add members
+        if team.captain_id != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only team captain can add members"
+            )
+        
+        # Check if user exists
+        user_to_add = await db.users.find_one({"id": user_id})
+        if not user_to_add:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        # Check if user is already a member
+        if user_id in team.members:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User is already a member of this team"
+            )
+        
+        # Check if team is full
+        if len(team.members) >= team.max_members:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Team is full"
+            )
+        
+        # Add user to team
+        await db.teams.update_one(
+            {"id": team_id},
+            {
+                "$push": {"members": user_id},
+                "$set": {"updated_at": datetime.utcnow()}
+            }
+        )
+        
+        logger.info(f"User {user_to_add['username']} added to team {team.name} by {current_user.username}")
+        
+        return {"message": f"User {user_to_add['username']} added to team successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error adding member to team {team_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error adding member to team"
+        )
+
+@router.delete("/{team_id}/remove-member/{user_id}")
+async def remove_member_from_team(
+    team_id: str,
+    user_id: str,
+    current_user: User = Depends(get_current_active_user)
+):
+    """Remove a member from team (captain only, cannot remove captain)."""
+    try:
+        # Get team
+        team_data = await db.teams.find_one({"id": team_id})
+        if not team_data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Team not found"
+            )
+        
+        team = Team(**team_data)
+        
+        # Check permissions - only captain can remove members
+        if team.captain_id != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only team captain can remove members"
+            )
+        
+        # Cannot remove captain
+        if user_id == team.captain_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Cannot remove team captain. Transfer captaincy first."
+            )
+        
+        # Check if user is a member
+        if user_id not in team.members:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User is not a member of this team"
+            )
+        
+        # Get user info for logging
+        user_to_remove = await db.users.find_one({"id": user_id})
+        
+        # Remove user from team
+        await db.teams.update_one(
+            {"id": team_id},
+            {
+                "$pull": {"members": user_id},
+                "$set": {"updated_at": datetime.utcnow()}
+            }
+        )
+        
+        logger.info(f"User {user_to_remove['username'] if user_to_remove else user_id} removed from team {team.name} by {current_user.username}")
+        
+        return {"message": f"User removed from team successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error removing member from team {team_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error removing member from team"
+        )
+
+@router.get("/{team_id}/available-users")
+async def get_available_users_for_team(
+    team_id: str,
+    current_user: User = Depends(get_current_active_user)
+):
+    """Get users that can be added to the team (captain only)."""
+    try:
+        # Get team
+        team_data = await db.teams.find_one({"id": team_id})
+        if not team_data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Team not found"
+            )
+        
+        team = Team(**team_data)
+        
+        # Check permissions - only captain can see available users
+        if team.captain_id != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only team captain can view available users"
+            )
+        
+        # Get all users except current team members
+        all_users = await db.users.find({
+            "id": {"$nin": team.members},
+            "status": "active"
+        }).to_list(100)
+        
+        available_users = [
+            {
+                "id": user["id"],
+                "username": user["username"],
+                "role": user.get("role", "member"),
+                "created_at": user["created_at"]
+            }
+            for user in all_users
+        ]
+        
+        return {"available_users": available_users}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting available users for team {team_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error getting available users"
+        )
+
 @router.get("/stats/community")
 async def get_team_stats():
     """Get team statistics for the community."""
