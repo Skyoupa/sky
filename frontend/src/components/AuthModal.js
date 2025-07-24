@@ -153,6 +153,7 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
 
         <form onSubmit={handleSubmit} className="auth-form">
           {error && <div className="error-message">{error}</div>}
+          {success && <div className="success-message">{success}</div>}
 
           {mode === 'register' && (
             <>
