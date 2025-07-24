@@ -192,7 +192,8 @@ const TournamentDetail = () => {
   const handleTeamUpdated = () => {
     fetchUserTeamsForTournament(); // Refresh teams data
   };
-          method: 'POST',
+
+  if (loading) {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
