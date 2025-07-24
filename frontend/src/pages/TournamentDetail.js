@@ -799,7 +799,7 @@ const TournamentDetail = () => {
 
         .team-name {
           font-weight: 600;
-          color: #e2e8f0;
+          color: #1a1a1a;
         }
 
         .captain-badge {
