@@ -90,6 +90,8 @@ api_router.include_router(teams.router)
 api_router.include_router(matches.router)
 api_router.include_router(content.router)
 api_router.include_router(admin.router)
+api_router.include_router(community.router)
+api_router.include_router(profiles.router)
 
 # Include the router in the main app
 app.include_router(api_router)
