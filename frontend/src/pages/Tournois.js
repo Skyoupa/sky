@@ -663,6 +663,137 @@ const Tournois = () => {
           .tournaments-grid-pro {
             grid-template-columns: 1fr;
           }
+
+          .participation-features {
+            flex-direction: column;
+          }
+
+          .feature-item {
+            text-align: center;
+          }
+
+          .discord-btn-content {
+            text-align: center;
+          }
+        }
+
+        /* Styles pour la section participation */
+        .participation-info-section {
+          background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+          color: white;
+          border-radius: 20px;
+          padding: 40px;
+          margin-top: 50px;
+          text-align: center;
+        }
+
+        .participation-header {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 15px;
+          margin-bottom: 30px;
+        }
+
+        .participation-header h2 {
+          margin: 0;
+          font-size: 28px;
+          font-weight: 700;
+        }
+
+        .discord-logo {
+          font-size: 32px;
+          background: rgba(255, 255, 255, 0.1);
+          padding: 10px;
+          border-radius: 50%;
+        }
+
+        .participation-content p {
+          font-size: 18px;
+          line-height: 1.6;
+          margin-bottom: 30px;
+          opacity: 0.9;
+          max-width: 800px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        .participation-features {
+          display: flex;
+          gap: 30px;
+          margin-bottom: 40px;
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+
+        .feature-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 15px;
+          max-width: 250px;
+        }
+
+        .feature-icon {
+          font-size: 24px;
+          background: rgba(255, 255, 255, 0.1);
+          padding: 10px;
+          border-radius: 10px;
+          flex-shrink: 0;
+        }
+
+        .feature-text strong {
+          display: block;
+          font-size: 16px;
+          margin-bottom: 5px;
+        }
+
+        .feature-text p {
+          margin: 0;
+          font-size: 14px;
+          opacity: 0.8;
+          line-height: 1.4;
+        }
+
+        .discord-cta {
+          display: flex;
+          justify-content: center;
+        }
+
+        .discord-btn {
+          background: linear-gradient(45deg, #5865f2, #404eed);
+          color: white;
+          text-decoration: none;
+          padding: 20px 30px;
+          border-radius: 15px;
+          transition: all 0.3s;
+          box-shadow: 0 5px 20px rgba(88, 101, 242, 0.3);
+        }
+
+        .discord-btn:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 8px 25px rgba(88, 101, 242, 0.4);
+          background: linear-gradient(45deg, #404eed, #3c44e9);
+        }
+
+        .discord-btn-content {
+          display: flex;
+          align-items: center;
+          gap: 15px;
+        }
+
+        .discord-icon {
+          font-size: 24px;
+        }
+
+        .discord-btn-content strong {
+          display: block;
+          font-size: 18px;
+          margin-bottom: 2px;
+        }
+
+        .discord-btn-content small {
+          font-size: 14px;
+          opacity: 0.9;
         }
       `}</style>
     </div>
