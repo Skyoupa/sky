@@ -447,7 +447,44 @@ const TeamManagementModal = ({ isOpen, onClose, team, onTeamUpdated }) => {
             padding: 1rem 1.5rem;
             border-top: 1px solid #e5e7eb;
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
+            align-items: center;
+          }
+
+          .footer-left {
+            display: flex;
+          }
+
+          .footer-right {
+            display: flex;
+          }
+
+          .btn-danger-team {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+          }
+
+          .btn-danger-team:hover:not(:disabled) {
+            background: #dc2626;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+          }
+
+          .btn-danger-team:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
           }
 
           .btn-secondary {
