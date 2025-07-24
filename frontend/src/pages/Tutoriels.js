@@ -185,7 +185,15 @@ const Tutoriels = () => {
                 className={`game-selector ${selectedGame === game.id ? 'active' : ''}`}
                 onClick={() => setSelectedGame(game.id)}
               >
-                <div className={`selector-gradient bg-gradient-to-br ${game.bgGradient}`}></div>
+                <div 
+                  className="selector-gradient"
+                  style={{
+                    backgroundImage: `url(${game.backgroundImage})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat'
+                  }}
+                ></div>
                 <div className="selector-content">
                   <div className="selector-info">
                     <h3>{game.name}</h3>
