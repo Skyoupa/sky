@@ -213,7 +213,15 @@ const Tutoriels = () => {
           <div className="container-pro">
             {games.filter(game => game.id === selectedGame).map(game => (
               <div key={game.id} className="game-banner">
-                <div className={`banner-bg bg-gradient-to-r ${game.bgGradient}`}>
+                <div 
+                  className="banner-bg"
+                  style={{
+                    backgroundImage: `url(${game.backgroundImage})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat'
+                  }}
+                >
                   <div className="banner-pattern"></div>
                 </div>
                 <div className="banner-content">
