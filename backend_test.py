@@ -945,7 +945,7 @@ class OupafamillyTester:
         test_avatar_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAI9jU77zgAAAABJRU5ErkJggg=="
         avatar_data = f"data:image/png;base64,{test_avatar_base64}"
         
-        status, data = await self.make_request("POST", "/profiles/upload-avatar-base64", {"avatar_data": avatar_data}, auth_token=self.test_user_token)
+        status, data = await self.make_request("POST", "/profiles/upload-avatar-base64", avatar_data, auth_token=self.test_user_token)
         if status == 200 and "avatar_url" in data:
             self.log_test("Base64 Avatar Upload", True, f"Avatar uploaded successfully: {data.get('message')}")
             
@@ -960,7 +960,7 @@ class OupafamillyTester:
         
         # Test 4: Test invalid base64 avatar upload
         invalid_avatar_data = "invalid_base64_data"
-        status, data = await self.make_request("POST", "/profiles/upload-avatar-base64", {"avatar_data": invalid_avatar_data}, auth_token=self.test_user_token)
+        status, data = await self.make_request("POST", "/profiles/upload-avatar-base64", invalid_avatar_data, auth_token=self.test_user_token)
         if status == 400:
             self.log_test("Invalid Avatar Validation", True, "Invalid base64 data properly rejected")
         else:
