@@ -306,53 +306,78 @@ const Communaute = () => {
                     </div>
                     <div className="team-info-pro">
                       <h3 className="team-name-pro">{team.name}</h3>
-                      <p className="team-game-pro">{team.game}</p>
+                      <p className="team-game-pro">{getGameDisplay(team.game)}</p>
                     </div>
-                    <span className="team-rank-pro">{team.rank}</span>
+                    <div className="team-rank-badge">
+                      <span className="rank-number">#{team.rank}</span>
+                    </div>
                   </div>
 
                   <div className="team-stats-pro">
                     <div className="team-stat-item">
-                      <span className="stat-label">Victoires</span>
-                      <span className="stat-value win">{team.wins}</span>
+                      <span className="stat-label">Tournois</span>
+                      <span className="stat-value">{team.statistics?.total_tournaments || 0}</span>
                     </div>
                     <div className="team-stat-item">
-                      <span className="stat-label">Défaites</span>
-                      <span className="stat-value loss">{team.losses}</span>
+                      <span className="stat-label">Victoires</span>
+                      <span className="stat-value win">{team.statistics?.tournaments_won || 0}</span>
                     </div>
                     <div className="team-stat-item">
                       <span className="stat-label">Winrate</span>
-                      <span className="stat-value winrate">{team.winRate}%</span>
+                      <span className="stat-value winrate">{team.statistics?.win_rate || 0}%</span>
+                    </div>
+                    <div className="team-stat-item">
+                      <span className="stat-label">Points</span>
+                      <span className="stat-value points">{team.statistics?.total_points || 0}</span>
                     </div>
                   </div>
 
                   <div className="team-members-pro">
-                    <h4 className="members-title-pro">Roster ({team.members.length})</h4>
+                    <h4 className="members-title-pro">Roster ({team.member_count}/{team.max_members})</h4>
                     <div className="members-list-pro">
-                      {team.members.map(memberName => (
+                      <div className="captain-member">
+                        <span className="captain-icon">👑</span>
+                        <span className="member-name">{team.captain}</span>
+                      </div>
+                      {team.members.filter(member => member !== team.captain).map(memberName => (
                         <span key={memberName} className="member-tag-pro">
                           {memberName}
                         </span>
                       ))}
                     </div>
+                    {team.is_open && team.member_count < team.max_members && (
+                      <div className="team-recruiting">
+                        <span className="recruiting-badge">🔍 Recrute</span>
+                        <span className="spots-available">{team.max_members - team.member_count} places disponibles</span>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="team-achievements-pro">
-                    <h4 className="achievements-title-pro">Palmarès</h4>
-                    <ul className="achievements-list-pro">
-                      {team.achievements.map((achievement, index) => (
-                        <li key={index} className="achievement-item-pro">
-                          <svg className="trophy-icon-small" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2L15.09 8.26L22 9L16 14.74L17.18 21.02L12 18.77L6.82 21.02L8 14.74L2 9L8.91 8.26L12 2Z"/>
-                          </svg>
-                          {achievement}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  {team.statistics?.victories_by_type && (
+                    <div className="team-trophies-pro">
+                      <h4 className="trophies-title-pro">Trophées par mode</h4>
+                      <div className="trophies-breakdown">
+                        <div className="trophy-item">
+                          <span className="trophy-label">1v1</span>
+                          <span className="trophy-count">{team.statistics.victories_by_type['1v1'] || 0}</span>
+                        </div>
+                        <div className="trophy-item">
+                          <span className="trophy-label">2v2</span>
+                          <span className="trophy-count">{team.statistics.victories_by_type['2v2'] || 0}</span>
+                        </div>
+                        <div className="trophy-item">
+                          <span className="trophy-label">5v5</span>
+                          <span className="trophy-count">{team.statistics.victories_by_type['5v5'] || 0}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="team-actions-pro">
                     <button className="btn-primary-pro btn-team">VOIR L'ÉQUIPE</button>
+                    {team.is_open && team.member_count < team.max_members && (
+                      <button className="btn-secondary-pro btn-team">REJOINDRE</button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -365,6 +390,20 @@ const Communaute = () => {
               <div className="leaderboard-header-pro">
                 <h2 className="leaderboard-title-pro">Hall of Fame</h2>
                 <p className="leaderboard-subtitle-pro">Les légendes de la Oupafamilly</p>
+                <div className="leaderboard-legend">
+                  <div className="legend-item">
+                    <span className="trophy-icon-1v1">🏆</span>
+                    <span>1v1: 100 pts</span>
+                  </div>
+                  <div className="legend-item">
+                    <span className="trophy-icon-2v2">🥇</span>
+                    <span>2v2: 150 pts</span>
+                  </div>
+                  <div className="legend-item">
+                    <span className="trophy-icon-5v5">🏅</span>
+                    <span>5v5: 200 pts</span>
+                  </div>
+                </div>
               </div>
 
               <div className="leaderboard-list-pro">
@@ -393,15 +432,23 @@ const Communaute = () => {
                     </div>
                     
                     <div className="player-info-pro">
-                      <h3 className="player-name-pro">{player.name}</h3>
+                      <h3 className="player-name-pro">{player.username}</h3>
                       <div className="player-stats-pro">
-                        <span className="points-pro">{player.points} points</span>
-                        <span className="trophies-pro">
-                          <svg className="trophy-icon-small" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2L15.09 8.26L22 9L16 14.74L17.18 21.02L12 18.77L6.82 21.02L8 14.74L2 9L8.91 8.26L12 2Z"/>
-                          </svg>
-                          {player.trophies}
-                        </span>
+                        <span className="points-pro">{player.total_points} points</span>
+                        <div className="trophies-breakdown-inline">
+                          <span className="trophy-detail">
+                            <span className="trophy-icon-1v1">🏆</span>
+                            {player.victories_1v1}
+                          </span>
+                          <span className="trophy-detail">
+                            <span className="trophy-icon-2v2">🥇</span>
+                            {player.victories_2v2}
+                          </span>
+                          <span className="trophy-detail">
+                            <span className="trophy-icon-5v5">🏅</span>
+                            {player.victories_5v5}
+                          </span>
+                        </div>
                       </div>
                     </div>
 
@@ -409,6 +456,12 @@ const Communaute = () => {
                       <span className={`champion-badge-pro rank-${player.rank}`}>
                         {player.badge}
                       </span>
+                      <div className="total-trophies">
+                        <svg className="trophy-icon-small" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 2L15.09 8.26L22 9L16 14.74L17.18 21.02L12 18.77L6.82 21.02L8 14.74L2 9L8.91 8.26L12 2Z"/>
+                        </svg>
+                        {player.total_trophies}
+                      </div>
                     </div>
                   </div>
                 ))}
