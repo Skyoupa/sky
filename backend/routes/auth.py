@@ -15,8 +15,8 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
-# Get database from main server
-from server import db
+# Get database from database module
+from database import db
 
 @router.post("/register", response_model=UserResponse)
 async def register_user(user_data: UserCreate):
