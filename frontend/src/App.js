@@ -5,6 +5,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import Accueil from './pages/Accueil';
 import Tutoriels from './pages/Tutoriels';
+import TutorialDetail from './pages/TutorialDetail';
 import Tournois from './pages/Tournois';
 import TournamentDetail from './pages/TournamentDetail';
 import TournamentBracket from './pages/TournamentBracket';
