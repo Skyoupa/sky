@@ -745,7 +745,7 @@ const TournamentDetail = () => {
         }
 
         .participant-rank {
-          color: #60a5fa;
+          color: #1e3a8a;
           font-weight: 600;
           font-size: 0.9rem;
         }
@@ -755,6 +755,7 @@ const TournamentDetail = () => {
           align-items: center;
           gap: 0.5rem;
           font-weight: 500;
+          color: #1a1a1a;
         }
 
         .team-icon,
