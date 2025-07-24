@@ -16,9 +16,9 @@ const Header = () => {
 
   const navItems = [
     { path: '/', label: 'ACCUEIL' },
-    { path: '/tutoriels', label: 'TUTORIELS' },
     { path: '/tournois', label: 'TOURNOIS CS2' },
     { path: '/communaute', label: 'COMMUNAUTÉ' },
+    { path: '/news', label: 'NEWS' },
     { path: '/a-propos', label: 'À PROPOS' }
   ];
 
