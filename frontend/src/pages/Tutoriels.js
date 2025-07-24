@@ -45,7 +45,7 @@ const Tutoriels = () => {
       name: 'League of Legends',
       description: 'MOBA Esports',
       color: '#3498DB',
-      bgGradient: 'from-blue-500 via-purple-600 to-blue-800',
+      backgroundImage: 'https://images.unsplash.com/photo-1593280359364-5242f1958068?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHw0fHxnYW1pbmd8ZW58MHx8fGJsdWV8MTc1MzM0MTQxMXww&ixlib=rb-4.1.0&q=85',
       tutorials: [
         { title: 'Interface et contrôles', level: 'Débutant', duration: '15 min', type: 'Basics' },
         { title: 'Champions et rôles', level: 'Débutant', duration: '25 min', type: 'Champions' },
