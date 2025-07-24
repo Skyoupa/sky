@@ -1812,6 +1812,7 @@ class OupafamillyTester:
             
             # ENHANCED TESTS for team management and tournament registration
             await self.test_enhanced_team_management_system()
+            await self.test_team_deletion_functionality()  # NEW: Team deletion tests
             await self.test_enhanced_tournament_registration_system()
             
         except Exception as e:
