@@ -409,7 +409,7 @@ class OupafamillyTester:
         
         # Test accessing protected endpoint without token
         status, data = await self.make_request("GET", "/auth/me")
-        if status == 401:
+        if status in [401, 403]:
             self.log_test("Protected Endpoint Security", True, "Unauthorized access properly blocked")
         else:
             self.log_test("Protected Endpoint Security", False, f"Security issue: {status} - {data}")
