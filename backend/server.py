@@ -45,6 +45,7 @@ async def root():
         "endpoints": {
             "auth": "/api/auth",
             "tournaments": "/api/tournaments", 
+            "teams": "/api/teams",
             "content": "/api/content",
             "admin": "/api/admin"
         }
