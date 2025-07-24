@@ -182,11 +182,16 @@ const TournamentBracket = () => {
           <h1>🏆 Bracket - {tournament?.title}</h1>
           <div className="tournament-info">
             <span className="status-badge">Statut: {tournament?.status}</span>
-            {tournament?.winner_id && (
+            {tournament?.winner_id && bracket.participants_map ? (
               <span className="winner-badge">
-                🏆 Vainqueur: {getPlayerName(tournament.winner_id)}
+                🏆 Vainqueur: {bracket.participants_map[tournament.winner_id]?.display_name || 
+                              `Joueur ${tournament.winner_id.substring(0, 8)}`}
               </span>
-            )}
+            ) : tournament?.winner_id ? (
+              <span className="winner-badge">
+                🏆 Vainqueur: Joueur {tournament.winner_id.substring(0, 8)}
+              </span>
+            ) : null}
           </div>
         </div>
         
