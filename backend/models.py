@@ -27,6 +27,12 @@ class TournamentType(str, Enum):
     BRACKET = "bracket"
     ROUND_ROBIN = "round_robin"
 
+class MatchStatus(str, Enum):
+    SCHEDULED = "scheduled"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
+
 class Game(str, Enum):
     CS2 = "cs2"
     WOW = "wow"
