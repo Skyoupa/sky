@@ -29,6 +29,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Accueil />} />
               <Route path="/tutoriels" element={<Tutoriels />} />
+              <Route path="/tutoriels/:gameId/:tutorialId" element={<TutorialDetail />} />
               <Route path="/tournois" element={<Tournois />} />
               <Route path="/tournois/:id" element={<TournamentDetail />} />
               <Route path="/tournois/:id/bracket" element={<TournamentBracket />} />
