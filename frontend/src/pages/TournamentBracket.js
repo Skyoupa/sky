@@ -115,14 +115,31 @@ const TournamentBracket = () => {
     }
   };
 
-  const getPlayerName = (playerId) => {
-    if (!playerId) return 'TBD';
-    if (playerId.includes('Winner of')) return playerId;
-    if (playerId === 'BYE') return 'BYE';
+  const getPlayerName = (match, isPlayer1 = true) => {
+    const playerName = isPlayer1 ? match.player1_name : match.player2_name;
+    const playerType = isPlayer1 ? match.player1_type : match.player2_type;
     
-    // For now, show first 8 characters of ID
-    // In real implementation, you'd fetch player/team names
-    return `Joueur ${playerId.substring(0, 8)}`;
+    if (!playerName || playerName === 'TBD') return 'TBD';
+    if (playerName.includes('Winner of')) return playerName;
+    if (playerName === 'BYE') return 'BYE';
+    
+    // Return the enriched name from backend
+    return playerName;
+  };
+
+  const getPlayerTypeIcon = (match, isPlayer1 = true) => {
+    const playerType = isPlayer1 ? match.player1_type : match.player2_type;
+    
+    switch(playerType) {
+      case 'team':
+        return '👥';
+      case 'user':
+        return '👤';
+      case 'placeholder':
+        return '🏆';
+      default:
+        return '❓';
+    }
   };
 
   const getMatchStatusBadge = (match) => {
