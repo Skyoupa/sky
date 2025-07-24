@@ -118,14 +118,8 @@ const Tournois = () => {
   };
 
   const getGameName = (gameId) => {
-    const games = {
-      'cs2': 'Counter-Strike 2',
-      'lol': 'League of Legends',
-      'wow': 'World of Warcraft',
-      'sc2': 'StarCraft II',
-      'minecraft': 'Minecraft'
-    };
-    return games[gameId] || gameId;
+    // Support uniquement CS2 pour Oupafamilly
+    return gameId === 'cs2' ? 'Counter-Strike 2' : 'CS2';
   };
 
   const renderTournamentCard = (tournament) => (
