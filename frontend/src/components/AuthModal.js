@@ -131,6 +131,7 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
   const toggleMode = () => {
     setMode(mode === 'login' ? 'register' : 'login');
     setError('');
+    setSuccess('');
     setFormData({
       email: '',
       password: '',
