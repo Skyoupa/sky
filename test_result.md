@@ -227,15 +227,18 @@ backend:
 
   - task: "CS2 Tournament Templates Integration"
     implemented: true
-    working: false
+    working: true
     file: "/app/backend/routes/tournaments.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Created 6 specialized CS2 tournament templates with detailed rules: 1v1 Quick Match, 5v5 Team Deathmatch, Competitive 5v5, Retake Masters, Aim Challenge, and Pistol Only Tournament. Each template has specific CS2 rules and configurations."
+      - working: true
+        agent: "testing"
+        comment: "✅ CS2 Tournament Templates FULLY FUNCTIONAL! All 6 templates working perfectly: 1) Endpoint /tournaments/templates/popular returns exactly 6 CS2 templates. 2) All templates have correct names: 'CS2 Quick Match 1v1', 'CS2 Team Deathmatch 5v5', 'CS2 Competitive 5v5', 'CS2 Retake Masters', 'CS2 Aim Challenge', 'CS2 Pistol Only Tournament'. 3) All templates have game: 'cs2' exclusively. 4) All templates have detailed, well-formatted rules with emojis and CS2-specific content (200+ characters each). 5) Tournament creation with templates works perfectly and saves detailed rules. 6) System properly rejects non-CS2 games. 7) Database contains 7 CS2 tournaments total (6 existing + 1 test). System is CS2-exclusive as required for Oupafamilly."
 
   - task: "Frontend CS2 Focus Update"
     implemented: true
