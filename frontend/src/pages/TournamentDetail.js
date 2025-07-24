@@ -240,6 +240,14 @@ const TournamentDetail = () => {
         <div className="tournament-badges">
           {getStatusBadge(tournament.status)}
           <span className="game-badge">{tournament.game === 'cs2' ? 'Counter-Strike 2' : tournament.game}</span>
+          {tournament.status === 'completed' && tournament.winner_id && (
+            <span className="winner-badge-detail">
+              🏆 Vainqueur: {
+                participantsInfo.find(p => p.id === tournament.winner_id)?.display_name || 
+                `Participant ${tournament.winner_id.substring(0, 8)}`
+              }
+            </span>
+          )}
         </div>
       </div>
 
