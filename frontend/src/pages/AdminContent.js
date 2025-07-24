@@ -512,8 +512,17 @@ const AdminContent = () => {
                             <span key={index} className="tag">#{tag}</span>
                           ))}
                         </div>
-                        <div className="content-date">
-                          {new Date(article.created_at).toLocaleDateString('fr-FR')}
+                        <div className="content-actions">
+                          <div className="content-date">
+                            {new Date(article.created_at).toLocaleDateString('fr-FR')}
+                          </div>
+                          <button
+                            className="btn-delete-content"
+                            onClick={() => handleDeleteNews(article.id, article.title)}
+                            title="Supprimer cet article"
+                          >
+                            🗑️ Supprimer
+                          </button>
                         </div>
                       </div>
                     </div>
