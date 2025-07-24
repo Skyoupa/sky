@@ -226,3 +226,201 @@ async def get_auth_stats(current_user: User = Depends(get_current_active_user)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error getting statistics"
         )
+
+@router.delete("/delete-account")
+async def delete_user_account(
+    current_user: User = Depends(get_current_active_user)
+):
+    """Delete the current user's account and all associated data."""
+    try:
+        # Check if user is admin (prevent admin deletion)
+        if current_user.role == "admin":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Admin accounts cannot be deleted. Please contact support."
+            )
+        
+        user_id = current_user.id
+        username = current_user.username
+        
+        # Clean up user data from various collections
+        
+        # Remove user from all teams
+        await db.teams.update_many(
+            {"members": {"$in": [user_id]}},
+            {"$pull": {"members": user_id}}
+        )
+        
+        # Transfer team captaincy or delete teams if user is captain
+        captain_teams = await db.teams.find({"captain_id": user_id}).to_list(100)
+        for team_data in captain_teams:
+            from models import Team
+            team = Team(**team_data)
+            if len(team.members) > 1:
+                # Transfer captaincy to first available member
+                new_captain = team.members[0] if team.members[0] != user_id else team.members[1]
+                await db.teams.update_one(
+                    {"id": team.id},
+                    {
+                        "$set": {"captain_id": new_captain},
+                        "$pull": {"members": user_id}
+                    }
+                )
+            else:
+                # Delete team if user is the only member
+                await db.teams.delete_one({"id": team.id})
+        
+        # Remove user from tournament participants
+        await db.tournaments.update_many(
+            {"participants": {"$in": [user_id]}},
+            {"$pull": {"participants": user_id}}
+        )
+        
+        # Delete user profile
+        await db.user_profiles.delete_one({"user_id": user_id})
+        
+        # Delete user's content (news, tutorials where they are author)
+        await db.news.delete_many({"author_id": user_id})
+        await db.tutorials.delete_many({"author_id": user_id})
+        
+        # Finally, delete the user account
+        result = await db.users.delete_one({"id": user_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User account not found"
+            )
+        
+        logger.info(f"User account {username} ({user_id}) deleted successfully with all associated data")
+        
+        return {
+            "message": f"Account '{username}' has been permanently deleted along with all associated data",
+            "deleted_data": {
+                "teams_updated": len(captain_teams),
+                "profile_deleted": True,
+                "content_deleted": True
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting user account {current_user.id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error deleting user account"
+        )
+
+@router.post("/request-password-reset")
+async def request_password_reset(email: str):
+    """Request a password reset email."""
+    try:
+        # Find user by email
+        user_data = await db.users.find_one({"email": email.lower()})
+        if not user_data:
+            # Don't reveal if email exists or not for security
+            return {"message": "If this email is registered, you will receive a password reset link"}
+        
+        user = User(**user_data)
+        
+        # Generate reset token (in real app, use secure random token and store with expiry)
+        import secrets
+        import time
+        
+        reset_token = secrets.token_urlsafe(32)
+        reset_expires = int(time.time()) + 3600  # 1 hour from now
+        
+        # Store reset token in database (you might want a separate collection for this)
+        await db.password_resets.insert_one({
+            "user_id": user.id,
+            "email": user.email,
+            "token": reset_token,
+            "expires_at": reset_expires,
+            "used": False,
+            "created_at": datetime.utcnow()
+        })
+        
+        # In a real application, you would send an email here
+        # For now, we'll just log the reset link
+        reset_link = f"http://localhost:3000/reset-password?token={reset_token}"
+        logger.info(f"Password reset requested for {email}. Reset link: {reset_link}")
+        
+        # Return success message (same for existing and non-existing emails)
+        return {
+            "message": "If this email is registered, you will receive a password reset link",
+            "reset_link": reset_link  # Remove this in production
+        }
+        
+    except Exception as e:
+        logger.error(f"Error requesting password reset for {email}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error processing password reset request"
+        )
+
+@router.post("/reset-password")
+async def reset_password(
+    token: str,
+    new_password: str
+):
+    """Reset password using reset token."""
+    try:
+        import time
+        
+        # Find valid reset token
+        reset_data = await db.password_resets.find_one({
+            "token": token,
+            "used": False,
+            "expires_at": {"$gt": int(time.time())}
+        })
+        
+        if not reset_data:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid or expired reset token"
+            )
+        
+        # Validate new password
+        if len(new_password) < 6:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Password must be at least 6 characters"
+            )
+        
+        # Hash new password
+        hashed_password = pwd_context.hash(new_password)
+        
+        # Update user password
+        result = await db.users.update_one(
+            {"id": reset_data["user_id"]},
+            {"$set": {
+                "hashed_password": hashed_password,
+                "updated_at": datetime.utcnow()
+            }}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        # Mark reset token as used
+        await db.password_resets.update_one(
+            {"token": token},
+            {"$set": {"used": True, "used_at": datetime.utcnow()}}
+        )
+        
+        logger.info(f"Password reset completed for user {reset_data['user_id']}")
+        
+        return {"message": "Password has been successfully reset"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error resetting password with token {token}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error resetting password"
+        )
