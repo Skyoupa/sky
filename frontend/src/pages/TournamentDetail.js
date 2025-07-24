@@ -685,11 +685,12 @@ const TournamentDetail = () => {
         .details-card,
         .participants-card,
         .user-teams-card {
-          background: rgba(255, 255, 255, 0.05);
+          background: white;
           border-radius: 12px;
           padding: 1.5rem;
           margin-bottom: 1.5rem;
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          border: 1px solid #e5e7eb;
+          color: #1a1a1a;
         }
 
         .details-card h3,
