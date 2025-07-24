@@ -10,6 +10,22 @@ const Header = () => {
   const location = useLocation();
   const { user, isAuthenticated, logout } = useAuth();
 
+  useEffect(() => {
+    const handleOpenAuthModal = (event) => {
+      setIsAuthModalOpen(true);
+      if (event.detail?.mode === 'register') {
+        // If there's a way to set the modal to register mode, do it here
+        // For now, just open the modal
+      }
+    };
+
+    window.addEventListener('openAuthModal', handleOpenAuthModal);
+    
+    return () => {
+      window.removeEventListener('openAuthModal', handleOpenAuthModal);
+    };
+  }, []);
+
   const isActive = (path) => {
     return location.pathname === path;
   };
