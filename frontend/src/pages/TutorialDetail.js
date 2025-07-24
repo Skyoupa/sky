@@ -69,11 +69,11 @@ Counter-Strike 2 représente l'évolution majeure de la série culte, avec une i
 **Raccourcis essentiels :**
 - **B** : Ouvrir le menu d'achat
 - **Achats rapides recommandés :**
-  - \`bind f1 "buy ak47; buy m4a1"\`
-  - \`bind f2 "buy awp"\`
-  - \`bind f3 "buy hegrenade"\`
-  - \`bind f4 "buy flashbang"\`
-  - \`bind f5 "buy smokegrenade"\`
+- bind f1 "buy ak47; buy m4a1"
+- bind f2 "buy awp"
+- bind f3 "buy hegrenade"
+- bind f4 "buy flashbang"
+- bind f5 "buy smokegrenade"
 
 ## 🎯 Paramètres optimaux pour la compétition
 
