@@ -205,7 +205,15 @@ const Accueil = () => {
           <div className="games-grid-pro">
             {games.map((game, index) => (
               <div key={index} className="game-card-pro">
-                <div className={`game-gradient bg-gradient-to-br ${game.gradient}`}></div>
+                <div 
+                  className="game-background"
+                  style={{
+                    backgroundImage: `url(${game.backgroundImage})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat'
+                  }}
+                ></div>
                 <div className="game-content">
                   <div className="game-status">
                     <span className="status-badge">{game.status}</span>
