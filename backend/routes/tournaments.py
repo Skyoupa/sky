@@ -288,12 +288,19 @@ async def get_user_teams_for_tournament(
         tournament_requires_team = False
         tournament_name = tournament.title.lower()
         
-        if "2v2" in tournament_name or "2vs2" in tournament_name or tournament.max_participants <= 4:
+        # Check tournament name patterns first (most reliable)
+        if "1v1" in tournament_name or "1vs1" in tournament_name:
+            tournament_requires_team = False
+        elif "2v2" in tournament_name or "2vs2" in tournament_name:
             tournament_requires_team = True
-        elif "5v5" in tournament_name or "5vs5" in tournament_name or tournament.max_participants >= 5:
+        elif "5v5" in tournament_name or "5vs5" in tournament_name:
             tournament_requires_team = True
-        elif tournament.max_participants > 2:
-            tournament_requires_team = True
+        else:
+            # Fallback to max_participants logic
+            if tournament.max_participants <= 4:
+                tournament_requires_team = True
+            else:
+                tournament_requires_team = False
         
         return {
             "tournament_id": tournament_id,
