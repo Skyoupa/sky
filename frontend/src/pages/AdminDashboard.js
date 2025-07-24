@@ -435,8 +435,9 @@ const AdminDashboard = () => {
         }
 
         .action-btn.secondary:hover {
-          background: #e2e8f0;
+          background: linear-gradient(45deg, #2563eb, #1e40af);
           transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
         }
 
         .action-btn.tertiary {
