@@ -80,7 +80,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         raise credentials_exception
     
     # Get database connection
-    from server import db
+    from database import db
     user = await get_user_by_email(db, email=token_data.email)
     if user is None:
         raise credentials_exception
