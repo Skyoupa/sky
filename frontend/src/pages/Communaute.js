@@ -350,7 +350,17 @@ const Communaute = () => {
           {/* Teams View */}
           {activeView === 'equipes' && (
             <div className="teams-grid-pro">
-              {teams.map(team => (
+              {filteredTeams.length === 0 ? (
+                <div className="no-results">
+                  <p>
+                    {searchTerm 
+                      ? `Aucune équipe trouvée pour "${searchTerm}"` 
+                      : 'Aucune équipe pour le moment'
+                    }
+                  </p>
+                </div>
+              ) : (
+                filteredTeams.map(team => (
                 <div key={team.id} className="team-card-pro">
                   <div className="team-header-pro">
                     <div className="team-icon-pro">
