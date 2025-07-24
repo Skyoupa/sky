@@ -221,6 +221,20 @@ const AdminTournaments = () => {
                     <span>👥 {template.max_participants} participants</span>
                     <span>⏱️ {template.suggested_duration_hours}h</span>
                   </div>
+                  <div className="template-rules">
+                    <details>
+                      <summary>📋 Voir les règles détaillées</summary>
+                      <div className="rules-content">
+                        {template.rules.split('\n').map((line, idx) => 
+                          line.trim() && (
+                            <div key={idx} className="rule-line">
+                              {line}
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </details>
+                  </div>
                   <button 
                     className="btn-template"
                     onClick={() => useTemplate(template)}
