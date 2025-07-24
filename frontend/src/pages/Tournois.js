@@ -245,6 +245,60 @@ const Tournois = () => {
         )}
       </div>
 
+      {/* Section information participation */}
+      <div className="participation-info-section">
+        <div className="participation-header">
+          <h2>🎮 Comment participer aux tournois ?</h2>
+          <div className="discord-logo">💬</div>
+        </div>
+        <div className="participation-content">
+          <p>
+            Tous les tournois d'Oupafamilly sont organisés et coordonnés sur notre serveur Discord officiel. 
+            C'est là que vous trouverez toutes les informations importantes, les annonces de matches, 
+            les règlements détaillés et où vous pourrez échanger avec les autres participants.
+          </p>
+          <div className="participation-features">
+            <div className="feature-item">
+              <span className="feature-icon">📢</span>
+              <div className="feature-text">
+                <strong>Annonces officielles</strong>
+                <p>Notifications en temps réel des matches et événements</p>
+              </div>
+            </div>
+            <div className="feature-item">
+              <span className="feature-icon">🗣️</span>
+              <div className="feature-text">
+                <strong>Communication d'équipe</strong>
+                <p>Salons vocaux dédiés pour coordonner vos stratégies</p>
+              </div>
+            </div>
+            <div className="feature-item">
+              <span className="feature-icon">🎯</span>
+              <div className="feature-text">
+                <strong>Support direct</strong>
+                <p>Assistance immédiate de nos administrateurs</p>
+              </div>
+            </div>
+          </div>
+          <div className="discord-cta">
+            <a 
+              href="https://discord.gg/PY3WtKJu" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="discord-btn"
+            >
+              <div className="discord-btn-content">
+                <span className="discord-icon">🎮</span>
+                <div>
+                  <strong>Rejoindre le Discord Oupafamilly</strong>
+                  <small>Cliquez ici pour accéder à notre communauté</small>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
       <style jsx>{`
         .tournaments-container-pro {
           max-width: 1200px;
