@@ -40,6 +40,12 @@
   --text-muted: #64748b;
   --text-accent: #3b82f6;
   
+  /* Text colors for white backgrounds - HIGH CONTRAST */
+  --text-white-bg-primary: #000000;
+  --text-white-bg-secondary: #1a1a1a;
+  --text-white-bg-muted: #333333;
+  --text-white-bg-label: #2d2d2d;
+  
   /* Professional Spacing */
   --container-max-width: 1400px;
   --section-padding: 6rem 0;
