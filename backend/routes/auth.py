@@ -6,7 +6,8 @@ from models import (
 )
 from auth import (
     authenticate_user, create_access_token, get_password_hash,
-    get_current_active_user, get_user_by_email, ACCESS_TOKEN_EXPIRE_MINUTES
+    get_current_active_user, get_user_by_email, ACCESS_TOKEN_EXPIRE_MINUTES,
+    pwd_context
 )
 from motor.motor_asyncio import AsyncIOMotorClient
 import logging
