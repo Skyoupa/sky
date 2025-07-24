@@ -8,61 +8,67 @@ const Communaute = () => {
       id: 1,
       name: 'Alexandre',
       pseudo: 'AlexTheKing',
-      avatar: '👨‍💻',
       role: 'Admin',
       games: ['CS2', 'LOL'],
       joinDate: '2023-01-15',
-      status: 'En ligne'
+      status: 'En ligne',
+      rank: 'Global Elite',
+      trophies: 12
     },
     {
       id: 2,
       name: 'Marie',
       pseudo: 'MariGamer',
-      avatar: '👩‍🎮',
       role: 'Modérateur',
       games: ['WOW', 'Minecraft'],
       joinDate: '2023-03-20',
-      status: 'En ligne'
+      status: 'En ligne',
+      rank: 'Mythic',
+      trophies: 8
     },
     {
       id: 3,
       name: 'Thomas',
       pseudo: 'TomStrat',
-      avatar: '🧙‍♂️',
-      role: 'Membre',
+      role: 'Membre Pro',
       games: ['SC2', 'CS2'],
       joinDate: '2023-06-10',
-      status: 'Absent'
+      status: 'En jeu',
+      rank: 'Master',
+      trophies: 7
     },
     {
       id: 4,
       name: 'Sarah',
       pseudo: 'SarahPro',
-      avatar: '🦸‍♀️',
-      role: 'Membre',
+      role: 'Capitaine',
       games: ['LOL', 'WOW'],
       joinDate: '2023-08-05',
-      status: 'En ligne'
+      status: 'En ligne',
+      rank: 'Diamant',
+      trophies: 6
     },
     {
       id: 5,
       name: 'Lucas',
       pseudo: 'LucasBuilder',
-      avatar: '🏗️',
       role: 'Membre',
       games: ['Minecraft', 'CS2'],
       joinDate: '2023-11-12',
-      status: 'En jeu'
+      status: 'Absent',
+      rank: 'Expert',
+      trophies: 4
     },
     {
       id: 6,
       name: 'Emma',
       pseudo: 'EmmaSpeed',
-      avatar: '⚡',
       role: 'Membre',
       games: ['SC2', 'LOL'],
       joinDate: '2024-01-08',
-      status: 'En ligne'
+      status: 'En ligne',
+      rank: 'Platine',
+      trophies: 5
     }
   ];
 
@@ -71,186 +77,222 @@ const Communaute = () => {
       id: 1,
       name: 'Oupafamilly Esports',
       game: 'League of Legends',
-      icon: '🏟️',
       members: ['AlexTheKing', 'SarahPro', 'EmmaSpeed', 'TomStrat', 'MariGamer'],
       rank: 'Diamant',
       wins: 24,
       losses: 6,
+      winRate: 80,
       achievements: ['LoL New Year Cup Winner', 'Regional Champions']
     },
     {
       id: 2,
       name: 'Alpha Squad',
       game: 'Counter-Strike 2',
-      icon: '🔫',
       members: ['AlexTheKing', 'TomStrat', 'LucasBuilder'],
       rank: 'Global Elite',
       wins: 18,
       losses: 4,
+      winRate: 82,
       achievements: ['Winter CS2 Tournament Winner']
     },
     {
       id: 3,
       name: 'Guild Oupafamilly',
       game: 'World of Warcraft',
-      icon: '⚔️',
       members: ['MariGamer', 'SarahPro', 'EmmaSpeed'],
       rank: 'Mythic',
       wins: 15,
       losses: 2,
+      winRate: 88,
       achievements: ['Heroic Raid Clear', 'PvP Champions']
-    },
-    {
-      id: 4,
-      name: 'StarCraft Masters',
-      game: 'StarCraft II',
-      icon: '🚀',
-      members: ['TomStrat', 'EmmaSpeed'],
-      rank: 'Master',
-      wins: 12,
-      losses: 3,
-      achievements: ['RTS Tournament Finalists']
-    },
-    {
-      id: 5,
-      name: 'Creative Builders',
-      game: 'Minecraft',
-      icon: '⛏️',
-      members: ['LucasBuilder', 'MariGamer'],
-      rank: 'Expert',
-      wins: 8,
-      losses: 1,
-      achievements: ['Best Build Award', 'Creative Championship']
     }
   ];
 
   const leaderboard = [
-    { rank: 1, name: 'AlexTheKing', points: 2450, trophies: 12 },
-    { rank: 2, name: 'SarahPro', points: 2180, trophies: 8 },
-    { rank: 3, name: 'TomStrat', points: 1950, trophies: 7 },
-    { rank: 4, name: 'EmmaSpeed', points: 1820, trophies: 6 },
-    { rank: 5, name: 'MariGamer', points: 1650, trophies: 5 },
-    { rank: 6, name: 'LucasBuilder', points: 1480, trophies: 4 }
+    { rank: 1, name: 'AlexTheKing', points: 2450, trophies: 12, badge: 'Champion' },
+    { rank: 2, name: 'SarahPro', points: 2180, trophies: 8, badge: 'Pro' },
+    { rank: 3, name: 'TomStrat', points: 1950, trophies: 7, badge: 'Expert' },
+    { rank: 4, name: 'EmmaSpeed', points: 1820, trophies: 6, badge: 'Vétéran' },
+    { rank: 5, name: 'MariGamer', points: 1650, trophies: 5, badge: 'Elite' },
+    { rank: 6, name: 'LucasBuilder', points: 1480, trophies: 4, badge: 'Rising' }
   ];
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'En ligne': return 'green';
-      case 'En jeu': return 'blue';
-      case 'Absent': return 'gray';
-      default: return 'gray';
+      case 'En ligne': return 'status-online';
+      case 'En jeu': return 'status-gaming';
+      case 'Absent': return 'status-away';
+      default: return 'status-offline';
     }
   };
 
   const getRoleColor = (role) => {
     switch (role) {
-      case 'Admin': return 'red';
-      case 'Modérateur': return 'orange';
-      case 'Membre': return 'blue';
-      default: return 'blue';
+      case 'Admin': return 'role-admin';
+      case 'Modérateur': return 'role-moderator';
+      case 'Capitaine': return 'role-captain';
+      case 'Membre Pro': return 'role-pro';
+      case 'Membre': return 'role-member';
+      default: return 'role-member';
     }
   };
 
   return (
-    <div className="page">
+    <div className="page-pro">
       {/* Header */}
-      <section className="page-header">
-        <div className="container">
-          <h1 className="page-title">Communauté</h1>
-          <p className="page-subtitle">
+      <section className="page-header-pro community-header">
+        <div className="community-bg">
+          <div className="community-overlay"></div>
+          <div className="community-pattern"></div>
+        </div>
+        <div className="container-pro">
+          <div className="community-badge">
+            <svg className="community-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 12C14.21 12 16 10.21 16 8S14.21 4 12 4 8 5.79 8 8 9.79 12 12 12M12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/>
+            </svg>
+            <span>COMMUNAUTÉ ÉLITE</span>
+          </div>
+          <h1 className="page-title-pro community-title">COMMUNAUTÉ</h1>
+          <p className="page-subtitle-pro">
             Découvrez les membres, équipes et champions de la Oupafamilly
           </p>
         </div>
       </section>
 
       {/* Community Stats */}
-      <section className="section">
-        <div className="container">
-          <div className="community-stats">
-            <div className="stat-card">
-              <div className="stat-number">{members.length}</div>
-              <div className="stat-label">Membres actifs</div>
+      <section className="section-pro">
+        <div className="container-pro">
+          <div className="community-stats-pro">
+            <div className="stat-card-pro">
+              <div className="stat-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 12C14.21 12 16 10.21 16 8S14.21 4 12 4 8 5.79 8 8 9.79 12 12 12M12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/>
+                </svg>
+              </div>
+              <div className="stat-content">
+                <div className="stat-number">{members.length}</div>
+                <div className="stat-label">Membres actifs</div>
+              </div>
             </div>
-            <div className="stat-card">
-              <div className="stat-number">{teams.length}</div>
-              <div className="stat-label">Équipes</div>
+            <div className="stat-card-pro">
+              <div className="stat-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M16 4C16.88 4 17.67 4.5 18 5.26L20 9H16L15 7H9L8 9H4L6 5.26C6.33 4.5 7.12 4 8 4H16M4 10H20V16H18V14H16V16H8V14H6V16H4V10Z"/>
+                </svg>
+              </div>
+              <div className="stat-content">
+                <div className="stat-number">{teams.length}</div>
+                <div className="stat-label">Équipes compétitives</div>
+              </div>
             </div>
-            <div className="stat-card">
-              <div className="stat-number">{members.filter(m => m.status === 'En ligne').length}</div>
-              <div className="stat-label">En ligne</div>
+            <div className="stat-card-pro">
+              <div className="stat-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M5 16L3 5H1V3H4L6 14H18.5L21 6H8L8.25 5H22L19 17H6L5 16Z"/>
+                </svg>
+              </div>
+              <div className="stat-content">
+                <div className="stat-number">{members.filter(m => m.status === 'En ligne').length}</div>
+                <div className="stat-label">En ligne maintenant</div>
+              </div>
             </div>
-            <div className="stat-card">
-              <div className="stat-number">23</div>
-              <div className="stat-label">Tournois gagnés</div>
+            <div className="stat-card-pro">
+              <div className="stat-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2L15.09 8.26L22 9L16 14.74L17.18 21.02L12 18.77L6.82 21.02L8 14.74L2 9L8.91 8.26L12 2Z"/>
+                </svg>
+              </div>
+              <div className="stat-content">
+                <div className="stat-number">47</div>
+                <div className="stat-label">Tournois gagnés</div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* View Tabs */}
-      <section className="section section-alt">
-        <div className="container">
-          <div className="community-tabs">
+      <section className="section-pro section-alt-pro">
+        <div className="container-pro">
+          <div className="community-tabs-pro">
             <button
-              className={`community-tab ${activeView === 'membres' ? 'active' : ''}`}
+              className={`community-tab-pro ${activeView === 'membres' ? 'active' : ''}`}
               onClick={() => setActiveView('membres')}
             >
-              Membres
+              <span>MEMBRES</span>
             </button>
             <button
-              className={`community-tab ${activeView === 'equipes' ? 'active' : ''}`}
+              className={`community-tab-pro ${activeView === 'equipes' ? 'active' : ''}`}
               onClick={() => setActiveView('equipes')}
             >
-              Équipes
+              <span>ÉQUIPES</span>
             </button>
             <button
-              className={`community-tab ${activeView === 'classement' ? 'active' : ''}`}
+              className={`community-tab-pro ${activeView === 'classement' ? 'active' : ''}`}
               onClick={() => setActiveView('classement')}
             >
-              Classement
+              <span>CLASSEMENT</span>
             </button>
           </div>
 
           {/* Members View */}
           {activeView === 'membres' && (
-            <div className="members-grid">
+            <div className="members-grid-pro">
               {members.map(member => (
-                <div key={member.id} className="member-card">
-                  <div className="member-header">
-                    <div className="member-avatar">{member.avatar}</div>
-                    <div className="member-info">
-                      <h3 className="member-name">{member.name}</h3>
-                      <p className="member-pseudo">@{member.pseudo}</p>
+                <div key={member.id} className="member-card-pro">
+                  <div className="member-header-pro">
+                    <div className="member-avatar-pro">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 12C14.21 12 16 10.21 16 8S14.21 4 12 4 8 5.79 8 8 9.79 12 12 12M12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/>
+                      </svg>
                     </div>
-                    <span className={`member-status ${getStatusColor(member.status)}`}>
+                    <div className="member-info-pro">
+                      <h3 className="member-name-pro">{member.name}</h3>
+                      <p className="member-pseudo-pro">@{member.pseudo}</p>
+                    </div>
+                    <span className={`member-status-pro ${getStatusColor(member.status)}`}>
                       {member.status}
                     </span>
                   </div>
 
-                  <div className="member-details">
-                    <div className="member-role">
-                      <span className={`role-badge ${getRoleColor(member.role)}`}>
+                  <div className="member-details-pro">
+                    <div className="member-role-pro">
+                      <span className={`role-badge-pro ${getRoleColor(member.role)}`}>
                         {member.role}
                       </span>
                     </div>
                     
-                    <div className="member-games">
-                      <span className="games-label">Jeux :</span>
-                      <div className="games-list">
+                    <div className="member-stats-pro">
+                      <div className="member-stat">
+                        <span className="stat-label">Rang</span>
+                        <span className="stat-value">{member.rank}</span>
+                      </div>
+                      <div className="member-stat">
+                        <span className="stat-label">Trophées</span>
+                        <span className="stat-value">{member.trophies}</span>
+                      </div>
+                    </div>
+
+                    <div className="member-games-pro">
+                      <span className="games-label">Spécialités :</span>
+                      <div className="games-list-pro">
                         {member.games.map(game => (
-                          <span key={game} className="game-tag">{game}</span>
+                          <span key={game} className="game-tag-pro">{game}</span>
                         ))}
                       </div>
                     </div>
 
-                    <div className="member-join">
-                      Membre depuis {new Date(member.joinDate).toLocaleDateString('fr-FR')}
+                    <div className="member-join-pro">
+                      Membre depuis {new Date(member.joinDate).toLocaleDateString('fr-FR', { 
+                        year: 'numeric', 
+                        month: 'long' 
+                      })}
                     </div>
                   </div>
 
-                  <div className="member-actions">
-                    <button className="btn btn-sm btn-outline">Profil</button>
-                    <button className="btn btn-sm btn-primary">Message</button>
+                  <div className="member-actions-pro">
+                    <button className="btn-outline-pro btn-sm">PROFIL</button>
+                    <button className="btn-primary-pro btn-sm">MESSAGE</button>
                   </div>
                 </div>
               ))}
@@ -259,59 +301,64 @@ const Communaute = () => {
 
           {/* Teams View */}
           {activeView === 'equipes' && (
-            <div className="teams-grid">
+            <div className="teams-grid-pro">
               {teams.map(team => (
-                <div key={team.id} className="team-card">
-                  <div className="team-header">
-                    <div className="team-icon">{team.icon}</div>
-                    <div className="team-info">
-                      <h3 className="team-name">{team.name}</h3>
-                      <p className="team-game">{team.game}</p>
+                <div key={team.id} className="team-card-pro">
+                  <div className="team-header-pro">
+                    <div className="team-icon-pro">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 4C16.88 4 17.67 4.5 18 5.26L20 9H16L15 7H9L8 9H4L6 5.26C6.33 4.5 7.12 4 8 4H16M4 10H20V16H18V14H16V16H8V14H6V16H4V10Z"/>
+                      </svg>
                     </div>
-                    <span className="team-rank">{team.rank}</span>
+                    <div className="team-info-pro">
+                      <h3 className="team-name-pro">{team.name}</h3>
+                      <p className="team-game-pro">{team.game}</p>
+                    </div>
+                    <span className="team-rank-pro">{team.rank}</span>
                   </div>
 
-                  <div className="team-stats">
-                    <div className="stat-item">
+                  <div className="team-stats-pro">
+                    <div className="team-stat-item">
                       <span className="stat-label">Victoires</span>
-                      <span className="stat-value">{team.wins}</span>
+                      <span className="stat-value win">{team.wins}</span>
                     </div>
-                    <div className="stat-item">
+                    <div className="team-stat-item">
                       <span className="stat-label">Défaites</span>
-                      <span className="stat-value">{team.losses}</span>
+                      <span className="stat-value loss">{team.losses}</span>
                     </div>
-                    <div className="stat-item">
-                      <span className="stat-label">Ratio</span>
-                      <span className="stat-value">
-                        {((team.wins / (team.wins + team.losses)) * 100).toFixed(0)}%
-                      </span>
+                    <div className="team-stat-item">
+                      <span className="stat-label">Winrate</span>
+                      <span className="stat-value winrate">{team.winRate}%</span>
                     </div>
                   </div>
 
-                  <div className="team-members">
-                    <h4 className="members-title">Membres ({team.members.length})</h4>
-                    <div className="members-list">
+                  <div className="team-members-pro">
+                    <h4 className="members-title-pro">Roster ({team.members.length})</h4>
+                    <div className="members-list-pro">
                       {team.members.map(memberName => (
-                        <span key={memberName} className="member-tag">
+                        <span key={memberName} className="member-tag-pro">
                           {memberName}
                         </span>
                       ))}
                     </div>
                   </div>
 
-                  <div className="team-achievements">
-                    <h4 className="achievements-title">Réalisations</h4>
-                    <ul className="achievements-list">
+                  <div className="team-achievements-pro">
+                    <h4 className="achievements-title-pro">Palmarès</h4>
+                    <ul className="achievements-list-pro">
                       {team.achievements.map((achievement, index) => (
-                        <li key={index} className="achievement-item">
-                          🏆 {achievement}
+                        <li key={index} className="achievement-item-pro">
+                          <svg className="trophy-icon-small" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2L15.09 8.26L22 9L16 14.74L17.18 21.02L12 18.77L6.82 21.02L8 14.74L2 9L8.91 8.26L12 2Z"/>
+                          </svg>
+                          {achievement}
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  <div className="team-actions">
-                    <button className="btn btn-primary">Voir l'équipe</button>
+                  <div className="team-actions-pro">
+                    <button className="btn-primary-pro btn-team">VOIR L'ÉQUIPE</button>
                   </div>
                 </div>
               ))}
@@ -320,37 +367,54 @@ const Communaute = () => {
 
           {/* Leaderboard View */}
           {activeView === 'classement' && (
-            <div className="leaderboard">
-              <div className="leaderboard-header">
-                <h2 className="leaderboard-title">Classement Général</h2>
-                <p className="leaderboard-subtitle">Les meilleurs joueurs de la communauté</p>
+            <div className="leaderboard-pro">
+              <div className="leaderboard-header-pro">
+                <h2 className="leaderboard-title-pro">Hall of Fame</h2>
+                <p className="leaderboard-subtitle-pro">Les légendes de la Oupafamilly</p>
               </div>
 
-              <div className="leaderboard-list">
+              <div className="leaderboard-list-pro">
                 {leaderboard.map(player => (
-                  <div key={player.rank} className={`leaderboard-item ${player.rank <= 3 ? 'podium' : ''}`}>
-                    <div className="rank-badge">
+                  <div key={player.rank} className={`leaderboard-item-pro ${player.rank <= 3 ? 'podium' : ''}`}>
+                    <div className="rank-badge-pro">
                       {player.rank <= 3 ? (
-                        <span className="trophy">
-                          {player.rank === 1 ? '🥇' : player.rank === 2 ? '🥈' : '🥉'}
+                        <span className="trophy-pro">
+                          {player.rank === 1 ? (
+                            <svg className="trophy-gold" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M12 2L15.09 8.26L22 9L16 14.74L17.18 21.02L12 18.77L6.82 21.02L8 14.74L2 9L8.91 8.26L12 2Z"/>
+                            </svg>
+                          ) : player.rank === 2 ? (
+                            <svg className="trophy-silver" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M12 2L15.09 8.26L22 9L16 14.74L17.18 21.02L12 18.77L6.82 21.02L8 14.74L2 9L8.91 8.26L12 2Z"/>
+                            </svg>
+                          ) : (
+                            <svg className="trophy-bronze" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M12 2L15.09 8.26L22 9L16 14.74L17.18 21.02L12 18.77L6.82 21.02L8 14.74L2 9L8.91 8.26L12 2Z"/>
+                            </svg>
+                          )}
                         </span>
                       ) : (
-                        <span className="rank-number">#{player.rank}</span>
+                        <span className="rank-number-pro">#{player.rank}</span>
                       )}
                     </div>
                     
-                    <div className="player-info">
-                      <h3 className="player-name">{player.name}</h3>
-                      <div className="player-stats">
-                        <span className="points">{player.points} points</span>
-                        <span className="trophies">🏆 {player.trophies}</span>
+                    <div className="player-info-pro">
+                      <h3 className="player-name-pro">{player.name}</h3>
+                      <div className="player-stats-pro">
+                        <span className="points-pro">{player.points} points</span>
+                        <span className="trophies-pro">
+                          <svg className="trophy-icon-small" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2L15.09 8.26L22 9L16 14.74L17.18 21.02L12 18.77L6.82 21.02L8 14.74L2 9L8.91 8.26L12 2Z"/>
+                          </svg>
+                          {player.trophies}
+                        </span>
                       </div>
                     </div>
 
-                    <div className="player-badge">
-                      {player.rank === 1 && <span className="champion-badge">Champion</span>}
-                      {player.rank === 2 && <span className="pro-badge">Pro</span>}
-                      {player.rank === 3 && <span className="expert-badge">Expert</span>}
+                    <div className="player-badge-pro">
+                      <span className={`champion-badge-pro rank-${player.rank}`}>
+                        {player.badge}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -361,16 +425,27 @@ const Communaute = () => {
       </section>
 
       {/* Join CTA */}
-      <section className="cta-section">
-        <div className="container">
-          <div className="cta-content">
-            <h2 className="cta-title">Rejoignez la famille !</h2>
-            <p className="cta-subtitle">
-              Intégrez une communauté passionnée et bienveillante
+      <section className="cta-section-pro">
+        <div className="cta-bg">
+          <div className="cta-pattern"></div>
+        </div>
+        <div className="container-pro">
+          <div className="cta-content-pro">
+            <div className="cta-badge">
+              <span>REJOIGNEZ-NOUS</span>
+            </div>
+            <h2 className="cta-title-pro">Prêt à intégrer l'élite ?</h2>
+            <p className="cta-subtitle-pro">
+              Rejoignez une communauté d'exception où talent et passion se rencontrent
             </p>
-            <button className="btn btn-primary">
-              Demander l'accès
-            </button>
+            <div className="cta-buttons-pro">
+              <button className="btn-primary-pro btn-large">
+                <span>CANDIDATER MAINTENANT</span>
+                <svg className="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </section>
