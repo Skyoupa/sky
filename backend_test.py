@@ -1456,7 +1456,7 @@ class OupafamillyTester:
         # Test 7: Test successful team deletion without tournament constraints
         # Create another team for clean deletion test
         clean_team_data = {
-            "name": "Clean Deletion Test Team",
+            "name": f"Clean Deletion Test Team {unique_suffix}",
             "description": "Team for testing clean deletion",
             "game": "cs2",
             "max_members": 6
