@@ -679,22 +679,25 @@ async def get_popular_tournament_templates():
         },
         {
             "name": "CS2 Retake Masters",
-            "description": "Spécialité mode Retake - défense de sites",
+            "description": "Spécialité mode Retake sur les sites des maps Active Duty 2025",
             "game": "cs2",
             "tournament_type": "round_robin",
-            "max_participants": 20,
+            "max_participants": 16,
             "suggested_duration_hours": 4,
             "rules": """🎯 FORMAT: Round Robin mode Retake
-🗺️ MAPS: Sites A et B de Mirage, Inferno, Dust2
-⏱️ DURÉE: 10 rounds par adversaire (5 en T, 5 en CT)
-🔫 ARMES: Kit de retake prédéfini (AK/M4, utilitaires)
-💰 ÉCONOMIE: Équipement standardisé
+🗺️ MAPS 2025: Sites A/B de Ancient, Dust2, Inferno, Mirage, Nuke, Overpass, Train
+⏱️ DURÉE: 20 rounds retake par adversaire (10 par site)
+🔫 ARMES: Kit retake prédéfini (AK/M4 + utility selon site)
+💰 ÉCONOMIE: Équipement standardisé par map/site
 📋 RÈGLES RETAKE:
-- Spawn T déjà sur site avec bombe posée
-- CT doivent reprendre le site ou désamorcer
-- 45 secondes par round maximum
-- Points: +3 défuse, +2 élimination équipe T, +1 kill
-🏆 CLASSEMENT: Cumul des points sur tous les matchs"""
+- Terrorists spawn déjà sur site avec bombe plantée (35s timer)
+- Counter-Terrorists doivent reprendre le site ou défuser
+- Rotation automatique toutes les 5 rounds
+- Points: +3 défuse, +2 site retake, +1 frag
+🎮 SPÉCIFICITÉS 2025:
+- Sites Overpass et Train: setups spéciaux
+- Ancient sites: focus utility usage
+🏆 CLASSEMENT: Cumul points + coefficient de difficulté par site"""
         },
         {
             "name": "CS2 Competitive 2v2",
