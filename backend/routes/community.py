@@ -384,6 +384,7 @@ async def get_community_teams():
             team = Team(**team_data)
             
             # Calculate team statistics
+            from routes.teams import calculate_team_statistics
             team_stats = await calculate_team_statistics(team.id)
             
             # Get team member names
