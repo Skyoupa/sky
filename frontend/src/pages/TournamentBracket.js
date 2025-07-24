@@ -310,7 +310,10 @@ const TournamentBracket = () => {
                 <h3>Participants</h3>
                 <div className="participants-grid">
                   <div className="participant">
-                    <span className="participant-name">{getPlayerName(selectedMatch.player1_id)}</span>
+                    <div className="participant-header">
+                      <span className="participant-icon">{getPlayerTypeIcon(selectedMatch, true)}</span>
+                      <span className="participant-name">{getPlayerName(selectedMatch, true)}</span>
+                    </div>
                     <input
                       type="number"
                       placeholder="Score"
@@ -321,7 +324,10 @@ const TournamentBracket = () => {
                   </div>
                   <div className="vs-text">VS</div>
                   <div className="participant">
-                    <span className="participant-name">{getPlayerName(selectedMatch.player2_id)}</span>
+                    <div className="participant-header">
+                      <span className="participant-icon">{getPlayerTypeIcon(selectedMatch, false)}</span>
+                      <span className="participant-name">{getPlayerName(selectedMatch, false)}</span>
+                    </div>
                     <input
                       type="number"
                       placeholder="Score"
