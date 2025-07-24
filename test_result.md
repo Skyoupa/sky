@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Extension de la plateforme Oupafamilly avec système de communauté avancé, profils utilisateur améliorés avec avatars et trophées, équipes avec maximum 6 membres et classements basés sur les victoires de tournois (1v1, 2v2, 5v5)."
+user_problem_statement: "Améliorations 2025 pour Oupafamilly : Gestion admin d'équipes avec suppression, correction bug suppression tournois, validation participants multiples de 2/5, templates CS2 mis à jour avec maps Active Duty 2025 (remplacement Aim Challenge par 2v2), page News pour affichage contenu et suppression de contenu."
 
 backend:
   - task: "Backend Models Definition"
