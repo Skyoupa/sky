@@ -593,6 +593,162 @@ class OupafamillyTester:
         
         return passed_tests, failed_tests
 
+    async def test_tournament_deletion_feature(self):
+        """Test tournament deletion functionality comprehensively"""
+        print("\n🗑️ Testing Tournament Deletion Feature...")
+        
+        if not self.admin_token or not self.test_user_token:
+            self.log_test("Tournament Deletion Setup", False, "Missing required tokens for testing")
+            return
+        
+        # Create test tournaments for deletion testing
+        test_tournament_1 = {
+            "title": "Test Tournament for Deletion",
+            "description": "Tournament créé pour tester la suppression",
+            "game": "cs2",
+            "tournament_type": "elimination",
+            "max_participants": 8,
+            "entry_fee": 0.0,
+            "prize_pool": 50.0,
+            "registration_start": (datetime.utcnow() + timedelta(hours=1)).isoformat(),
+            "registration_end": (datetime.utcnow() + timedelta(days=7)).isoformat(),
+            "tournament_start": (datetime.utcnow() + timedelta(days=8)).isoformat(),
+            "rules": "Règles de test pour suppression"
+        }
+        
+        # Test 1: Create tournament as admin
+        status, data = await self.make_request("POST", "/tournaments/", 
+                                              test_tournament_1, 
+                                              auth_token=self.admin_token)
+        tournament_id_admin = None
+        if status == 200 and data.get("id"):
+            tournament_id_admin = data["id"]
+            self.log_test("Tournament Creation for Deletion Test", True, f"Tournament created: {data.get('title')}")
+        else:
+            self.log_test("Tournament Creation for Deletion Test", False, f"Failed to create tournament: {data}")
+            return
+        
+        # Test 2: Create tournament as regular user
+        status, data = await self.make_request("POST", "/tournaments/", 
+                                              test_tournament_1, 
+                                              auth_token=self.test_user_token)
+        tournament_id_user = None
+        if status == 200 and data.get("id"):
+            tournament_id_user = data["id"]
+            self.log_test("User Tournament Creation", True, f"User tournament created: {data.get('title')}")
+        else:
+            self.log_test("User Tournament Creation", False, f"Failed to create user tournament: {data}")
+        
+        # Test 3: Try to delete tournament without authentication (should fail with 401)
+        status, data = await self.make_request("DELETE", f"/tournaments/{tournament_id_admin}")
+        if status in [401, 403]:
+            self.log_test("Delete Without Auth", True, "Unauthorized deletion properly blocked")
+        else:
+            self.log_test("Delete Without Auth", False, f"Security issue - deletion allowed without auth: {status}")
+        
+        # Test 4: Try to delete tournament with regular user token (not organizer, should fail with 403)
+        status, data = await self.make_request("DELETE", f"/tournaments/{tournament_id_admin}", 
+                                              auth_token=self.test_user_token)
+        if status == 403:
+            self.log_test("Delete Permission Check", True, "Non-organizer/non-admin deletion properly blocked")
+        else:
+            self.log_test("Delete Permission Check", False, f"Permission issue: {status} - {data}")
+        
+        # Test 5: Try to delete non-existent tournament (should return 404)
+        fake_tournament_id = str(uuid.uuid4())
+        status, data = await self.make_request("DELETE", f"/tournaments/{fake_tournament_id}", 
+                                              auth_token=self.admin_token)
+        if status == 404:
+            self.log_test("Delete Non-existent Tournament", True, "404 returned for non-existent tournament")
+        else:
+            self.log_test("Delete Non-existent Tournament", False, f"Expected 404, got {status}: {data}")
+        
+        # Test 6: Register users for tournament and test participant cleanup
+        if tournament_id_admin:
+            # First set tournament to open status
+            status, _ = await self.make_request("PUT", f"/tournaments/{tournament_id_admin}/status?new_status=open", 
+                                              auth_token=self.admin_token)
+            
+            # Register test user
+            status, data = await self.make_request("POST", f"/tournaments/{tournament_id_admin}/register", 
+                                                  auth_token=self.test_user_token)
+            if status == 200:
+                self.log_test("User Registration for Deletion Test", True, "User registered successfully")
+                
+                # Check user profile tournament count before deletion
+                status, profile_before = await self.make_request("GET", "/auth/profile", 
+                                                                auth_token=self.test_user_token)
+                tournaments_before = profile_before.get("total_tournaments", 0) if status == 200 else 0
+                
+                # Test 7: Delete tournament as admin (should succeed and clean up registrations)
+                status, data = await self.make_request("DELETE", f"/tournaments/{tournament_id_admin}", 
+                                                      auth_token=self.admin_token)
+                if status == 200:
+                    self.log_test("Admin Tournament Deletion", True, f"Tournament deleted successfully: {data.get('message')}")
+                    
+                    # Verify tournament is actually deleted
+                    status, _ = await self.make_request("GET", f"/tournaments/{tournament_id_admin}")
+                    if status == 404:
+                        self.log_test("Tournament Deletion Verification", True, "Tournament properly removed from database")
+                    else:
+                        self.log_test("Tournament Deletion Verification", False, "Tournament still exists after deletion")
+                    
+                    # Check user profile tournament count after deletion (should be decremented)
+                    status, profile_after = await self.make_request("GET", "/auth/profile", 
+                                                                   auth_token=self.test_user_token)
+                    if status == 200:
+                        tournaments_after = profile_after.get("total_tournaments", 0)
+                        if tournaments_after == tournaments_before - 1:
+                            self.log_test("User Profile Cleanup", True, f"User tournament count properly decremented: {tournaments_before} -> {tournaments_after}")
+                        else:
+                            self.log_test("User Profile Cleanup", False, f"Tournament count not properly updated: {tournaments_before} -> {tournaments_after}")
+                    else:
+                        self.log_test("User Profile Cleanup", False, "Could not verify profile update")
+                        
+                else:
+                    self.log_test("Admin Tournament Deletion", False, f"Admin deletion failed: {data}")
+            else:
+                self.log_test("User Registration for Deletion Test", False, f"Registration failed: {data}")
+        
+        # Test 8: Test deletion of in-progress tournament (should fail with 400)
+        if tournament_id_user:
+            # Set tournament to in_progress status
+            status, _ = await self.make_request("PUT", f"/tournaments/{tournament_id_user}/status?new_status=in_progress", 
+                                              auth_token=self.test_user_token)
+            
+            if status == 200:
+                # Try to delete in-progress tournament
+                status, data = await self.make_request("DELETE", f"/tournaments/{tournament_id_user}", 
+                                                      auth_token=self.test_user_token)
+                if status == 400:
+                    self.log_test("In-Progress Tournament Deletion Block", True, "In-progress tournament deletion properly blocked")
+                else:
+                    self.log_test("In-Progress Tournament Deletion Block", False, f"In-progress tournament deletion not blocked: {status} - {data}")
+                
+                # Reset to draft status for cleanup
+                await self.make_request("PUT", f"/tournaments/{tournament_id_user}/status?new_status=draft", 
+                                      auth_token=self.test_user_token)
+        
+        # Test 9: Test organizer can delete their own tournament
+        if tournament_id_user:
+            status, data = await self.make_request("DELETE", f"/tournaments/{tournament_id_user}", 
+                                                  auth_token=self.test_user_token)
+            if status == 200:
+                self.log_test("Organizer Tournament Deletion", True, f"Organizer successfully deleted own tournament: {data.get('message')}")
+            else:
+                self.log_test("Organizer Tournament Deletion", False, f"Organizer deletion failed: {data}")
+        
+        # Test 10: Verify tournament list is updated after deletions
+        status, tournaments = await self.make_request("GET", "/tournaments/")
+        if status == 200:
+            deleted_tournaments = [t for t in tournaments if t.get("id") in [tournament_id_admin, tournament_id_user]]
+            if len(deleted_tournaments) == 0:
+                self.log_test("Tournament List Update", True, "Tournament list properly updated after deletions")
+            else:
+                self.log_test("Tournament List Update", False, f"Deleted tournaments still in list: {len(deleted_tournaments)}")
+        else:
+            self.log_test("Tournament List Update", False, "Could not verify tournament list update")
+
     async def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Oupafamilly Backend Tests...")
@@ -606,6 +762,7 @@ class OupafamillyTester:
             await self.test_authentication_system()
             await self.test_tournament_system()
             await self.test_cs2_tournament_templates()  # New CS2 specific tests
+            await self.test_tournament_deletion_feature()  # New deletion tests
             await self.test_content_management()
             await self.test_admin_dashboard()
             await self.test_protected_endpoints()
