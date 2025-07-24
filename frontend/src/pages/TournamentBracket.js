@@ -350,7 +350,10 @@ const TournamentBracket = () => {
                       checked={matchResult.winner_id === selectedMatch.player1_id}
                       onChange={(e) => setMatchResult({...matchResult, winner_id: e.target.value})}
                     />
-                    <span>{getPlayerName(selectedMatch.player1_id)}</span>
+                    <div className="winner-info">
+                      <span className="winner-icon">{getPlayerTypeIcon(selectedMatch, true)}</span>
+                      <span>{getPlayerName(selectedMatch, true)}</span>
+                    </div>
                   </label>
                   <label className="winner-option">
                     <input
@@ -360,7 +363,10 @@ const TournamentBracket = () => {
                       checked={matchResult.winner_id === selectedMatch.player2_id}
                       onChange={(e) => setMatchResult({...matchResult, winner_id: e.target.value})}
                     />
-                    <span>{getPlayerName(selectedMatch.player2_id)}</span>
+                    <div className="winner-info">
+                      <span className="winner-icon">{getPlayerTypeIcon(selectedMatch, false)}</span>
+                      <span>{getPlayerName(selectedMatch, false)}</span>
+                    </div>
                   </label>
                 </div>
               </div>
