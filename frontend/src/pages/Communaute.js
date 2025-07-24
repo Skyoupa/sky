@@ -13,6 +13,19 @@ const Communaute = () => {
   const [members, setMembers] = useState([]);
   const [teams, setTeams] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Filtered data based on search
+  const filteredMembers = members.filter(member => 
+    member.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (member.profile?.display_name && member.profile.display_name.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
+  const filteredTeams = teams.filter(team =>
+    team.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    team.captain.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    team.members.some(member => member.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   useEffect(() => {
     fetchCommunityData();
