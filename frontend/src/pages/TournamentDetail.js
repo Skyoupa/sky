@@ -304,7 +304,7 @@ const TournamentDetail = () => {
                 {tournament.participants.map((participantId, index) => (
                   <div key={participantId} className="participant-card">
                     <span className="participant-number">#{index + 1}</span>
-                    <span className="participant-name">Participant {participantId.substring(0, 8)}</span>
+                    <span className="participant-name">Participant {String(participantId).substring(0, 8)}</span>
                   </div>
                 ))}
               </div>
