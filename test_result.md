@@ -270,17 +270,17 @@ backend:
         agent: "testing"
         comment: "✅ Backend integration confirmed working perfectly. Tournament list endpoint returns 7 CS2 tournaments exclusively. All tournaments have proper CS2 game field. Tournament registration, status updates, and stats all functional. Backend API fully supports the frontend CS2 integration."
 
-  - task: "Database Cleanup CS2 Focus"
+  - task: "Tournament Deletion Feature"
     implemented: true
-    working: true
-    file: "/app/backend/cleanup_non_cs2.py"
+    working: false
+    file: "/app/backend/routes/tournaments.py,/app/frontend/src/pages/AdminTournaments.js"
     stuck_count: 0
-    priority: "medium"
-    needs_retesting: false
+    priority: "high"
+    needs_retesting: true
     status_history:
-      - working: true
+      - working: "NA"
         agent: "main"
-        comment: "Created and executed cleanup script. Database already contained only CS2 tournaments (6 total). No cleanup needed, system optimized for CS2-only operation."
+        comment: "Added tournament deletion functionality with DELETE endpoint in backend and deletion interface in admin frontend. Includes safety checks (no deletion during in_progress status), double confirmation prompts, and automatic cleanup of participant registrations."
 
 frontend:
   - task: "Frontend Pages Structure"
