@@ -412,6 +412,29 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
           box-shadow: none;
         }
 
+        .forgot-password {
+          text-align: center;
+          margin-bottom: 20px;
+        }
+
+        .forgot-password-btn {
+          background: none;
+          border: none;
+          color: #60a5fa;
+          cursor: pointer;
+          font-size: 14px;
+          transition: color 0.3s;
+        }
+
+        .forgot-password-btn:hover:not(:disabled) {
+          color: #93c5fd;
+        }
+
+        .forgot-password-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
         .auth-switch {
           text-align: center;
           color: rgba(255, 255, 255, 0.8);
