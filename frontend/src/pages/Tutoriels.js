@@ -9,7 +9,7 @@ const Tutoriels = () => {
       name: 'Counter-Strike 2',
       description: 'FPS Tactique Compétitif',
       color: '#FF6B35',
-      bgGradient: 'from-orange-600 via-red-600 to-orange-800',
+      backgroundImage: 'https://images.unsplash.com/photo-1580234811497-9df7fd2f357e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwxfHxnYW1pbmd8ZW58MHx8fGJsdWV8MTc1MzM0MTQxMXww&ixlib=rb-4.1.0&q=85',
       tutorials: [
         { title: 'Bases du gameplay CS2', level: 'Débutant', duration: '15 min', type: 'Fundamentals' },
         { title: 'Maîtrise des armes', level: 'Débutant', duration: '20 min', type: 'Weapons' },
