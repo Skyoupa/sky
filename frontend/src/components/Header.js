@@ -19,6 +19,7 @@ const Header = () => {
     { path: '/tournois', label: 'TOURNOIS CS2' },
     { path: '/communaute', label: 'COMMUNAUTÉ' },
     { path: '/news', label: 'NEWS' },
+    { path: '/tutoriels', label: 'TUTORIELS' },
     { path: '/a-propos', label: 'À PROPOS' }
   ];
 
