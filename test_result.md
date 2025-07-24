@@ -258,11 +258,14 @@ backend:
     file: "/app/frontend/src/pages/Tournois.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: true
         agent: "main"
         comment: "Page already integrated with backend API and working. Updated to support CS2-only display. Dynamic tournament fetching, registration system, and status management all functional."
+      - working: true
+        agent: "testing"
+        comment: "✅ Backend integration confirmed working perfectly. Tournament list endpoint returns 7 CS2 tournaments exclusively. All tournaments have proper CS2 game field. Tournament registration, status updates, and stats all functional. Backend API fully supports the frontend CS2 integration."
 
   - task: "Database Cleanup CS2 Focus"
     implemented: true
