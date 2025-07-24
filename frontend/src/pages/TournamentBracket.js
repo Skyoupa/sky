@@ -781,9 +781,10 @@ const TournamentBracket = () => {
         }
 
         .participant-name {
-          font-weight: 600;
+          font-weight: 700;
           color: #1a1a1a;
           text-align: center;
+          font-size: 15px;
         }
 
         .score-input {
@@ -792,8 +793,10 @@ const TournamentBracket = () => {
           border: 2px solid #e5e7eb;
           border-radius: 8px;
           text-align: center;
-          font-weight: 600;
+          font-weight: 700;
           font-size: 16px;
+          background: white;
+          color: #1a1a1a;
         }
 
         .score-input:focus {
@@ -803,8 +806,9 @@ const TournamentBracket = () => {
 
         .vs-text {
           font-weight: 700;
-          color: #64748b;
+          color: #1a1a1a;
           text-align: center;
+          font-size: 16px;
         }
 
         .winner-options {
@@ -823,6 +827,7 @@ const TournamentBracket = () => {
           border-radius: 10px;
           cursor: pointer;
           transition: all 0.3s;
+          background: white;
         }
 
         .winner-option:hover {
@@ -839,8 +844,9 @@ const TournamentBracket = () => {
           display: flex;
           align-items: center;
           gap: 8px;
-          font-weight: 600;
+          font-weight: 700;
           color: #1a1a1a;
+          font-size: 15px;
         }
 
         .winner-icon {
@@ -855,11 +861,20 @@ const TournamentBracket = () => {
           font-family: inherit;
           resize: vertical;
           margin-bottom: 25px;
+          background: white;
+          color: #1a1a1a;
+          font-weight: 500;
+          font-size: 14px;
         }
 
         .notes-textarea:focus {
           outline: none;
           border-color: #3b82f6;
+        }
+
+        .notes-textarea::placeholder {
+          color: #6b7280;
+          font-weight: 400;
         }
 
         .modal-footer {
