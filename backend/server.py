@@ -46,6 +46,7 @@ async def root():
             "auth": "/api/auth",
             "tournaments": "/api/tournaments", 
             "teams": "/api/teams",
+            "matches": "/api/matches",
             "content": "/api/content",
             "admin": "/api/admin"
         }
