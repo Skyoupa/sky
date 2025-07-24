@@ -285,7 +285,7 @@ const AdminDashboard = () => {
           margin: 0 0 5px 0;
           font-size: 16px;
           font-weight: 600;
-          color: #374151;
+          color: #1a1a1a;
         }
 
         .growth .stat-content p {
@@ -294,7 +294,7 @@ const AdminDashboard = () => {
 
         .stat-detail {
           font-size: 14px;
-          color: #6b7280;
+          color: #333333;
         }
 
         .growth .stat-detail {
@@ -339,7 +339,7 @@ const AdminDashboard = () => {
         }
 
         .member-email {
-          color: #6b7280;
+          color: #333333 !important;
           font-size: 14px;
         }
 
@@ -369,7 +369,7 @@ const AdminDashboard = () => {
 
         .member-date {
           font-size: 12px;
-          color: #9ca3af;
+          color: #333333 !important;
         }
 
         .quick-actions {
