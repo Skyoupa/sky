@@ -9,8 +9,8 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/content", tags=["Content"])
 
-# Get database from main server
-from server import db
+# Get database from database module
+from database import db
 
 # News/Announcements Routes
 @router.post("/news", response_model=News)
