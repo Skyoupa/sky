@@ -187,6 +187,95 @@ const Profil = () => {
     setUpdating(false);
   };
 
+  const handleDeleteAccount = async () => {
+    const confirmDelete = window.confirm(
+      "⚠️ ATTENTION: Cette action est irréversible!\n\n" +
+      "La suppression de votre compte entraînera:\n" +
+      "• Suppression définitive de votre profil\n" +
+      "• Retrait de toutes les équipes\n" +
+      "• Suppression de votre contenu (articles, tutoriels)\n" +
+      "• Perte de tous vos trophées et statistiques\n\n" +
+      "Êtes-vous sûr de vouloir supprimer votre compte?"
+    );
+
+    if (!confirmDelete) return;
+
+    const finalConfirm = window.prompt(
+      "Pour confirmer la suppression, tapez 'SUPPRIMER' (en majuscules):"
+    );
+
+    if (finalConfirm !== 'SUPPRIMER') {
+      setError('Suppression annulée. Vous devez taper exactement "SUPPRIMER" pour confirmer.');
+      return;
+    }
+
+    setDeleting(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/delete-account`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert(`✅ ${result.message}`);
+        // Logout user and redirect to home
+        window.location.href = '/';
+      } else {
+        const errorData = await response.json();
+        setError(errorData.detail || 'Erreur lors de la suppression du compte');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+      setError('Erreur lors de la suppression du compte');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handlePasswordReset = async () => {
+    setRequestingReset(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/request-password-reset?email=${encodeURIComponent(user.email)}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setSuccess(
+          `📧 ${result.message}\n\n` +
+          "Un lien de réinitialisation a été envoyé à votre adresse email. " +
+          "Vérifiez votre boîte de réception et suivez les instructions pour changer votre mot de passe."
+        );
+        if (result.reset_link) {
+          // In development, also show the reset link
+          console.log('Reset link (dev):', result.reset_link);
+          setSuccess(prev => prev + `\n\n🔗 Lien de développement: ${result.reset_link}`);
+        }
+      } else {
+        const errorData = await response.json();
+        setError(errorData.detail || 'Erreur lors de la demande de réinitialisation');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la demande:', error);
+      setError('Erreur lors de la demande de réinitialisation du mot de passe');
+    } finally {
+      setRequestingReset(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="profile-container">
