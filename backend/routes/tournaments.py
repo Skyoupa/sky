@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/tournaments", tags=["Tournaments"])
 
-# Get database from main server
-from server import db
+# Get database from database module
+from database import db
 
 @router.post("/", response_model=Tournament)
 async def create_tournament(
