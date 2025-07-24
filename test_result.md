@@ -119,6 +119,57 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ Models working perfectly. All Pydantic models properly defined with UUID generation, enums for UserRole/Status/TournamentStatus/Game, and comprehensive field validation. Models support community growth features."
+      - working: true
+        agent: "main"
+        comment: "Updated Team model to support maximum 6 members as requested by user. Added enhanced UserProfile model with avatar support (base64), banner, location, and trophy tracking by game mode (1v1, 2v2, 5v5). Added CommunityPost and TeamStats models for community features."
+
+  - task: "Community Management System"
+    implemented: true
+    working: true
+    file: "/app/backend/routes/community.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented comprehensive community system with posts management, leaderboard with trophy-based ranking, member listings with profiles, team listings with statistics, and community statistics aggregation."
+
+  - task: "Enhanced User Profiles System"
+    implemented: true
+    working: true
+    file: "/app/backend/routes/profiles.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Extended profiles system with detailed user statistics, tournament history, team memberships, avatar upload support (both file and base64), and comprehensive trophy tracking by tournament types (1v1, 2v2, 5v5)."
+
+  - task: "Team System Enhancement"
+    implemented: true
+    working: true
+    file: "/app/backend/routes/teams.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Enhanced team system to support 6 members maximum. Added team leaderboard with comprehensive statistics including tournament participation, victories, win rates, and point-based ranking system. Teams ranked by total points from tournament victories."
+
+  - task: "Server Integration Update"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added community and profiles router integration to main server. All new API endpoints now available under /api/community and /api/profiles prefixes."
 
   - task: "Authentication System"
     implemented: true
