@@ -723,6 +723,65 @@ async def get_team_leaderboard(
             detail="Error fetching team leaderboard"
         )
 
+@router.delete("/{team_id}/delete")
+async def delete_team(
+    team_id: str,
+    current_user: User = Depends(get_current_active_user)
+):
+    """Delete a team (captain only). Cannot delete if team is registered in active tournaments."""
+    try:
+        # Get team
+        team_data = await db.teams.find_one({"id": team_id})
+        if not team_data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Team not found"
+            )
+        
+        team = Team(**team_data)
+        
+        # Check permissions - only captain can delete team
+        if team.captain_id != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only team captain can delete the team"
+            )
+        
+        # Check if team is registered in any active tournaments
+        active_tournaments = await db.tournaments.find({
+            "participants": {"$in": [team_id]},
+            "status": {"$in": ["open", "in_progress"]}
+        }).to_list(100)
+        
+        if active_tournaments:
+            tournament_names = [t["title"] for t in active_tournaments]
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Cannot delete team. Team is registered in active tournaments: {', '.join(tournament_names)}"
+            )
+        
+        # Remove team from all completed tournaments (cleanup)
+        await db.tournaments.update_many(
+            {"participants": {"$in": [team_id]}},
+            {"$pull": {"participants": team_id}}
+        )
+        
+        # Delete the team
+        await db.teams.delete_one({"id": team_id})
+        
+        logger.info(f"Team {team.name} deleted by captain {current_user.username}")
+        
+        return {"message": f"Team '{team.name}' has been successfully deleted"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting team {team_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error deleting team"
+        )
+
 async def calculate_team_statistics(team_id: str) -> dict:
     """Calculate comprehensive statistics for a team."""
     try:
