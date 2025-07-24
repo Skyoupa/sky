@@ -4,8 +4,10 @@ import { useAuth } from '../contexts/AuthContext';
 const Profil = () => {
   const { user, updateProfile, API_BASE_URL, token } = useAuth();
   const [profile, setProfile] = useState(null);
+  const [userStats, setUserStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState({
@@ -33,8 +35,11 @@ const Profil = () => {
   ];
 
   useEffect(() => {
-    fetchProfile();
-  }, []);
+    if (user) {
+      fetchProfile();
+      fetchUserStats();
+    }
+  }, [user]);
 
   const fetchProfile = async () => {
     try {
@@ -61,6 +66,24 @@ const Profil = () => {
     } catch (error) {
       console.error('Erreur lors du chargement du profil:', error);
       setError('Erreur lors du chargement du profil');
+    }
+  };
+
+  const fetchUserStats = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/profiles/${user.id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const statsData = await response.json();
+        setUserStats(statsData);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des statistiques:', error);
     } finally {
       setLoading(false);
     }
@@ -95,6 +118,51 @@ const Profil = () => {
     }));
   };
 
+  const handleAvatarUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setUploadingAvatar(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      // Convert file to base64
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const base64Data = e.target.result;
+        
+        const response = await fetch(`${API_BASE_URL}/profiles/upload-avatar-base64`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            avatar_data: base64Data
+          })
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          setSuccess('Avatar mis à jour avec succès !');
+          // Refresh profile to get new avatar
+          await fetchProfile();
+          await fetchUserStats();
+        } else {
+          const errorData = await response.json();
+          setError(errorData.detail || 'Erreur lors de l\'upload de l\'avatar');
+        }
+        setUploadingAvatar(false);
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Erreur lors de l\'upload:', error);
+      setError('Erreur lors de l\'upload de l\'avatar');
+      setUploadingAvatar(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUpdating(true);
@@ -106,6 +174,7 @@ const Profil = () => {
     if (result.success) {
       setSuccess('Profil mis à jour avec succès !');
       await fetchProfile(); // Recharger le profil
+      await fetchUserStats(); // Recharger les stats
     } else {
       setError(result.error);
     }
@@ -132,15 +201,111 @@ const Profil = () => {
   return (
     <div className="profile-container">
       <div className="profile-header">
-        <h1>Mon Profil</h1>
-        <div className="user-info">
-          <div className="user-details">
-            <span className="username">{user.username}</span>
-            <span className="email">{user.email}</span>
-            {user.role === 'admin' && <span className="role admin">ADMIN</span>}
-            {user.role === 'moderator' && <span className="role moderator">MODÉRATEUR</span>}
+        <div className="profile-header-content">
+          <div className="profile-avatar-section">
+            <div className="profile-avatar-container">
+              {userStats?.profile?.avatar_url ? (
+                <img 
+                  src={userStats.profile.avatar_url} 
+                  alt={user.username}
+                  className="profile-avatar-image"
+                />
+              ) : (
+                <div className="profile-avatar-placeholder">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 12C14.21 12 16 10.21 16 8S14.21 4 12 4 8 5.79 8 8 9.79 12 12 12M12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/>
+                  </svg>
+                </div>
+              )}
+              <div className="avatar-upload-overlay">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarUpload}
+                  disabled={uploadingAvatar}
+                  className="avatar-upload-input"
+                  id="avatar-upload"
+                />
+                <label htmlFor="avatar-upload" className="avatar-upload-label">
+                  {uploadingAvatar ? (
+                    <span>📤</span>
+                  ) : (
+                    <span>📷</span>
+                  )}
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <div className="profile-info">
+            <h1>{userStats?.profile?.display_name || user.username}</h1>
+            {userStats?.profile?.bio && (
+              <p className="profile-bio">{userStats.profile.bio}</p>
+            )}
+            <div className="user-details">
+              <span className="username">@{user.username}</span>
+              <span className="email">{user.email}</span>
+              {user.role === 'admin' && <span className="role admin">ADMIN</span>}
+              {user.role === 'moderator' && <span className="role moderator">MODÉRATEUR</span>}
+            </div>
           </div>
         </div>
+
+        {/* Trophy Display */}
+        {userStats?.statistics && (
+          <div className="profile-trophies">
+            <h3>🏆 Trophées</h3>
+            <div className="trophies-display">
+              <div className="trophy-category">
+                <div className="trophy-icon">🏆</div>
+                <div className="trophy-info">
+                  <span className="trophy-count">{userStats.statistics.trophies['1v1'] || 0}</span>
+                  <span className="trophy-label">1v1</span>
+                </div>
+              </div>
+              <div className="trophy-category">
+                <div className="trophy-icon">🥇</div>
+                <div className="trophy-info">
+                  <span className="trophy-count">{userStats.statistics.trophies['2v2'] || 0}</span>
+                  <span className="trophy-label">2v2</span>
+                </div>
+              </div>
+              <div className="trophy-category">
+                <div className="trophy-icon">🏅</div>
+                <div className="trophy-info">
+                  <span className="trophy-count">{userStats.statistics.trophies['5v5'] || 0}</span>
+                  <span className="trophy-label">5v5</span>
+                </div>
+              </div>
+              <div className="trophy-total">
+                <div className="total-count">{userStats.statistics.trophies.total || 0}</div>
+                <div className="total-label">Total</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Statistics Display */}
+        {userStats?.statistics && (
+          <div className="profile-statistics">
+            <div className="stat-item">
+              <span className="stat-value">{userStats.statistics.tournaments.total}</span>
+              <span className="stat-label">Tournois</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-value">{userStats.statistics.tournaments.victories}</span>
+              <span className="stat-label">Victoires</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-value">{userStats.statistics.tournaments.win_rate}%</span>
+              <span className="stat-label">Winrate</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-value">{userStats.statistics.ranking.total_points}</span>
+              <span className="stat-label">Points</span>
+            </div>
+          </div>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="profile-form">
