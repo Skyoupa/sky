@@ -184,6 +184,21 @@ const Header = () => {
           font-weight: 500;
         }
 
+        .profile-link {
+          text-decoration: none;
+          color: inherit;
+          transition: color 0.3s;
+        }
+
+        .profile-link:hover {
+          color: #93c5fd;
+        }
+
+        .profile-link-mobile {
+          text-decoration: none;
+          color: inherit;
+        }
+
         .admin-badge {
           background: linear-gradient(45deg, #ef4444, #dc2626);
           color: white;
