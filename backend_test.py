@@ -1401,8 +1401,8 @@ class OupafamillyTester:
             
             if status == 200:
                 # Register team for tournament
-                status, _ = await self.make_request("POST", f"/tournaments/{tournament_id}/register", 
-                                                 {"team_id": team_id}, auth_token=self.test_user_token)
+                status, _ = await self.make_request("POST", f"/tournaments/{tournament_id}/register?team_id={team_id}", 
+                                                 auth_token=self.test_user_token)
                 
                 if status == 200:
                     self.log_test("Team Tournament Registration", True, "Team registered for tournament successfully")
