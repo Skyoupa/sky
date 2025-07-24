@@ -386,7 +386,9 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Enhanced Team Management System"
+    - "Enhanced Tournament Registration System"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
