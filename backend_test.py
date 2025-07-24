@@ -1324,8 +1324,10 @@ class OupafamillyTester:
             return
         
         # Create test teams for deletion testing
+        import uuid
+        unique_suffix = str(uuid.uuid4())[:8]
         test_team_data = {
-            "name": "Team Deletion Test",
+            "name": f"Team Deletion Test {unique_suffix}",
             "description": "Team created specifically for testing deletion functionality",
             "game": "cs2",
             "max_members": 6
