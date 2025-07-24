@@ -242,15 +242,18 @@ backend:
 
   - task: "Frontend CS2 Focus Update"
     implemented: true
-    working: false
+    working: true
     file: "/app/frontend/src/pages/AdminTournaments.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Updated AdminTournaments to focus exclusively on CS2, removed other games, added detailed rules display with collapsible sections for each template. Enhanced UX for CS2-specific tournament creation."
+      - working: true
+        agent: "testing"
+        comment: "✅ FRONTEND CS2 FOCUS TESTING COMPLETED SUCCESSFULLY! Comprehensive testing confirms perfect CS2 integration: 1) Admin Tournaments Page (/admin/tournaments): All 6 CS2 templates display correctly with names 'CS2 Quick Match 1v1', 'CS2 Team Deathmatch 5v5', 'CS2 Competitive 5v5', 'CS2 Retake Masters', 'CS2 Aim Challenge', 'CS2 Pistol Only Tournament'. 2) Detailed rules display working perfectly with collapsible sections (200-500+ characters each with CS2-specific content and emojis). 3) Game dropdown shows only 'Counter-Strike 2' option. 4) Template usage functionality working - forms populate correctly with template data. 5) Tournament creation successful with CS2 templates. 6) Public Tournaments Page (/tournois): Perfect '🏆 Tournois CS2' title display. 7) Tab functionality working (À venir, En cours, Terminés). 8) All tournaments display CS2 game badges exclusively. 9) Tournament registration system functional. 10) Mobile responsiveness excellent. 11) Navigation between admin and public pages working. 12) Authentication system integrated properly. Frontend is 100% CS2-focused as required for Oupafamilly community. Ready for production!"
 
   - task: "Public Tournament Page CS2 Integration"
     implemented: true
