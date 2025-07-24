@@ -5589,6 +5589,48 @@ body {
   font-size: 14px;
 }
 
+/* ===========================================
+   HIGH CONTRAST TEXT CLASSES FOR WHITE BACKGROUNDS
+=========================================== */
+.text-white-bg-primary {
+  color: var(--text-white-bg-primary) !important;
+}
+
+.text-white-bg-secondary {
+  color: var(--text-white-bg-secondary) !important;
+}
+
+.text-white-bg-muted {
+  color: var(--text-white-bg-muted) !important;
+}
+
+.text-white-bg-label {
+  color: var(--text-white-bg-label) !important;
+}
+
+/* Admin pages specific high contrast styles */
+.admin-section {
+  color: var(--text-white-bg-primary);
+}
+
+.admin-section p,
+.admin-section span,
+.admin-section div {
+  color: var(--text-white-bg-primary);
+}
+
+.admin-section .text-muted,
+.admin-section .user-email,
+.admin-section .member-email,
+.admin-section .content-date,
+.admin-section .member-date {
+  color: var(--text-white-bg-muted) !important;
+}
+
+.admin-section label {
+  color: var(--text-white-bg-label) !important;
+}
+
 @media (max-width: 768px) {
   .welcome-message {
     padding: 15px;
