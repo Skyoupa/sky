@@ -697,7 +697,7 @@ const TournamentDetail = () => {
         .participants-card h3,
         .user-teams-card h3 {
           margin: 0 0 1rem 0;
-          color: #3b82f6;
+          color: #1e3a8a;
           font-size: 1.2rem;
           font-weight: 600;
         }
