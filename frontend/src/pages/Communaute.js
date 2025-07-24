@@ -225,6 +225,31 @@ const Communaute = () => {
             </button>
           </div>
 
+          {/* Search Bar */}
+          {(activeView === 'membres' || activeView === 'equipes') && (
+            <div className="search-section">
+              <div className="search-container">
+                <div className="search-icon">🔍</div>
+                <input
+                  type="text"
+                  placeholder={`Rechercher ${activeView === 'membres' ? 'un membre' : 'une équipe'}...`}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="search-input"
+                />
+                {searchTerm && (
+                  <button
+                    className="search-clear"
+                    onClick={() => setSearchTerm('')}
+                    title="Effacer la recherche"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Members View */}
           {activeView === 'membres' && (
             <div className="members-grid-pro">
