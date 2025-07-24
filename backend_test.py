@@ -224,6 +224,14 @@ class OupafamillyTester:
         status, data = await self.make_request("GET", "/tournaments/")
         if status == 200 and isinstance(data, list):
             self.log_test("Get Tournaments", True, f"Retrieved {len(data)} tournaments")
+            
+            # Verify all tournaments are CS2 only
+            cs2_only = all(tournament.get("game") == "cs2" for tournament in data)
+            if cs2_only:
+                self.log_test("CS2 Only Tournaments", True, f"All {len(data)} tournaments are CS2 exclusive")
+            else:
+                non_cs2 = [t.get("game") for t in data if t.get("game") != "cs2"]
+                self.log_test("CS2 Only Tournaments", False, f"Found non-CS2 tournaments: {non_cs2}")
         else:
             self.log_test("Get Tournaments", False, f"Failed to get tournaments: {data}")
         
@@ -242,13 +250,6 @@ class OupafamillyTester:
         else:
             self.log_test("Tournament Stats", False, f"Failed to get tournament stats: {data}")
         
-        # Test popular templates
-        status, data = await self.make_request("GET", "/tournaments/templates/popular")
-        if status == 200 and "templates" in data:
-            self.log_test("Tournament Templates", True, f"Retrieved {len(data['templates'])} templates")
-        else:
-            self.log_test("Tournament Templates", False, f"Failed to get templates: {data}")
-        
         # Test tournament registration (if we have a test user)
         if tournament_id and self.test_user_token:
             # First update tournament status to open
@@ -262,6 +263,136 @@ class OupafamillyTester:
                 self.log_test("Tournament Registration", True, "User registered for tournament")
             else:
                 self.log_test("Tournament Registration", False, f"Registration failed: {data}")
+
+    async def test_cs2_tournament_templates(self):
+        """Test CS2 tournament templates specifically for Oupafamilly"""
+        print("\n🎮 Testing CS2 Tournament Templates...")
+        
+        # Test popular templates endpoint
+        status, data = await self.make_request("GET", "/tournaments/templates/popular")
+        if status != 200:
+            self.log_test("CS2 Templates Endpoint", False, f"Failed to get templates: {data}")
+            return
+        
+        templates = data.get("templates", [])
+        
+        # Test 1: Should return exactly 6 templates
+        if len(templates) == 6:
+            self.log_test("CS2 Templates Count", True, f"Retrieved exactly 6 CS2 templates")
+        else:
+            self.log_test("CS2 Templates Count", False, f"Expected 6 templates, got {len(templates)}")
+        
+        # Test 2: Verify all templates are CS2
+        cs2_only = all(template.get("game") == "cs2" for template in templates)
+        if cs2_only:
+            self.log_test("CS2 Templates Game Filter", True, "All templates are CS2 exclusive")
+        else:
+            non_cs2 = [t.get("game") for t in templates if t.get("game") != "cs2"]
+            self.log_test("CS2 Templates Game Filter", False, f"Found non-CS2 templates: {non_cs2}")
+        
+        # Test 3: Verify expected template names
+        expected_names = [
+            "CS2 Quick Match 1v1",
+            "CS2 Team Deathmatch 5v5", 
+            "CS2 Competitive 5v5",
+            "CS2 Retake Masters",
+            "CS2 Aim Challenge",
+            "CS2 Pistol Only Tournament"
+        ]
+        
+        actual_names = [template.get("name") for template in templates]
+        missing_names = [name for name in expected_names if name not in actual_names]
+        extra_names = [name for name in actual_names if name not in expected_names]
+        
+        if not missing_names and not extra_names:
+            self.log_test("CS2 Template Names", True, "All expected template names present")
+        else:
+            error_msg = ""
+            if missing_names:
+                error_msg += f"Missing: {missing_names}. "
+            if extra_names:
+                error_msg += f"Extra: {extra_names}."
+            self.log_test("CS2 Template Names", False, error_msg)
+        
+        # Test 4: Verify detailed rules are present and well-formatted
+        rules_quality_passed = 0
+        for template in templates:
+            name = template.get("name", "Unknown")
+            rules = template.get("rules", "")
+            
+            # Check if rules are detailed (at least 200 characters)
+            if len(rules) >= 200:
+                rules_quality_passed += 1
+                
+            # Check for CS2-specific content and emojis
+            has_emojis = any(char in rules for char in "🎯🗺️⏱️🔫💰📋🏆")
+            has_cs2_terms = any(term in rules.lower() for term in ["cs2", "counter-strike", "rounds", "maps", "frags"])
+            
+            if has_emojis and has_cs2_terms:
+                self.log_test(f"Template Rules Quality - {name}", True, "Rules are detailed and well-formatted")
+            else:
+                self.log_test(f"Template Rules Quality - {name}", False, "Rules lack detail or CS2-specific content")
+        
+        if rules_quality_passed == 6:
+            self.log_test("CS2 Templates Rules Overall", True, "All templates have detailed rules")
+        else:
+            self.log_test("CS2 Templates Rules Overall", False, f"Only {rules_quality_passed}/6 templates have adequate rules")
+        
+        # Test 5: Test tournament creation with CS2 template
+        if templates:
+            template = templates[0]  # Use first template
+            tournament_data = {
+                "title": f"Test {template['name']}",
+                "description": template["description"],
+                "game": template["game"],
+                "tournament_type": template["tournament_type"],
+                "max_participants": template["max_participants"],
+                "entry_fee": 0.0,
+                "prize_pool": 50.0,
+                "registration_start": (datetime.utcnow() + timedelta(hours=1)).isoformat(),
+                "registration_end": (datetime.utcnow() + timedelta(days=7)).isoformat(),
+                "tournament_start": (datetime.utcnow() + timedelta(days=8)).isoformat(),
+                "rules": template["rules"]
+            }
+            
+            if self.admin_token:
+                status, data = await self.make_request("POST", "/tournaments/", 
+                                                      tournament_data, 
+                                                      auth_token=self.admin_token)
+                if status == 200 and data.get("id"):
+                    self.log_test("CS2 Template Tournament Creation", True, f"Created tournament from template: {template['name']}")
+                    
+                    # Verify the created tournament has detailed rules
+                    if len(data.get("rules", "")) >= 200:
+                        self.log_test("CS2 Template Rules Persistence", True, "Detailed rules saved correctly")
+                    else:
+                        self.log_test("CS2 Template Rules Persistence", False, "Rules not saved properly")
+                else:
+                    self.log_test("CS2 Template Tournament Creation", False, f"Failed to create tournament: {data}")
+        
+        # Test 6: Verify only CS2 is accepted as game
+        invalid_tournament_data = {
+            "title": "Invalid Game Tournament",
+            "description": "This should fail",
+            "game": "valorant",  # Not CS2
+            "tournament_type": "elimination",
+            "max_participants": 16,
+            "entry_fee": 0.0,
+            "prize_pool": 50.0,
+            "registration_start": (datetime.utcnow() + timedelta(hours=1)).isoformat(),
+            "registration_end": (datetime.utcnow() + timedelta(days=7)).isoformat(),
+            "tournament_start": (datetime.utcnow() + timedelta(days=8)).isoformat(),
+            "rules": "Test rules"
+        }
+        
+        if self.admin_token:
+            status, data = await self.make_request("POST", "/tournaments/", 
+                                                  invalid_tournament_data, 
+                                                  auth_token=self.admin_token)
+            if status in [400, 422]:  # Should fail validation
+                self.log_test("CS2 Only Game Validation", True, "Non-CS2 games properly rejected")
+            else:
+                self.log_test("CS2 Only Game Validation", False, f"Non-CS2 game was accepted: {data}")
 
     async def test_content_management(self):
         """Test content management system"""
