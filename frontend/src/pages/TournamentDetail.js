@@ -822,6 +822,8 @@ const TournamentDetail = () => {
           font-size: 15px;
           font-weight: 500;
         }
+        .btn-bracket {
+          display: inline-block;
           width: 100%;
           background: linear-gradient(45deg, #3b82f6, #1d4ed8);
           color: white;
