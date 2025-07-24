@@ -764,13 +764,13 @@ const TournamentDetail = () => {
         }
 
         .member-count {
-          color: #94a3b8;
+          color: #6b7280;
           font-size: 0.9rem;
         }
 
         .no-participants {
           text-align: center;
-          color: #94a3b8;
+          color: #6b7280;
           font-style: italic;
           padding: 2rem;
         }
