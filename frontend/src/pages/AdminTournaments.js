@@ -147,6 +147,56 @@ const AdminTournaments = () => {
     }
   };
 
+  const deleteTournament = async (tournamentId, tournamentTitle) => {
+    // Confirmation avant suppression
+    const confirmDelete = window.confirm(
+      `⚠️ Êtes-vous sûr de vouloir supprimer le tournoi "${tournamentTitle}" ?\n\n` +
+      `Cette action est irréversible et supprimera :\n` +
+      `• Le tournoi et toutes ses données\n` +
+      `• Les inscriptions des participants\n` +
+      `• L'historique associé\n\n` +
+      `Tapez "SUPPRIMER" pour confirmer :`
+    );
+
+    if (!confirmDelete) return;
+
+    // Double confirmation avec saisie
+    const confirmText = window.prompt(
+      `Pour confirmer la suppression du tournoi "${tournamentTitle}", tapez exactement : SUPPRIMER`
+    );
+
+    if (confirmText !== 'SUPPRIMER') {
+      if (confirmText !== null) { // User didn't cancel
+        setError('Confirmation incorrecte. Suppression annulée.');
+      }
+      return;
+    }
+
+    try {
+      setError('');
+      setSuccess('');
+
+      const response = await fetch(`${API_BASE_URL}/tournaments/${tournamentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSuccess(`✅ ${data.message}`);
+        fetchTournaments(); // Actualiser la liste
+      } else {
+        const errorData = await response.json();
+        setError(errorData.detail || 'Erreur lors de la suppression');
+      }
+    } catch (error) {
+      setError('Erreur de connexion au serveur');
+    }
+  };
+
   const useTemplate = (template) => {
     const now = new Date();
     const registrationStart = new Date(now.getTime() + 24 * 60 * 60 * 1000); // +1 jour
