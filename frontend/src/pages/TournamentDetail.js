@@ -306,10 +306,18 @@ const TournamentDetail = () => {
               <p className="no-participants">Aucun participant inscrit pour le moment</p>
             ) : (
               <div className="participants-list">
-                {tournament.participants.map((participantId, index) => (
-                  <div key={participantId} className="participant-card">
+                {participantsInfo.map((participant, index) => (
+                  <div key={participant.id} className={`participant-card ${participant.type}`}>
                     <span className="participant-number">#{index + 1}</span>
-                    <span className="participant-name">Participant {String(participantId).substring(0, 8)}</span>
+                    <div className="participant-info">
+                      <span className="participant-name">{participant.display_name}</span>
+                      {participant.type === 'team' && (
+                        <span className="participant-type">👥 Équipe</span>
+                      )}
+                      {participant.type === 'user' && (
+                        <span className="participant-type">👤 Joueur</span>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
