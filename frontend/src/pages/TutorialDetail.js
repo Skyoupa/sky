@@ -96,7 +96,7 @@ Counter-Strike 2 représente l'évolution majeure de la série culte, avec une i
 - **Casque de qualité essentiel** : Position directionnelle précise
 
 ## 💡 Crosshair professionnel
-```
+**Configuration recommandée :**
 cl_crosshair_drawoutline 1
 cl_crosshair_outlinethickness 1
 cl_crosshairsize 2
@@ -107,7 +107,6 @@ cl_crosshaircolor 5
 cl_crosshaircolor_r 0
 cl_crosshaircolor_g 255
 cl_crosshaircolor_b 255
-```
 
 ## 🏆 Conseils de pros
 1. **Autoexec.cfg** : Créez un fichier de configuration automatique
