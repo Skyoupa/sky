@@ -272,7 +272,7 @@ async def get_community_growth_stats(
             },
             {"$sort": {"_id.year": 1, "_id.month": 1, "_id.day": 1}}
         ]
-        daily_tournaments = await db.tournaments.aggregate(pipeline).to_list(None)
+        daily_tournaments = await db.tournaments.aggregate(tournament_pipeline).to_list(None)
         
         # User retention (users still active after registration)
         total_users = await db.users.count_documents({"created_at": {"$gte": start_date}})
