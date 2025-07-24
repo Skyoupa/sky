@@ -100,6 +100,58 @@ const TeamManagementModal = ({ isOpen, onClose, team, onTeamUpdated }) => {
     }
   };
 
+  const handleDeleteTeam = async () => {
+    const confirmDelete = window.confirm(
+      `⚠️ ATTENTION ⚠️\n\nVoulez-vous vraiment supprimer définitivement l'équipe "${team.name}" ?\n\n` +
+      `Cette action est IRRÉVERSIBLE et supprimera :\n` +
+      `• L'équipe et tous ses membres\n` +
+      `• L'historique de l'équipe\n` +
+      `• Les statistiques de l'équipe\n\n` +
+      `Tapez "SUPPRIMER" dans la prochaine boîte de dialogue pour confirmer.`
+    );
+
+    if (!confirmDelete) return;
+
+    const confirmText = window.prompt(
+      `Pour confirmer la suppression de l'équipe "${team.name}", tapez exactement : SUPPRIMER`
+    );
+
+    if (confirmText !== 'SUPPRIMER') {
+      if (confirmText !== null) { // User didn't cancel
+        alert('Confirmation incorrecte. Suppression annulée.');
+      }
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/teams/${team.id}/delete`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert(data.message || 'Équipe supprimée avec succès !');
+        onClose(); // Close modal
+        if (onTeamUpdated) onTeamUpdated(); // Refresh parent component
+      } else {
+        const errorData = await response.json();
+        setError(errorData.detail || 'Erreur lors de la suppression de l\'équipe');
+      }
+    } catch (error) {
+      setError('Erreur lors de la suppression de l\'équipe');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
