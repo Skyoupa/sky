@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Développement backend complet pour la communauté multigaming Oupafamilly naissante. L'utilisateur démarre sa communauté et n'a pas encore de membres ni de tournois organisés. Il faut implémenter un système d'authentification, de gestion des tournois, du contenu et de l'administration adapté à une communauté qui démarre."
+user_problem_statement: "Finalisation de l'intégration frontend/backend pour les tournois CS2 de la communauté Oupafamilly. Focus exclusif sur Counter-Strike 2 avec templates variés et règles détaillées pré-remplies. Suppression des autres jeux et optimisation pour CS2 uniquement."
 
 backend:
   - task: "Backend Models Definition"
