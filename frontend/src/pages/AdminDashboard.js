@@ -166,9 +166,12 @@ const AdminDashboard = () => {
               >
                 📝 Gérer le contenu
               </a>
-              <div className="action-btn secondary teams-management-card">
+              <button 
+                className="action-btn secondary"
+                onClick={() => setShowTeamsManagement(!showTeamsManagement)}
+              >
                 🛡️ Gérer les équipes
-              </div>
+              </button>
               <button 
                 className="action-btn tertiary"
                 onClick={fetchDashboardData}
