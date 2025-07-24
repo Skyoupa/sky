@@ -146,24 +146,24 @@ const AdminDashboard = () => {
           <div className="admin-section">
             <h2>⚡ Actions rapides</h2>
             <div className="quick-actions">
-              <button 
+              <a 
+                href="/admin/tournaments"
                 className="action-btn primary"
-                onClick={() => window.location.href = '/admin/tournaments'}
               >
                 🏆 Gérer les tournois
-              </button>
-              <button 
+              </a>
+              <a 
+                href="/admin/users"
                 className="action-btn secondary"
-                onClick={() => window.location.href = '/admin/users'}
               >
                 👥 Gérer les utilisateurs
-              </button>
-              <button 
+              </a>
+              <a 
+                href="/admin/content"
                 className="action-btn secondary"
-                onClick={() => window.location.href = '/admin/content'}
               >
                 📝 Gérer le contenu
-              </button>
+              </a>
               <button 
                 className="action-btn tertiary"
                 onClick={fetchDashboardData}
