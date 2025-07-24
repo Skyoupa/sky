@@ -573,6 +573,24 @@ const TournamentDetail = () => {
           font-weight: 600;
         }
 
+        .winner-badge {
+          background: linear-gradient(45deg, #fbbf24, #f59e0b);
+          color: white;
+          padding: 8px 15px;
+          border-radius: 15px;
+          font-weight: 700;
+          font-size: 14px;
+        }
+
+        .winner-badge-detail {
+          background: linear-gradient(45deg, #10b981, #059669);
+          color: white;
+          padding: 8px 15px;
+          border-radius: 15px;
+          font-weight: 700;
+          font-size: 14px;
+        }
+
         .tournament-detail-content {
           display: grid;
           grid-template-columns: 1fr 350px;
