@@ -22,6 +22,7 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
       [e.target.name]: e.target.value
     });
     setError('');
+    setSuccess('');
   };
 
   const handleSubmit = async (e) => {
