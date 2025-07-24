@@ -311,8 +311,14 @@ async def get_user_teams_for_tournament(
             tournament_requires_team = False
         elif "2v2" in tournament_name or "2vs2" in tournament_name:
             tournament_requires_team = True
+            # Validate max_participants is multiple of 2 for 2v2 tournaments
+            if tournament.max_participants % 2 != 0:
+                logger.warning(f"Tournament {tournament.title} has invalid max_participants ({tournament.max_participants}) for 2v2 tournament")
         elif "5v5" in tournament_name or "5vs5" in tournament_name:
             tournament_requires_team = True
+            # Validate max_participants is multiple of 5 for 5v5 tournaments
+            if tournament.max_participants % 5 != 0:
+                logger.warning(f"Tournament {tournament.title} has invalid max_participants ({tournament.max_participants}) for 5v5 tournament")
         else:
             # Fallback to max_participants logic
             if tournament.max_participants <= 4:
