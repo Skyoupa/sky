@@ -1819,6 +1819,9 @@ class OupafamillyTester:
             await self.test_team_deletion_functionality()  # NEW: Team deletion tests
             await self.test_enhanced_tournament_registration_system()
             
+            # NEW ENHANCEMENTS 2025 - PRIMARY FOCUS
+            await self.test_new_enhancements_2025()
+            
         except Exception as e:
             print(f"❌ Critical error during testing: {e}")
             self.log_test("Critical Error", False, str(e))
