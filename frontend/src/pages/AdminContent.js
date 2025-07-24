@@ -911,8 +911,15 @@ const AdminContent = () => {
         .content-footer {
           display: flex;
           justify-content: space-between;
-          align-items: center;
+          align-items: flex-end;
           margin-top: 15px;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+
+        .content-actions {
+          display: flex;
+          align-items: center;
           gap: 15px;
         }
 
@@ -932,9 +939,29 @@ const AdminContent = () => {
         }
 
         .content-date {
-          color: #333333;
-          font-size: 12px;
-          font-weight: 600;
+          color: #6b7280;
+          font-size: 14px;
+        }
+
+        .btn-delete-content {
+          background: #ef4444;
+          color: white;
+          border: none;
+          padding: 6px 12px;
+          border-radius: 6px;
+          font-size: 13px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+        }
+
+        .btn-delete-content:hover {
+          background: #dc2626;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
         }
 
         .error-message {
