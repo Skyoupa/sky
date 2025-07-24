@@ -447,16 +447,101 @@ const Profil = () => {
           color: white;
         }
 
-        .profile-header h1 {
-          margin: 0 0 20px 0;
+        .profile-header-content {
+          display: flex;
+          align-items: flex-start;
+          gap: 2rem;
+          margin-bottom: 2rem;
+        }
+
+        .profile-avatar-section {
+          position: relative;
+        }
+
+        .profile-avatar-container {
+          position: relative;
+          width: 120px;
+          height: 120px;
+          border-radius: 50%;
+          overflow: hidden;
+          border: 4px solid rgba(255, 255, 255, 0.2);
+          background: rgba(255, 255, 255, 0.1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .profile-avatar-image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .profile-avatar-placeholder {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-avatar-placeholder svg {
+          width: 60px;
+          height: 60px;
+          color: rgba(255, 255, 255, 0.7);
+        }
+
+        .avatar-upload-overlay {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          background: #3b82f6;
+          border-radius: 50%;
+          width: 36px;
+          height: 36px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.3s;
+        }
+
+        .avatar-upload-overlay:hover {
+          background: #2563eb;
+          transform: scale(1.1);
+        }
+
+        .avatar-upload-input {
+          display: none;
+        }
+
+        .avatar-upload-label {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 100%;
+          cursor: pointer;
+          font-size: 16px;
+        }
+
+        .profile-info {
+          flex: 1;
+        }
+
+        .profile-info h1 {
+          margin: 0 0 10px 0;
           font-size: 28px;
           font-weight: 600;
         }
 
-        .user-info {
-          display: flex;
-          align-items: center;
-          gap: 20px;
+        .profile-bio {
+          color: rgba(255, 255, 255, 0.9);
+          font-size: 16px;
+          line-height: 1.5;
+          margin-bottom: 15px;
+          font-style: italic;
         }
 
         .user-details {
@@ -467,7 +552,8 @@ const Profil = () => {
 
         .username {
           font-size: 18px;
-          font-weight: 600;
+          font-weight: 500;
+          color: rgba(255, 255, 255, 0.9);
         }
 
         .email {
@@ -482,6 +568,7 @@ const Profil = () => {
           font-weight: bold;
           text-transform: uppercase;
           width: fit-content;
+          margin-top: 5px;
         }
 
         .role.admin {
@@ -490,6 +577,107 @@ const Profil = () => {
 
         .role.moderator {
           background: linear-gradient(45deg, #f59e0b, #d97706);
+        }
+
+        .profile-trophies {
+          margin-bottom: 2rem;
+        }
+
+        .profile-trophies h3 {
+          margin: 0 0 1rem 0;
+          font-size: 20px;
+          color: white;
+        }
+
+        .trophies-display {
+          display: flex;
+          gap: 1.5rem;
+          align-items: center;
+        }
+
+        .trophy-category {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+          background: rgba(255, 255, 255, 0.1);
+          padding: 1rem;
+          border-radius: 10px;
+          min-width: 80px;
+        }
+
+        .trophy-icon {
+          font-size: 2rem;
+        }
+
+        .trophy-info {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.25rem;
+        }
+
+        .trophy-count {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #fbbf24;
+        }
+
+        .trophy-label {
+          font-size: 0.9rem;
+          color: rgba(255, 255, 255, 0.8);
+          font-weight: 500;
+        }
+
+        .trophy-total {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+          background: rgba(251, 191, 36, 0.2);
+          padding: 1rem;
+          border-radius: 10px;
+          border: 2px solid rgba(251, 191, 36, 0.4);
+          min-width: 80px;
+        }
+
+        .total-count {
+          font-size: 2rem;
+          font-weight: 700;
+          color: #fbbf24;
+        }
+
+        .total-label {
+          font-size: 0.9rem;
+          color: #fbbf24;
+          font-weight: 600;
+        }
+
+        .profile-statistics {
+          display: flex;
+          gap: 2rem;
+          justify-content: center;
+        }
+
+        .stat-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .stat-value {
+          font-size: 1.8rem;
+          font-weight: 700;
+          color: white;
+        }
+
+        .stat-label {
+          font-size: 0.9rem;
+          color: rgba(255, 255, 255, 0.8);
+          text-transform: uppercase;
+          font-weight: 500;
+          letter-spacing: 1px;
         }
 
         .profile-form {
@@ -665,6 +853,29 @@ const Profil = () => {
 
           .profile-header {
             padding: 20px;
+          }
+
+          .profile-header-content {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 1rem;
+          }
+
+          .profile-avatar-container {
+            width: 100px;
+            height: 100px;
+          }
+
+          .trophies-display {
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+          }
+
+          .profile-statistics {
+            flex-wrap: wrap;
+            gap: 1rem;
           }
 
           .profile-form {
