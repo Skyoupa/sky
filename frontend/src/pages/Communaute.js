@@ -1,141 +1,117 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 
 const Communaute = () => {
+  const { API_BASE_URL } = useAuth();
   const [activeView, setActiveView] = useState('membres');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  
+  // State for real data from API
+  const [communityStats, setCommunityStats] = useState({});
+  const [members, setMembers] = useState([]);
+  const [teams, setTeams] = useState([]);
+  const [leaderboard, setLeaderboard] = useState([]);
 
-  const members = [
-    {
-      id: 1,
-      name: 'Alexandre',
-      pseudo: 'AlexTheKing',
-      role: 'Admin',
-      games: ['CS2', 'LOL'],
-      joinDate: '2023-01-15',
-      status: 'En ligne',
-      rank: 'Global Elite',
-      trophies: 12
-    },
-    {
-      id: 2,
-      name: 'Marie',
-      pseudo: 'MariGamer',
-      role: 'Modérateur',
-      games: ['WOW', 'Minecraft'],
-      joinDate: '2023-03-20',
-      status: 'En ligne',
-      rank: 'Mythic',
-      trophies: 8
-    },
-    {
-      id: 3,
-      name: 'Thomas',
-      pseudo: 'TomStrat',
-      role: 'Membre Pro',
-      games: ['SC2', 'CS2'],
-      joinDate: '2023-06-10',
-      status: 'En jeu',
-      rank: 'Master',
-      trophies: 7
-    },
-    {
-      id: 4,
-      name: 'Sarah',
-      pseudo: 'SarahPro',
-      role: 'Capitaine',
-      games: ['LOL', 'WOW'],
-      joinDate: '2023-08-05',
-      status: 'En ligne',
-      rank: 'Diamant',
-      trophies: 6
-    },
-    {
-      id: 5,
-      name: 'Lucas',
-      pseudo: 'LucasBuilder',
-      role: 'Membre',
-      games: ['Minecraft', 'CS2'],
-      joinDate: '2023-11-12',
-      status: 'Absent',
-      rank: 'Expert',
-      trophies: 4
-    },
-    {
-      id: 6,
-      name: 'Emma',
-      pseudo: 'EmmaSpeed',
-      role: 'Membre',
-      games: ['SC2', 'LOL'],
-      joinDate: '2024-01-08',
-      status: 'En ligne',
-      rank: 'Platine',
-      trophies: 5
+  useEffect(() => {
+    fetchCommunityData();
+  }, []);
+
+  const fetchCommunityData = async () => {
+    setLoading(true);
+    try {
+      // Fetch community statistics
+      const statsResponse = await fetch(`${API_BASE_URL}/community/stats`);
+      if (statsResponse.ok) {
+        const statsData = await statsResponse.json();
+        setCommunityStats(statsData);
+      }
+
+      // Fetch community members
+      const membersResponse = await fetch(`${API_BASE_URL}/community/members`);
+      if (membersResponse.ok) {
+        const membersData = await membersResponse.json();
+        setMembers(membersData.members || []);
+      }
+
+      // Fetch community teams
+      const teamsResponse = await fetch(`${API_BASE_URL}/community/teams`);
+      if (teamsResponse.ok) {
+        const teamsData = await teamsResponse.json();
+        setTeams(teamsData.teams || []);
+      }
+
+      // Fetch leaderboard
+      const leaderboardResponse = await fetch(`${API_BASE_URL}/community/leaderboard`);
+      if (leaderboardResponse.ok) {
+        const leaderboardData = await leaderboardResponse.json();
+        setLeaderboard(leaderboardData.leaderboard || []);
+      }
+
+    } catch (error) {
+      console.error('Erreur lors du chargement des données communautaires:', error);
+      setError('Erreur lors du chargement des données communautaires');
+    } finally {
+      setLoading(false);
     }
-  ];
-
-  const teams = [
-    {
-      id: 1,
-      name: 'Oupafamilly Esports',
-      game: 'League of Legends',
-      members: ['AlexTheKing', 'SarahPro', 'EmmaSpeed', 'TomStrat', 'MariGamer'],
-      rank: 'Diamant',
-      wins: 24,
-      losses: 6,
-      winRate: 80,
-      achievements: ['LoL New Year Cup Winner', 'Regional Champions']
-    },
-    {
-      id: 2,
-      name: 'Alpha Squad',
-      game: 'Counter-Strike 2',
-      members: ['AlexTheKing', 'TomStrat', 'LucasBuilder'],
-      rank: 'Global Elite',
-      wins: 18,
-      losses: 4,
-      winRate: 82,
-      achievements: ['Winter CS2 Tournament Winner']
-    },
-    {
-      id: 3,
-      name: 'Guild Oupafamilly',
-      game: 'World of Warcraft',
-      members: ['MariGamer', 'SarahPro', 'EmmaSpeed'],
-      rank: 'Mythic',
-      wins: 15,
-      losses: 2,
-      winRate: 88,
-      achievements: ['Heroic Raid Clear', 'PvP Champions']
-    }
-  ];
-
-  const leaderboard = [
-    { rank: 1, name: 'AlexTheKing', points: 2450, trophies: 12, badge: 'Champion' },
-    { rank: 2, name: 'SarahPro', points: 2180, trophies: 8, badge: 'Pro' },
-    { rank: 3, name: 'TomStrat', points: 1950, trophies: 7, badge: 'Expert' },
-    { rank: 4, name: 'EmmaSpeed', points: 1820, trophies: 6, badge: 'Vétéran' },
-    { rank: 5, name: 'MariGamer', points: 1650, trophies: 5, badge: 'Elite' },
-    { rank: 6, name: 'LucasBuilder', points: 1480, trophies: 4, badge: 'Rising' }
-  ];
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'En ligne': return 'status-online';
-      case 'En jeu': return 'status-gaming';
-      case 'Absent': return 'status-away';
+      case 'active': return 'status-online';
+      case 'inactive': return 'status-away';
       default: return 'status-offline';
     }
   };
 
   const getRoleColor = (role) => {
     switch (role) {
-      case 'Admin': return 'role-admin';
-      case 'Modérateur': return 'role-moderator';
-      case 'Capitaine': return 'role-captain';
-      case 'Membre Pro': return 'role-pro';
-      case 'Membre': return 'role-member';
+      case 'admin': return 'role-admin';
+      case 'moderator': return 'role-moderator';
+      case 'member': return 'role-member';
       default: return 'role-member';
     }
   };
+
+  const getRoleDisplay = (role) => {
+    switch (role) {
+      case 'admin': return 'Admin';
+      case 'moderator': return 'Modérateur';
+      case 'member': return 'Membre';
+      default: return 'Membre';
+    }
+  };
+
+  const getGameDisplay = (game) => {
+    switch (game) {
+      case 'cs2': return 'Counter-Strike 2';
+      case 'lol': return 'League of Legends';
+      case 'wow': return 'World of Warcraft';
+      case 'sc2': return 'StarCraft II';
+      case 'minecraft': return 'Minecraft';
+      default: return game;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="page-pro">
+        <div className="container-pro">
+          <div className="loading">Chargement des données communautaires...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="page-pro">
+        <div className="container-pro">
+          <div className="error">{error}</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="page-pro">
@@ -170,8 +146,8 @@ const Communaute = () => {
                 </svg>
               </div>
               <div className="stat-content">
-                <div className="stat-number">{members.length}</div>
-                <div className="stat-label">Membres actifs</div>
+                <div className="stat-number">{communityStats.users?.total || 0}</div>
+                <div className="stat-label">Membres inscrits</div>
               </div>
             </div>
             <div className="stat-card-pro">
@@ -181,8 +157,8 @@ const Communaute = () => {
                 </svg>
               </div>
               <div className="stat-content">
-                <div className="stat-number">{teams.length}</div>
-                <div className="stat-label">Équipes compétitives</div>
+                <div className="stat-number">{communityStats.teams?.total || 0}</div>
+                <div className="stat-label">Équipes actives</div>
               </div>
             </div>
             <div className="stat-card-pro">
@@ -192,8 +168,8 @@ const Communaute = () => {
                 </svg>
               </div>
               <div className="stat-content">
-                <div className="stat-number">{members.filter(m => m.status === 'En ligne').length}</div>
-                <div className="stat-label">En ligne maintenant</div>
+                <div className="stat-number">{communityStats.users?.active_last_week || 0}</div>
+                <div className="stat-label">Actifs cette semaine</div>
               </div>
             </div>
             <div className="stat-card-pro">
@@ -203,8 +179,8 @@ const Communaute = () => {
                 </svg>
               </div>
               <div className="stat-content">
-                <div className="stat-number">47</div>
-                <div className="stat-label">Tournois gagnés</div>
+                <div className="stat-number">{communityStats.tournaments?.completed || 0}</div>
+                <div className="stat-label">Tournois terminés</div>
               </div>
             </div>
           </div>
@@ -242,48 +218,66 @@ const Communaute = () => {
                 <div key={member.id} className="member-card-pro">
                   <div className="member-header-pro">
                     <div className="member-avatar-pro">
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 12C14.21 12 16 10.21 16 8S14.21 4 12 4 8 5.79 8 8 9.79 12 12 12M12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/>
-                      </svg>
+                      {member.profile?.avatar_url ? (
+                        <img 
+                          src={member.profile.avatar_url} 
+                          alt={member.username}
+                          className="avatar-image"
+                        />
+                      ) : (
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 12C14.21 12 16 10.21 16 8S14.21 4 12 4 8 5.79 8 8 9.79 12 12 12M12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z"/>
+                        </svg>
+                      )}
                     </div>
                     <div className="member-info-pro">
-                      <h3 className="member-name-pro">{member.name}</h3>
-                      <p className="member-pseudo-pro">@{member.pseudo}</p>
+                      <h3 className="member-name-pro">{member.profile?.display_name || member.username}</h3>
+                      <p className="member-pseudo-pro">@{member.username}</p>
                     </div>
                     <span className={`member-status-pro ${getStatusColor(member.status)}`}>
-                      {member.status}
+                      {member.status === 'active' ? 'En ligne' : 'Hors ligne'}
                     </span>
                   </div>
 
                   <div className="member-details-pro">
                     <div className="member-role-pro">
                       <span className={`role-badge-pro ${getRoleColor(member.role)}`}>
-                        {member.role}
+                        {getRoleDisplay(member.role)}
                       </span>
                     </div>
                     
                     <div className="member-stats-pro">
                       <div className="member-stat">
-                        <span className="stat-label">Rang</span>
-                        <span className="stat-value">{member.rank}</span>
+                        <span className="stat-label">Trophées</span>
+                        <span className="stat-value">{member.trophies?.total || 0}</span>
                       </div>
                       <div className="member-stat">
-                        <span className="stat-label">Trophées</span>
-                        <span className="stat-value">{member.trophies}</span>
+                        <span className="stat-label">1v1</span>
+                        <span className="stat-value trophy-1v1">{member.trophies?.['1v1'] || 0}</span>
+                      </div>
+                      <div className="member-stat">
+                        <span className="stat-label">2v2</span>
+                        <span className="stat-value trophy-2v2">{member.trophies?.['2v2'] || 0}</span>
+                      </div>
+                      <div className="member-stat">
+                        <span className="stat-label">5v5</span>
+                        <span className="stat-value trophy-5v5">{member.trophies?.['5v5'] || 0}</span>
                       </div>
                     </div>
 
-                    <div className="member-games-pro">
-                      <span className="games-label">Spécialités :</span>
-                      <div className="games-list-pro">
-                        {member.games.map(game => (
-                          <span key={game} className="game-tag-pro">{game}</span>
-                        ))}
+                    {member.profile?.favorite_games && member.profile.favorite_games.length > 0 && (
+                      <div className="member-games-pro">
+                        <span className="games-label">Spécialités :</span>
+                        <div className="games-list-pro">
+                          {member.profile.favorite_games.map(game => (
+                            <span key={game} className="game-tag-pro">{getGameDisplay(game)}</span>
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     <div className="member-join-pro">
-                      Membre depuis {new Date(member.joinDate).toLocaleDateString('fr-FR', { 
+                      Membre depuis {new Date(member.created_at).toLocaleDateString('fr-FR', { 
                         year: 'numeric', 
                         month: 'long' 
                       })}
