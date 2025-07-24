@@ -58,7 +58,9 @@ class UserProfile(BaseModel):
     user_id: str
     display_name: str
     bio: Optional[str] = None
-    avatar_url: Optional[str] = None
+    avatar_url: Optional[str] = None  # Support for base64 encoded images
+    banner_url: Optional[str] = None
+    location: Optional[str] = None
     favorite_games: List[Game] = []
     gaming_experience: Dict[Game, str] = {}  # game -> level (beginner, intermediate, expert)
     discord_username: Optional[str] = None
@@ -66,6 +68,11 @@ class UserProfile(BaseModel):
     steam_profile: Optional[str] = None
     total_tournaments: int = 0
     tournaments_won: int = 0
+    # Trophy tracking by game mode
+    trophies_1v1: int = 0
+    trophies_2v2: int = 0
+    trophies_5v5: int = 0
+    total_points: int = 0
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
