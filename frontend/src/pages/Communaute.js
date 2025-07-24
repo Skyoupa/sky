@@ -342,7 +342,8 @@ const Communaute = () => {
                     </Link>
                   </div>
                 </div>
-              ))}
+              ))
+              )}
             </div>
           )}
 
