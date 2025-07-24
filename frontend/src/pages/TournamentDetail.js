@@ -1,48 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import TeamManagementModal from '../components/TeamManagementModal';
 
 const TournamentDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [tournament, setTournament] = useState(null);
   const [participantsInfo, setParticipantsInfo] = useState([]);
-  const [teams, setTeams] = useState([]);
+  const [userTeamsForTournament, setUserTeamsForTournament] = useState(null);
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
-  const [selectedTeam, setSelectedTeam] = useState('');
+  const [showTeamManagementModal, setShowTeamManagementModal] = useState(false);
+  const [selectedTeamForManagement, setSelectedTeamForManagement] = useState(null);
+  const [selectedTeamForRegistration, setSelectedTeamForRegistration] = useState('');
   const [newTeamName, setNewTeamName] = useState('');
   const [registrationType, setRegistrationType] = useState('existing'); // 'existing' or 'new'
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [registrationLoading, setRegistrationLoading] = useState(false);
+  const [registrationError, setRegistrationError] = useState('');
   const { API_BASE_URL, user, token } = useAuth();
 
   useEffect(() => {
     fetchTournamentDetails();
     fetchParticipantsInfo();
     if (user) {
-      fetchUserTeams();
+      fetchUserTeamsForTournament();
     }
   }, [id, user]);
 
   const fetchTournamentDetails = async () => {
     try {
       setLoading(true);
-      console.log('Fetching tournament details for ID:', id);
-      console.log('API URL:', `${API_BASE_URL}/tournaments/${id}`);
-      
       const response = await fetch(`${API_BASE_URL}/tournaments/${id}`);
-      console.log('Response status:', response.status);
       
       if (response.ok) {
         const data = await response.json();
-        console.log('Tournament data received:', data);
         setTournament(data);
       } else if (response.status === 404) {
-        console.log('Tournament not found (404)');
         setError('Tournoi non trouvé');
         setTimeout(() => navigate('/tournois'), 3000);
       } else {
-        console.log('Error response status:', response.status);
         setError('Erreur lors du chargement du tournoi');
       }
     } catch (error) {
@@ -65,9 +63,9 @@ const TournamentDetail = () => {
     }
   };
 
-  const fetchUserTeams = async () => {
+  const fetchUserTeamsForTournament = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/teams/my-teams`, {
+      const response = await fetch(`${API_BASE_URL}/tournaments/${id}/user-teams`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -75,15 +73,31 @@ const TournamentDetail = () => {
       
       if (response.ok) {
         const data = await response.json();
-        // Filter teams by tournament game
-        const gameTeams = data.filter(team => 
-          !tournament || team.game === tournament.game
-        );
-        setTeams(gameTeams);
+        setUserTeamsForTournament(data);
+        // Set default team selection if only one team available
+        if (data.eligible_teams && data.eligible_teams.length === 1) {
+          setSelectedTeamForRegistration(data.eligible_teams[0].id);
+        }
       }
     } catch (error) {
-      console.error('Erreur fetch teams:', error);
+      console.error('Erreur fetch user teams for tournament:', error);
     }
+  };
+
+  const handleOpenRegistrationModal = () => {
+    setShowRegistrationModal(true);
+    setRegistrationError('');
+    if (userTeamsForTournament?.eligible_teams?.length === 1) {
+      setSelectedTeamForRegistration(userTeamsForTournament.eligible_teams[0].id);
+    }
+  };
+
+  const handleCloseRegistrationModal = () => {
+    setShowRegistrationModal(false);
+    setSelectedTeamForRegistration('');
+    setNewTeamName('');
+    setRegistrationType('existing');
+    setRegistrationError('');
   };
 
   const handleRegistration = async () => {
@@ -92,12 +106,92 @@ const TournamentDetail = () => {
       return;
     }
 
+    // Check if tournament requires team and user has no eligible teams
+    if (userTeamsForTournament?.requires_team && (!userTeamsForTournament.eligible_teams || userTeamsForTournament.eligible_teams.length === 0)) {
+      setRegistrationError(`Ce tournoi ${userTeamsForTournament.tournament_name.includes('2v2') ? '2v2' : '5v5'} nécessite une équipe. Vous devez d'abord créer ou rejoindre une équipe pour le jeu ${userTeamsForTournament.tournament_game}.`);
+      return;
+    }
+
+    // For team tournaments, ensure a team is selected
+    if (userTeamsForTournament?.requires_team && !selectedTeamForRegistration && registrationType === 'existing') {
+      setRegistrationError('Veuillez sélectionner une équipe pour ce tournoi.');
+      return;
+    }
+
+    setRegistrationLoading(true);
+    setRegistrationError('');
+
     try {
-      let registrationData = {};
-      
+      let teamIdToUse = null;
+
       if (registrationType === 'new' && newTeamName.trim()) {
         // Create new team first
         const teamResponse = await fetch(`${API_BASE_URL}/teams/`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: newTeamName.trim(),
+            game: tournament.game,
+            max_members: 6
+          })
+        });
+
+        if (teamResponse.ok) {
+          const teamData = await teamResponse.json();
+          teamIdToUse = teamData.id;
+        } else {
+          const errorData = await teamResponse.json();
+          setRegistrationError(errorData.detail || 'Erreur lors de la création de l\'équipe');
+          return;
+        }
+      } else if (registrationType === 'existing' && selectedTeamForRegistration) {
+        teamIdToUse = selectedTeamForRegistration;
+      }
+
+      // Register for tournament
+      const registrationPayload = {};
+      if (teamIdToUse) {
+        registrationPayload.team_id = teamIdToUse;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/tournaments/${id}/register`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(registrationPayload)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert(data.message || 'Inscription réussie !');
+        handleCloseRegistrationModal();
+        fetchTournamentDetails(); // Refresh tournament data
+        fetchParticipantsInfo(); // Refresh participants
+      } else {
+        const errorData = await response.json();
+        setRegistrationError(errorData.detail || 'Erreur lors de l\'inscription');
+      }
+    } catch (error) {
+      console.error('Erreur registration:', error);
+      setRegistrationError('Erreur de connexion lors de l\'inscription');
+    } finally {
+      setRegistrationLoading(false);
+    }
+  };
+
+  const handleTeamManagement = (team) => {
+    setSelectedTeamForManagement(team);
+    setShowTeamManagementModal(true);
+  };
+
+  const handleTeamUpdated = () => {
+    fetchUserTeamsForTournament(); // Refresh teams data
+  };
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
