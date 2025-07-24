@@ -105,7 +105,7 @@ class TeamCreate(BaseModel):
     name: str
     description: Optional[str] = None
     game: Game
-    max_members: int = 5
+    max_members: int = 6  # Maximum 6 members as requested
 
 # Tournament Models
 class Tournament(BaseModel):
