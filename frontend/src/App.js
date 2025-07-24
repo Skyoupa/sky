@@ -7,6 +7,7 @@ import Accueil from './pages/Accueil';
 import Tutoriels from './pages/Tutoriels';
 import Tournois from './pages/Tournois';
 import TournamentDetail from './pages/TournamentDetail';
+import TournamentBracket from './pages/TournamentBracket';
 import Communaute from './pages/Communaute';
 import APropos from './pages/APropos';
 import Profil from './pages/Profil';
