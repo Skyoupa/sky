@@ -1,53 +1,132 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const Tournois = () => {
   const [activeTab, setActiveTab] = useState('en-cours');
+  const [tournaments, setTournaments] = useState({
+    'en-cours': [],
+    'a-venir': [],
+    'termines': []
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const { API_BASE_URL, user, token } = useAuth();
 
-  const tournaments = {
-    'en-cours': [
-      {
-        id: 1,
-        name: 'Oupafamilly Championship 2025',
-        type: 'Élimination Directe',
-        format: '5v5 - BO3',
-        participants: 16,
-        maxParticipants: 16,
-        prize: '2,500€',
-        startDate: '2025-02-01',
-        endDate: '2025-02-15',
-        status: 'En cours',
-        phase: 'Quarts de finale',
-        map: 'de_mirage, de_inferno, de_ancient'
-      },
-      {
-        id: 2,
-        name: 'CS2 Weekly Cup #8',
-        type: 'Swiss System',
-        format: '5v5 - BO1',
-        participants: 12,
-        maxParticipants: 16,
-        prize: '500€',
-        startDate: '2025-01-28',
-        endDate: '2025-02-02',
-        status: 'En cours',
-        phase: 'Round 3',
-        map: 'de_dust2, de_cache'
+  useEffect(() => {
+    fetchTournaments();
+  }, []);
+
+  const fetchTournaments = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/tournaments/`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Organiser les tournois par statut
+        const organized = {
+          'en-cours': data.filter(t => t.status === 'in_progress'),
+          'a-venir': data.filter(t => t.status === 'open' || t.status === 'draft'),
+          'termines': data.filter(t => t.status === 'completed')
+        };
+        
+        setTournaments(organized);
+      } else {
+        setError('Erreur lors du chargement des tournois');
       }
-    ],
-    'a-venir': [
-      {
-        id: 3,
-        name: 'CS2 Major Qualifier',
-        type: 'Double Élimination',
-        format: '5v5 - BO3/BO5',
-        participants: 8,
-        maxParticipants: 32,
-        prize: '5,000€',
-        startDate: '2025-03-01',
-        endDate: '2025-03-10',
-        status: 'Inscriptions ouvertes',
-        phase: 'Inscription',
+    } catch (error) {
+      console.error('Erreur fetch tournaments:', error);
+      setError('Erreur de connexion au serveur');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const registerForTournament = async (tournamentId) => {
+    if (!user) {
+      alert('Vous devez être connecté pour vous inscrire à un tournoi');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/tournaments/${tournamentId}/register`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        alert('Inscription réussie !');
+        fetchTournaments(); // Actualiser la liste
+      } else {
+        const errorData = await response.json();
+        alert(errorData.detail || 'Erreur lors de l\'inscription');
+      }
+    } catch (error) {
+      alert('Erreur de connexion au serveur');
+    }
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  };
+
+  const formatDateTime = (dateString) => {
+    return new Date(dateString).toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const getStatusBadge = (status) => {
+    switch(status) {
+      case 'draft':
+        return <span className="status-badge draft">📝 Brouillon</span>;
+      case 'open':
+        return <span className="status-badge open">🟢 Inscriptions ouvertes</span>;
+      case 'in_progress':
+        return <span className="status-badge progress">⏳ En cours</span>;
+      case 'completed':
+        return <span className="status-badge completed">✅ Terminé</span>;
+      default:
+        return <span className="status-badge">❓ Inconnu</span>;
+    }
+  };
+
+  const getTournamentTypeName = (type) => {
+    switch(type) {
+      case 'elimination':
+        return 'Élimination Directe';
+      case 'bracket':
+        return 'Bracket';
+      case 'round_robin':
+        return 'Round Robin';
+      default:
+        return type;
+    }
+  };
+
+  const getGameName = (gameId) => {
+    const games = {
+      'cs2': 'Counter-Strike 2',
+      'lol': 'League of Legends',
+      'wow': 'World of Warcraft',
+      'sc2': 'StarCraft II',
+      'minecraft': 'Minecraft'
+    };
+    return games[gameId] || gameId;
+  };
         map: 'Pool Compétitif Complet'
       },
       {
