@@ -1380,17 +1380,17 @@ class OupafamillyTester:
         
         # Test 4: Create tournament and register team to test active tournament protection
         tournament_data = {
-            "title": "Test Tournament for Team Deletion",
-            "description": "Tournament to test team deletion protection",
+            "title": "Test Tournament 2v2 for Team Deletion",
+            "description": "2v2 Tournament to test team deletion protection",
             "game": "cs2",
             "tournament_type": "elimination",
-            "max_participants": 8,
+            "max_participants": 4,  # Small number to ensure it's detected as team tournament
             "entry_fee": 0.0,
             "prize_pool": 50.0,
             "registration_start": (datetime.utcnow() + timedelta(hours=1)).isoformat(),
             "registration_end": (datetime.utcnow() + timedelta(days=7)).isoformat(),
             "tournament_start": (datetime.utcnow() + timedelta(days=8)).isoformat(),
-            "rules": "Test tournament rules"
+            "rules": "Test 2v2 tournament rules"
         }
         
         status, tournament_response = await self.make_request("POST", "/tournaments/", tournament_data, auth_token=self.admin_token)
