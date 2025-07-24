@@ -21,16 +21,7 @@ def get_backend_url():
     if BACKEND_URL:
         return BACKEND_URL
     
-    try:
-        with open(FRONTEND_ENV_PATH, 'r') as f:
-            for line in f:
-                if line.startswith('REACT_APP_BACKEND_URL='):
-                    BACKEND_URL = line.split('=', 1)[1].strip()
-                    return f"{BACKEND_URL}/api"
-    except Exception as e:
-        print(f"❌ Error reading frontend .env: {e}")
-        return "http://localhost:8001/api"
-    
+    # For testing, use local backend URL since external URL might not be accessible
     return "http://localhost:8001/api"
 
 BASE_URL = get_backend_url()
