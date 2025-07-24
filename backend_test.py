@@ -1790,6 +1790,348 @@ class OupafamillyTester:
             if resource_id:
                 await self.make_request("DELETE", f"/{resource_type}/{resource_id}", auth_token=self.admin_token)
 
+    async def test_new_enhancements_2025(self):
+        """Test all new enhancements for Oupafamilly platform - 2025 features."""
+        print("\n🆕 Testing New Enhancements 2025...")
+        
+        if not self.admin_token:
+            self.log_test("New Enhancements 2025", False, "No admin token available")
+            return
+        
+        # Test 1: Tournament Deletion Fix
+        await self.test_tournament_deletion_comprehensive()
+        
+        # Test 2: Enhanced Tournament Templates (2025 CS2 Maps)
+        await self.test_enhanced_tournament_templates_2025()
+        
+        # Test 3: Tournament Registration Validation (Multiples)
+        await self.test_tournament_registration_validation_multiples()
+        
+        # Test 4: Content Management Enhancements
+        await self.test_content_deletion_enhancements()
+        
+        # Test 5: Team Management for Admin
+        await self.test_admin_team_management()
+
+    async def test_tournament_deletion_comprehensive(self):
+        """Test comprehensive tournament deletion functionality."""
+        print("\n🗑️ Testing Tournament Deletion Fix...")
+        
+        # Create test tournament for deletion
+        test_tournament = {
+            "title": "Test Tournament Deletion 2025",
+            "description": "Tournament créé pour tester la suppression",
+            "game": "cs2",
+            "tournament_type": "elimination",
+            "max_participants": 8,
+            "entry_fee": 0.0,
+            "prize_pool": 50.0,
+            "registration_start": (datetime.utcnow() + timedelta(hours=1)).isoformat(),
+            "registration_end": (datetime.utcnow() + timedelta(days=7)).isoformat(),
+            "tournament_start": (datetime.utcnow() + timedelta(days=8)).isoformat(),
+            "rules": "Règles de test pour suppression"
+        }
+        
+        # Create tournament
+        status, data = await self.make_request("POST", "/tournaments/", test_tournament, auth_token=self.admin_token)
+        tournament_id = None
+        if status == 200 and data.get("id"):
+            tournament_id = data["id"]
+            self.log_test("Tournament Creation for Deletion", True, f"Tournament created: {data.get('title')}")
+        else:
+            self.log_test("Tournament Creation for Deletion", False, f"Failed to create tournament: {data}")
+            return
+        
+        # Test admin deletion permission
+        status, data = await self.make_request("DELETE", f"/tournaments/{tournament_id}", auth_token=self.admin_token)
+        if status == 200:
+            self.log_test("Admin Tournament Deletion", True, f"Admin successfully deleted tournament: {data.get('message')}")
+        else:
+            self.log_test("Admin Tournament Deletion", False, f"Admin deletion failed: {data}")
+        
+        # Test deletion of non-existent tournament
+        fake_id = str(uuid.uuid4())
+        status, data = await self.make_request("DELETE", f"/tournaments/{fake_id}", auth_token=self.admin_token)
+        if status == 404:
+            self.log_test("Delete Non-existent Tournament", True, "404 returned for non-existent tournament")
+        else:
+            self.log_test("Delete Non-existent Tournament", False, f"Expected 404, got {status}")
+        
+        # Test unauthorized deletion
+        if self.test_user_token:
+            # Create another tournament
+            status, data = await self.make_request("POST", "/tournaments/", test_tournament, auth_token=self.admin_token)
+            if status == 200:
+                test_id = data["id"]
+                status, data = await self.make_request("DELETE", f"/tournaments/{test_id}", auth_token=self.test_user_token)
+                if status == 403:
+                    self.log_test("Unauthorized Tournament Deletion", True, "Non-admin properly blocked from deletion")
+                    # Cleanup
+                    await self.make_request("DELETE", f"/tournaments/{test_id}", auth_token=self.admin_token)
+                else:
+                    self.log_test("Unauthorized Tournament Deletion", False, f"Security issue: {status}")
+
+    async def test_enhanced_tournament_templates_2025(self):
+        """Test enhanced tournament templates with 2025 CS2 maps."""
+        print("\n🎮 Testing Enhanced Tournament Templates 2025...")
+        
+        # Get templates
+        status, data = await self.make_request("GET", "/tournaments/templates/popular")
+        if status != 200:
+            self.log_test("Tournament Templates 2025", False, f"Failed to get templates: {data}")
+            return
+        
+        templates = data.get("templates", [])
+        
+        # Test 1: Should have 6 templates
+        if len(templates) == 6:
+            self.log_test("Template Count 2025", True, f"Retrieved exactly 6 CS2 templates")
+        else:
+            self.log_test("Template Count 2025", False, f"Expected 6 templates, got {len(templates)}")
+        
+        # Test 2: Check for updated template names (2v2 replaced Aim Challenge)
+        expected_names = [
+            "CS2 Quick Match 1v1",
+            "CS2 Team Deathmatch 5v5", 
+            "CS2 Championship 5v5",
+            "CS2 Retake Masters",
+            "CS2 Competitive 2v2",  # NEW: Replaced Aim Challenge
+            "CS2 Pistol Masters"
+        ]
+        
+        actual_names = [template.get("name") for template in templates]
+        
+        # Check for 2v2 template specifically
+        has_2v2_template = any("2v2" in name for name in actual_names)
+        if has_2v2_template:
+            self.log_test("2v2 Template Added", True, "New 2v2 template found (replaced Aim Challenge)")
+        else:
+            self.log_test("2v2 Template Added", False, "2v2 template not found")
+        
+        # Test 3: Verify Active Duty 2025 maps in rules
+        active_duty_2025_maps = ["Ancient", "Dust2", "Inferno", "Mirage", "Nuke", "Overpass", "Train"]
+        
+        maps_found_count = 0
+        for template in templates:
+            rules = template.get("rules", "").lower()
+            maps_in_template = sum(1 for map_name in active_duty_2025_maps if map_name.lower() in rules)
+            if maps_in_template >= 3:  # At least 3 Active Duty maps mentioned
+                maps_found_count += 1
+        
+        if maps_found_count >= 4:  # At least 4 templates should mention Active Duty maps
+            self.log_test("Active Duty 2025 Maps", True, f"{maps_found_count}/6 templates mention Active Duty 2025 maps")
+        else:
+            self.log_test("Active Duty 2025 Maps", False, f"Only {maps_found_count}/6 templates mention Active Duty maps")
+        
+        # Test 4: Verify 2v2 template has correct participant validation
+        for template in templates:
+            if "2v2" in template.get("name", ""):
+                max_participants = template.get("max_participants", 0)
+                if max_participants % 2 == 0:
+                    self.log_test("2v2 Template Validation", True, f"2v2 template has valid max_participants: {max_participants}")
+                else:
+                    self.log_test("2v2 Template Validation", False, f"2v2 template has invalid max_participants: {max_participants}")
+                break
+
+    async def test_tournament_registration_validation_multiples(self):
+        """Test tournament registration validation for 2v2 and 5v5 multiples."""
+        print("\n🔢 Testing Tournament Registration Validation (Multiples)...")
+        
+        if not self.admin_token:
+            return
+        
+        # Test 1: Create 2v2 tournament with invalid participant count (not multiple of 2)
+        invalid_2v2_tournament = {
+            "title": "Invalid 2v2 Tournament",
+            "description": "Tournament with invalid participant count",
+            "game": "cs2",
+            "tournament_type": "elimination",
+            "max_participants": 7,  # Not multiple of 2
+            "entry_fee": 0.0,
+            "prize_pool": 50.0,
+            "registration_start": (datetime.utcnow() + timedelta(hours=1)).isoformat(),
+            "registration_end": (datetime.utcnow() + timedelta(days=7)).isoformat(),
+            "tournament_start": (datetime.utcnow() + timedelta(days=8)).isoformat(),
+            "rules": "Test 2v2 validation"
+        }
+        
+        status, data = await self.make_request("POST", "/tournaments/", invalid_2v2_tournament, auth_token=self.admin_token)
+        if status == 200:
+            # Tournament created, now test registration validation
+            tournament_id = data["id"]
+            
+            # Set to open status
+            await self.make_request("PUT", f"/tournaments/{tournament_id}/status?new_status=open", auth_token=self.admin_token)
+            
+            # Try to register - should fail with validation error
+            status, reg_data = await self.make_request("POST", f"/tournaments/{tournament_id}/register", auth_token=self.test_user_token)
+            if status == 400 and "multiple of 2" in str(reg_data):
+                self.log_test("2v2 Validation Error", True, "2v2 tournament properly validates participant multiples")
+            else:
+                self.log_test("2v2 Validation Error", False, f"2v2 validation not working: {reg_data}")
+            
+            # Cleanup
+            await self.make_request("DELETE", f"/tournaments/{tournament_id}", auth_token=self.admin_token)
+        
+        # Test 2: Create 5v5 tournament with invalid participant count (not multiple of 5)
+        invalid_5v5_tournament = {
+            "title": "Invalid 5v5 Tournament",
+            "description": "Tournament with invalid participant count",
+            "game": "cs2",
+            "tournament_type": "elimination",
+            "max_participants": 12,  # Not multiple of 5
+            "entry_fee": 0.0,
+            "prize_pool": 50.0,
+            "registration_start": (datetime.utcnow() + timedelta(hours=1)).isoformat(),
+            "registration_end": (datetime.utcnow() + timedelta(days=7)).isoformat(),
+            "tournament_start": (datetime.utcnow() + timedelta(days=8)).isoformat(),
+            "rules": "Test 5v5 validation"
+        }
+        
+        status, data = await self.make_request("POST", "/tournaments/", invalid_5v5_tournament, auth_token=self.admin_token)
+        if status == 200:
+            tournament_id = data["id"]
+            
+            # Set to open status
+            await self.make_request("PUT", f"/tournaments/{tournament_id}/status?new_status=open", auth_token=self.admin_token)
+            
+            # Try to register - should fail with validation error
+            status, reg_data = await self.make_request("POST", f"/tournaments/{tournament_id}/register", auth_token=self.test_user_token)
+            if status == 400 and "multiple of 5" in str(reg_data):
+                self.log_test("5v5 Validation Error", True, "5v5 tournament properly validates participant multiples")
+            else:
+                self.log_test("5v5 Validation Error", False, f"5v5 validation not working: {reg_data}")
+            
+            # Cleanup
+            await self.make_request("DELETE", f"/tournaments/{tournament_id}", auth_token=self.admin_token)
+        
+        # Test 3: Create valid tournaments with correct multiples
+        valid_2v2_tournament = {
+            "title": "Valid 2v2 Tournament",
+            "description": "Tournament with valid participant count",
+            "game": "cs2",
+            "tournament_type": "elimination",
+            "max_participants": 8,  # Multiple of 2
+            "entry_fee": 0.0,
+            "prize_pool": 50.0,
+            "registration_start": (datetime.utcnow() + timedelta(hours=1)).isoformat(),
+            "registration_end": (datetime.utcnow() + timedelta(days=7)).isoformat(),
+            "tournament_start": (datetime.utcnow() + timedelta(days=8)).isoformat(),
+            "rules": "Valid 2v2 tournament"
+        }
+        
+        status, data = await self.make_request("POST", "/tournaments/", valid_2v2_tournament, auth_token=self.admin_token)
+        if status == 200:
+            self.log_test("Valid 2v2 Creation", True, "2v2 tournament with valid multiples created successfully")
+            # Cleanup
+            await self.make_request("DELETE", f"/tournaments/{data['id']}", auth_token=self.admin_token)
+        else:
+            self.log_test("Valid 2v2 Creation", False, f"Failed to create valid 2v2 tournament: {data}")
+
+    async def test_content_deletion_enhancements(self):
+        """Test content management deletion enhancements."""
+        print("\n📰 Testing Content Deletion Enhancements...")
+        
+        if not self.admin_token:
+            return
+        
+        # Test 1: Create and delete news article
+        news_data = {
+            "title": "Test News for Deletion",
+            "content": "This news article will be deleted",
+            "summary": "Test deletion",
+            "tags": ["test"],
+            "is_pinned": False
+        }
+        
+        status, data = await self.make_request("POST", "/content/news", news_data, auth_token=self.admin_token)
+        news_id = None
+        if status == 200 and data.get("id"):
+            news_id = data["id"]
+            self.log_test("News Creation for Deletion", True, f"News created: {data.get('title')}")
+            
+            # Test deletion
+            status, del_data = await self.make_request("DELETE", f"/content/news/{news_id}", auth_token=self.admin_token)
+            if status == 200:
+                self.log_test("News Deletion", True, f"News deleted successfully: {del_data.get('message')}")
+            else:
+                self.log_test("News Deletion", False, f"News deletion failed: {del_data}")
+        else:
+            self.log_test("News Creation for Deletion", False, f"Failed to create news: {data}")
+        
+        # Test 2: Create and delete tutorial
+        tutorial_data = {
+            "title": "Test Tutorial for Deletion",
+            "description": "This tutorial will be deleted",
+            "game": "cs2",
+            "level": "beginner",
+            "content": "Test tutorial content",
+            "tags": ["test"]
+        }
+        
+        if self.test_user_token:
+            status, data = await self.make_request("POST", "/content/tutorials", tutorial_data, auth_token=self.test_user_token)
+            tutorial_id = None
+            if status == 200 and data.get("id"):
+                tutorial_id = data["id"]
+                self.log_test("Tutorial Creation for Deletion", True, f"Tutorial created: {data.get('title')}")
+                
+                # Test deletion by author
+                status, del_data = await self.make_request("DELETE", f"/content/tutorials/{tutorial_id}", auth_token=self.test_user_token)
+                if status == 200:
+                    self.log_test("Tutorial Deletion by Author", True, f"Tutorial deleted by author: {del_data.get('message')}")
+                else:
+                    self.log_test("Tutorial Deletion by Author", False, f"Tutorial deletion failed: {del_data}")
+            else:
+                self.log_test("Tutorial Creation for Deletion", False, f"Failed to create tutorial: {data}")
+        
+        # Test 3: Test permission validation for content deletion
+        if news_id and self.test_user_token:
+            # Try to delete news as non-admin (should fail)
+            status, data = await self.make_request("DELETE", f"/content/news/{news_id}", auth_token=self.test_user_token)
+            if status == 403:
+                self.log_test("News Deletion Permission", True, "Non-admin properly blocked from deleting news")
+            else:
+                self.log_test("News Deletion Permission", False, f"Permission issue: {status}")
+
+    async def test_admin_team_management(self):
+        """Test admin team management capabilities."""
+        print("\n👥 Testing Admin Team Management...")
+        
+        if not self.admin_token or not self.test_user_token:
+            return
+        
+        # Create test team as regular user
+        team_data = {
+            "name": "Test Team for Admin Management",
+            "description": "Team for testing admin management",
+            "game": "cs2",
+            "max_members": 6
+        }
+        
+        status, data = await self.make_request("POST", "/teams/", team_data, auth_token=self.test_user_token)
+        team_id = None
+        if status == 200 and data.get("id"):
+            team_id = data["id"]
+            self.log_test("Team Creation for Admin Test", True, f"Team created: {data.get('name')}")
+        else:
+            self.log_test("Team Creation for Admin Test", False, f"Failed to create team: {data}")
+            return
+        
+        # Test 1: Admin can force delete teams (even if in active tournaments)
+        status, data = await self.make_request("DELETE", f"/teams/{team_id}", auth_token=self.admin_token)
+        if status == 200:
+            self.log_test("Admin Team Force Delete", True, f"Admin successfully deleted team: {data.get('message')}")
+        else:
+            self.log_test("Admin Team Force Delete", False, f"Admin team deletion failed: {data}")
+        
+        # Test 2: Verify team is actually deleted
+        status, data = await self.make_request("GET", f"/teams/{team_id}")
+        if status == 404:
+            self.log_test("Team Deletion Verification", True, "Team properly removed from database")
+        else:
+            self.log_test("Team Deletion Verification", False, "Team still exists after admin deletion")
+
     async def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Oupafamilly Backend Tests...")
