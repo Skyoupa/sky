@@ -73,31 +73,31 @@ const Accueil = () => {
       name: 'Counter-Strike 2', 
       description: 'FPS Tactique Compétitif',
       status: 'FOCUS PRINCIPAL',
-      gradient: 'from-orange-600 to-red-700'
+      backgroundImage: 'https://images.unsplash.com/photo-1580234811497-9df7fd2f357e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwxfHxnYW1pbmd8ZW58MHx8fGJsdWV8MTc1MzM0MTQxMXww&ixlib=rb-4.1.0&q=85'
     },
     { 
       name: 'World of Warcraft', 
       description: 'MMORPG Stratégique',
       status: 'ÉQUIPE ACTIVE',
-      gradient: 'from-yellow-600 to-orange-600'
+      backgroundImage: 'https://images.unsplash.com/photo-1504370164829-8c6ef0c41d06?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwyfHxnYW1pbmd8ZW58MHx8fGJsdWV8MTc1MzM0MTQxMXww&ixlib=rb-4.1.0&q=85'
     },
     { 
       name: 'League of Legends', 
       description: 'MOBA Esports',
       status: 'ÉQUIPE PRO',
-      gradient: 'from-blue-600 to-purple-600'
+      backgroundImage: 'https://images.unsplash.com/photo-1593280359364-5242f1958068?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHw0fHxnYW1pbmd8ZW58MHx8fGJsdWV8MTc1MzM0MTQxMXww&ixlib=rb-4.1.0&q=85'
     },
     { 
       name: 'StarCraft II', 
       description: 'RTS Compétitif',
       status: 'ÉLITE',
-      gradient: 'from-cyan-600 to-blue-600'
+      backgroundImage: 'https://images.unsplash.com/photo-1593280359364-5242f1958068?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHw0fHxnYW1pbmd8ZW58MHx8fGJsdWV8MTc1MzM0MTQxMXww&ixlib=rb-4.1.0&q=85'
     },
     { 
       name: 'Minecraft', 
       description: 'Créatif & Compétitif',
       status: 'COMMUNAUTÉ',
-      gradient: 'from-green-600 to-emerald-600'
+      backgroundImage: 'https://images.unsplash.com/photo-1580234811497-9df7fd2f357e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwxfHxnYW1pbmd8ZW58MHx8fGJsdWV8MTc1MzM0MTQxMXww&ixlib=rb-4.1.0&q=85'
     }
   ];
 
