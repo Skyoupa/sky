@@ -235,6 +235,19 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
             {loading ? 'Chargement...' : (mode === 'login' ? 'Se connecter' : 'S\'inscrire')}
           </button>
 
+          {mode === 'login' && (
+            <div className="forgot-password">
+              <button 
+                type="button" 
+                className="forgot-password-btn"
+                onClick={handleForgotPassword}
+                disabled={loading}
+              >
+                🔐 Mot de passe oublié ?
+              </button>
+            </div>
+          )}
+
           <div className="auth-switch">
             {mode === 'login' ? (
               <p>
