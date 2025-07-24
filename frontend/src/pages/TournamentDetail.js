@@ -632,7 +632,12 @@ const TournamentDetail = () => {
           background: rgba(255, 255, 255, 0.2);
         }
 
-        .status-open { background: #10b981; }
+        .status-open { 
+          background: #10b981; 
+          color: white;
+          font-weight: 600;
+          box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+        }
         .status-progress { background: #f59e0b; }
         .status-completed { background: #6b7280; }
         .status-cancelled { background: #ef4444; }
