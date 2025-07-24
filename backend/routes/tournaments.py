@@ -724,24 +724,27 @@ async def get_popular_tournament_templates():
 🏆 AVANTAGE 2v2: Communication simplifiée, stratégies duo"""
         },
         {
-            "name": "CS2 Pistol Only Tournament",
-            "description": "Tournoi exclusivement aux armes de poing",
+            "name": "CS2 Pistol Masters",
+            "description": "Tournoi exclusivement aux armes de poing - Maps Active Duty 2025",
             "game": "cs2",
             "tournament_type": "elimination",
             "max_participants": 16,
             "suggested_duration_hours": 3,
-            "rules": """🎯 FORMAT: Élimination directe 5v5
-🗺️ MAPS: Mirage, Dust2, Cache (format réduit)
-⏱️ DURÉE: Premier à 10 rounds (MR9)
-🔫 ARMES: Pistolets uniquement (Glock, USP-S, P250, Desert Eagle, etc.)
-💰 ÉCONOMIE: 8000$ start money, +800$ par round
+            "rules": """🎯 FORMAT: Élimination directe individuelle
+🗺️ MAPS 2025: Sites sélectionnés d'Ancient, Dust2, Inferno, Mirage (zones mid/close)
+⏱️ DURÉE: Premier à 16 frags par match
+🔫 ARMES: Pistolets uniquement (Glock-18, USP-S, P2000, P250, Five-SeveN, Tec-9, CZ-75, Desert Eagle)
+💰 ÉCONOMIE: 1000$ par round (round economy)
 📋 RÈGLES PISTOLET:
-- Aucune arme principale autorisée
-- Kevlar + casque autorisé
-- Grenades limitées: 1 par type max
-- Économie réduite pour encourager l'action
-- No-scope AWP interdit (pas d'AWP de toute façon!)
-🏆 SPÉCIFICITÉ: Met l'accent sur positioning et aim précis"""
+- Kevlar + casque autorisé (round 3+)
+- Grenades: 1 HE ou 1 Flash maximum
+- Kit défusal interdit
+- Zones de combat restreintes (no long angles)
+🎮 ROUNDS SPÉCIAUX:
+- Rounds 5,10,15: Deagle Only
+- Rounds 7,14: No Kevlar challenge
+- Round final: Classic pistols only (Glock/USP)
+🏆 TECHNIQUE: Focus sur movement, crosshair placement et game sense"""
         }
     ]
     
