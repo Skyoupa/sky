@@ -1401,7 +1401,7 @@ class OupafamillyTester:
             
             if status == 200:
                 # Register team for tournament
-                status, _ = await self.make_request("POST", f"/tournaments/{tournament_id}/register?team_id={team_id}", 
+                status, reg_response = await self.make_request("POST", f"/tournaments/{tournament_id}/register?team_id={team_id}", 
                                                  auth_token=self.test_user_token)
                 
                 if status == 200:
@@ -1443,7 +1443,9 @@ class OupafamillyTester:
                     else:
                         self.log_test("Tournament Status Update", False, "Could not complete tournament for cleanup testing")
                 else:
-                    self.log_test("Team Tournament Registration", False, "Could not register team for tournament")
+                    self.log_test("Team Tournament Registration", False, f"Could not register team for tournament: {status} - {reg_response}")
+                    # Still test clean deletion even if tournament registration fails
+                    self.log_test("Tournament Registration Debug", False, f"Registration failed with status {status}: {reg_response}")
             else:
                 self.log_test("Tournament Status Update", False, "Could not set tournament to open status")
         else:
