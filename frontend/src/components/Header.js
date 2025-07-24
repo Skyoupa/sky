@@ -134,7 +134,9 @@ const Header = () => {
                         <span className="welcome-text-mobile">Connecté : {user?.username}</span>
                       </Link>
                       {user?.role === 'admin' && (
-                        <span className="admin-badge-mobile">ADMIN</span>
+                        <Link to="/admin" className="admin-link-mobile" onClick={() => setIsMenuOpen(false)}>
+                          <span className="admin-badge-mobile">ADMIN</span>
+                        </Link>
                       )}
                     </div>
                     <button className="logout-btn-mobile" onClick={handleLogout}>
