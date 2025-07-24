@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import Accueil from './pages/Accueil';
 import Tutoriels from './pages/Tutoriels';
 import Tournois from './pages/Tournois';
+import TournamentDetail from './pages/TournamentDetail';
 import Communaute from './pages/Communaute';
 import APropos from './pages/APropos';
 import Profil from './pages/Profil';
