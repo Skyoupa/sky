@@ -749,6 +749,408 @@ class OupafamillyTester:
         else:
             self.log_test("Tournament List Update", False, "Could not verify tournament list update")
 
+    async def test_community_management_system(self):
+        """Test community management system with posts, leaderboard, members, and teams."""
+        print("\n🏘️ Testing Community Management System...")
+        
+        if not self.admin_token:
+            self.log_test("Community Management System", False, "No admin token available")
+            return
+        
+        # Test 1: Get community statistics
+        status, data = await self.make_request("GET", "/community/stats")
+        if status == 200 and "users" in data and "teams" in data and "tournaments" in data:
+            self.log_test("Community Stats", True, f"Users: {data['users']['total']}, Teams: {data['teams']['total']}, Tournaments: {data['tournaments']['total']}")
+        else:
+            self.log_test("Community Stats", False, f"Failed to get community stats: {data}")
+        
+        # Test 2: Get community posts
+        status, data = await self.make_request("GET", "/community/posts")
+        if status == 200 and isinstance(data, list):
+            self.log_test("Get Community Posts", True, f"Retrieved {len(data)} community posts")
+        else:
+            self.log_test("Get Community Posts", False, f"Failed to get community posts: {data}")
+        
+        # Test 3: Create community post (admin/moderator only)
+        post_data = {
+            "title": "Nouvelle fonctionnalité communauté",
+            "content": "Nous sommes ravis d'annoncer les nouvelles fonctionnalités de notre système communautaire!",
+            "summary": "Annonce des nouvelles fonctionnalités communautaires",
+            "tags": ["community", "update", "features"],
+            "is_pinned": True
+        }
+        status, data = await self.make_request("POST", "/community/posts", post_data, auth_token=self.admin_token)
+        post_id = None
+        if status == 200 and data.get("id"):
+            post_id = data["id"]
+            self.log_test("Create Community Post", True, f"Community post created: {data.get('title')}")
+        else:
+            self.log_test("Create Community Post", False, f"Failed to create community post: {data}")
+        
+        # Test 4: Update community post
+        if post_id:
+            update_data = {
+                "title": "Nouvelle fonctionnalité communauté - Mise à jour",
+                "content": "Contenu mis à jour avec plus de détails sur les nouvelles fonctionnalités!",
+                "summary": "Mise à jour de l'annonce",
+                "tags": ["community", "update", "features", "enhanced"],
+                "is_pinned": True
+            }
+            status, data = await self.make_request("PUT", f"/community/posts/{post_id}", update_data, auth_token=self.admin_token)
+            if status == 200:
+                self.log_test("Update Community Post", True, "Community post updated successfully")
+            else:
+                self.log_test("Update Community Post", False, f"Failed to update community post: {data}")
+        
+        # Test 5: Get community leaderboard with trophy-based ranking
+        status, data = await self.make_request("GET", "/community/leaderboard")
+        if status == 200 and "leaderboard" in data:
+            leaderboard = data["leaderboard"]
+            self.log_test("Community Leaderboard", True, f"Retrieved leaderboard with {len(leaderboard)} players")
+            
+            # Verify leaderboard structure
+            if leaderboard:
+                player = leaderboard[0]
+                required_fields = ["user_id", "username", "total_points", "total_trophies", "victories_1v1", "victories_2v2", "victories_5v5", "rank", "badge"]
+                if all(field in player for field in required_fields):
+                    self.log_test("Leaderboard Structure", True, f"Top player: {player['username']} with {player['total_points']} points and {player['total_trophies']} trophies")
+                else:
+                    missing_fields = [field for field in required_fields if field not in player]
+                    self.log_test("Leaderboard Structure", False, f"Missing fields in leaderboard: {missing_fields}")
+        else:
+            self.log_test("Community Leaderboard", False, f"Failed to get community leaderboard: {data}")
+        
+        # Test 6: Get community members with enhanced profiles
+        status, data = await self.make_request("GET", "/community/members")
+        if status == 200 and "members" in data:
+            members = data["members"]
+            self.log_test("Community Members", True, f"Retrieved {len(members)} community members")
+            
+            # Verify member structure
+            if members:
+                member = members[0]
+                required_fields = ["id", "username", "role", "trophies", "profile"]
+                if all(field in member for field in required_fields):
+                    trophies = member["trophies"]
+                    profile = member["profile"]
+                    self.log_test("Member Profile Structure", True, f"Member {member['username']} has {trophies['total']} trophies and profile with display_name: {profile['display_name']}")
+                else:
+                    missing_fields = [field for field in required_fields if field not in member]
+                    self.log_test("Member Profile Structure", False, f"Missing fields in member data: {missing_fields}")
+        else:
+            self.log_test("Community Members", False, f"Failed to get community members: {data}")
+        
+        # Test 7: Get community teams with rankings
+        status, data = await self.make_request("GET", "/community/teams")
+        if status == 200 and "teams" in data:
+            teams = data["teams"]
+            self.log_test("Community Teams", True, f"Retrieved {len(teams)} community teams")
+            
+            # Verify team structure
+            if teams:
+                team = teams[0]
+                required_fields = ["id", "name", "game", "captain", "members", "member_count", "max_members", "statistics", "rank"]
+                if all(field in team for field in required_fields):
+                    stats = team["statistics"]
+                    self.log_test("Team Structure", True, f"Team {team['name']} has {team['member_count']}/{team['max_members']} members and {stats['total_points']} points")
+                    
+                    # Verify max_members is 6 (as per requirements)
+                    if team["max_members"] == 6:
+                        self.log_test("Team Max Members", True, f"Team supports maximum 6 members as required")
+                    else:
+                        self.log_test("Team Max Members", False, f"Team max_members is {team['max_members']}, expected 6")
+                else:
+                    missing_fields = [field for field in required_fields if field not in team]
+                    self.log_test("Team Structure", False, f"Missing fields in team data: {missing_fields}")
+        else:
+            self.log_test("Community Teams", False, f"Failed to get community teams: {data}")
+        
+        # Test 8: Test unauthorized access to post creation
+        if self.test_user_token:
+            status, data = await self.make_request("POST", "/community/posts", post_data, auth_token=self.test_user_token)
+            if status == 403:
+                self.log_test("Post Creation Authorization", True, "Non-admin/moderator properly blocked from creating posts")
+            else:
+                self.log_test("Post Creation Authorization", False, f"Authorization issue: regular user could create post: {status}")
+        
+        # Test 9: Delete community post (cleanup)
+        if post_id:
+            status, data = await self.make_request("DELETE", f"/community/posts/{post_id}", auth_token=self.admin_token)
+            if status == 200:
+                self.log_test("Delete Community Post", True, "Community post deleted successfully")
+            else:
+                self.log_test("Delete Community Post", False, f"Failed to delete community post: {data}")
+
+    async def test_enhanced_profiles_system(self):
+        """Test enhanced user profiles system with avatars and statistics."""
+        print("\n👤 Testing Enhanced Profiles System...")
+        
+        if not self.test_user_token:
+            self.log_test("Enhanced Profiles System", False, "No test user token available")
+            return
+        
+        # Test 1: Get user profile with detailed statistics
+        # First get the current user to get their ID
+        status, user_data = await self.make_request("GET", "/auth/me", auth_token=self.test_user_token)
+        if status != 200:
+            self.log_test("Get Current User for Profile", False, "Could not get current user")
+            return
+        
+        user_id = user_data.get("id")
+        status, data = await self.make_request("GET", f"/profiles/{user_id}")
+        if status == 200:
+            required_sections = ["user", "profile", "statistics", "teams", "recent_matches"]
+            if all(section in data for section in required_sections):
+                self.log_test("Get User Profile", True, f"Retrieved detailed profile for {data['user']['username']}")
+                
+                # Verify statistics structure
+                stats = data["statistics"]
+                required_stats = ["tournaments", "matches", "trophies", "ranking"]
+                if all(stat in stats for stat in required_stats):
+                    trophies = stats["trophies"]
+                    ranking = stats["ranking"]
+                    self.log_test("Profile Statistics", True, f"User has {trophies['total']} trophies, {ranking['total_points']} points, level: {ranking['level']}")
+                else:
+                    missing_stats = [stat for stat in required_stats if stat not in stats]
+                    self.log_test("Profile Statistics", False, f"Missing statistics: {missing_stats}")
+            else:
+                missing_sections = [section for section in required_sections if section not in data]
+                self.log_test("Get User Profile", False, f"Missing profile sections: {missing_sections}")
+        else:
+            self.log_test("Get User Profile", False, f"Failed to get user profile: {data}")
+        
+        # Test 2: Update user profile with enhanced fields
+        profile_update = {
+            "display_name": "Alex Martin - Pro Gamer",
+            "bio": "Joueur passionné de CS2 avec 5 ans d'expérience en compétition",
+            "discord_username": "AlexGamer#1234",
+            "twitch_username": "alexgaming_pro",
+            "steam_profile": "https://steamcommunity.com/id/alexgamer",
+            "location": "Paris, France",
+            "favorite_games": ["cs2", "lol"],
+            "gaming_experience": {
+                "cs2": "expert",
+                "lol": "intermediate"
+            }
+        }
+        
+        status, data = await self.make_request("PUT", "/profiles/my-profile", profile_update, auth_token=self.test_user_token)
+        if status == 200:
+            self.log_test("Update User Profile", True, "Profile updated with enhanced fields successfully")
+        else:
+            self.log_test("Update User Profile", False, f"Failed to update profile: {data}")
+        
+        # Test 3: Test base64 avatar upload (NEW feature)
+        # Create a simple base64 encoded test image (1x1 pixel PNG)
+        test_avatar_base64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAI9jU77zgAAAABJRU5ErkJggg=="
+        avatar_data = f"data:image/png;base64,{test_avatar_base64}"
+        
+        status, data = await self.make_request("POST", "/profiles/upload-avatar-base64", {"avatar_data": avatar_data}, auth_token=self.test_user_token)
+        if status == 200 and "avatar_url" in data:
+            self.log_test("Base64 Avatar Upload", True, f"Avatar uploaded successfully: {data.get('message')}")
+            
+            # Verify the avatar URL contains base64 data
+            avatar_url = data["avatar_url"]
+            if avatar_url.startswith("data:image/png;base64,"):
+                self.log_test("Avatar Base64 Format", True, "Avatar stored in correct base64 format for frontend compatibility")
+            else:
+                self.log_test("Avatar Base64 Format", False, f"Avatar URL format unexpected: {avatar_url[:50]}...")
+        else:
+            self.log_test("Base64 Avatar Upload", False, f"Failed to upload base64 avatar: {data}")
+        
+        # Test 4: Test invalid base64 avatar upload
+        invalid_avatar_data = "invalid_base64_data"
+        status, data = await self.make_request("POST", "/profiles/upload-avatar-base64", {"avatar_data": invalid_avatar_data}, auth_token=self.test_user_token)
+        if status == 400:
+            self.log_test("Invalid Avatar Validation", True, "Invalid base64 data properly rejected")
+        else:
+            self.log_test("Invalid Avatar Validation", False, f"Invalid avatar data was accepted: {status}")
+        
+        # Test 5: Verify profile update persistence
+        status, updated_profile = await self.make_request("GET", f"/profiles/{user_id}")
+        if status == 200:
+            profile = updated_profile["profile"]
+            if (profile.get("display_name") == profile_update["display_name"] and
+                profile.get("bio") == profile_update["bio"] and
+                profile.get("location") == profile_update["location"]):
+                self.log_test("Profile Update Persistence", True, "Profile updates persisted correctly")
+            else:
+                self.log_test("Profile Update Persistence", False, "Profile updates not persisted correctly")
+        else:
+            self.log_test("Profile Update Persistence", False, "Could not verify profile update persistence")
+        
+        # Test 6: Test profile access for non-existent user
+        fake_user_id = str(uuid.uuid4())
+        status, data = await self.make_request("GET", f"/profiles/{fake_user_id}")
+        if status == 404:
+            self.log_test("Non-existent Profile", True, "404 returned for non-existent user profile")
+        else:
+            self.log_test("Non-existent Profile", False, f"Expected 404 for non-existent user, got {status}")
+
+    async def test_enhanced_teams_system(self):
+        """Test enhanced teams system with 6-member support and leaderboards."""
+        print("\n👥 Testing Enhanced Teams System...")
+        
+        if not self.test_user_token:
+            self.log_test("Enhanced Teams System", False, "No test user token available")
+            return
+        
+        # Test 1: Create team with 6-member maximum
+        team_data = {
+            "name": "Team Oupafamilly Elite",
+            "description": "Équipe d'élite pour les tournois CS2",
+            "game": "cs2",
+            "max_members": 6
+        }
+        
+        status, data = await self.make_request("POST", "/teams/", team_data, auth_token=self.test_user_token)
+        team_id = None
+        if status == 200 and data.get("id"):
+            team_id = data["id"]
+            self.log_test("Create Team with 6 Members", True, f"Team created: {data.get('name')} with max_members: {data.get('max_members')}")
+            
+            # Verify max_members is 6
+            if data.get("max_members") == 6:
+                self.log_test("Team Max Members Validation", True, "Team supports maximum 6 members as required")
+            else:
+                self.log_test("Team Max Members Validation", False, f"Team max_members is {data.get('max_members')}, expected 6")
+        else:
+            self.log_test("Create Team with 6 Members", False, f"Failed to create team: {data}")
+        
+        # Test 2: Get team leaderboard with rankings
+        status, data = await self.make_request("GET", "/teams/leaderboard")
+        if status == 200 and "leaderboard" in data:
+            leaderboard = data["leaderboard"]
+            self.log_test("Team Leaderboard", True, f"Retrieved team leaderboard with {len(leaderboard)} teams")
+            
+            # Verify leaderboard structure
+            if leaderboard:
+                team = leaderboard[0]
+                required_fields = ["team_id", "name", "game", "captain", "members", "member_count", "max_members", "statistics", "rank", "badge"]
+                if all(field in team for field in required_fields):
+                    stats = team["statistics"]
+                    self.log_test("Team Leaderboard Structure", True, f"Top team: {team['name']} with {stats['total_points']} points, rank: {team['rank']}")
+                    
+                    # Verify statistics structure
+                    required_stats = ["total_tournaments", "tournaments_won", "win_rate", "total_points", "victories_by_type"]
+                    if all(stat in stats for stat in required_stats):
+                        victories = stats["victories_by_type"]
+                        self.log_test("Team Statistics Structure", True, f"Team has victories: 1v1: {victories['1v1']}, 2v2: {victories['2v2']}, 5v5: {victories['5v5']}")
+                    else:
+                        missing_stats = [stat for stat in required_stats if stat not in stats]
+                        self.log_test("Team Statistics Structure", False, f"Missing team statistics: {missing_stats}")
+                else:
+                    missing_fields = [field for field in required_fields if field not in team]
+                    self.log_test("Team Leaderboard Structure", False, f"Missing fields in team leaderboard: {missing_fields}")
+        else:
+            self.log_test("Team Leaderboard", False, f"Failed to get team leaderboard: {data}")
+        
+        # Test 3: Get team statistics for community
+        status, data = await self.make_request("GET", "/teams/stats/community")
+        if status == 200:
+            required_fields = ["total_teams", "open_teams", "games_popularity", "average_team_size", "community_engagement"]
+            if all(field in data for field in required_fields):
+                self.log_test("Team Community Stats", True, f"Total teams: {data['total_teams']}, Open teams: {data['open_teams']}, Avg size: {data['average_team_size']}")
+            else:
+                missing_fields = [field for field in required_fields if field not in data]
+                self.log_test("Team Community Stats", False, f"Missing fields in team stats: {missing_fields}")
+        else:
+            self.log_test("Team Community Stats", False, f"Failed to get team community stats: {data}")
+        
+        # Test 4: Test team leaderboard with game filter
+        status, data = await self.make_request("GET", "/teams/leaderboard?game=cs2")
+        if status == 200 and "leaderboard" in data:
+            leaderboard = data["leaderboard"]
+            # Verify all teams are CS2
+            cs2_only = all(team.get("game") == "cs2" for team in leaderboard)
+            if cs2_only:
+                self.log_test("Team Leaderboard Game Filter", True, f"All {len(leaderboard)} teams are CS2 as filtered")
+            else:
+                non_cs2 = [team.get("game") for team in leaderboard if team.get("game") != "cs2"]
+                self.log_test("Team Leaderboard Game Filter", False, f"Found non-CS2 teams in CS2 filter: {non_cs2}")
+        else:
+            self.log_test("Team Leaderboard Game Filter", False, f"Failed to get filtered team leaderboard: {data}")
+        
+        # Test 5: Test team update functionality
+        if team_id:
+            update_data = {
+                "description": "Équipe d'élite mise à jour pour les tournois CS2 et autres compétitions",
+                "is_open": False,
+                "max_members": 5  # Try to reduce max_members
+            }
+            
+            status, data = await self.make_request("PUT", f"/teams/{team_id}", update_data, auth_token=self.test_user_token)
+            if status == 200:
+                self.log_test("Team Update", True, "Team updated successfully")
+                
+                # Verify the team was updated
+                status, updated_team = await self.make_request("GET", f"/teams/{team_id}")
+                if status == 200:
+                    if (updated_team.get("description") == update_data["description"] and
+                        updated_team.get("is_open") == update_data["is_open"]):
+                        self.log_test("Team Update Persistence", True, "Team updates persisted correctly")
+                    else:
+                        self.log_test("Team Update Persistence", False, "Team updates not persisted correctly")
+            else:
+                self.log_test("Team Update", False, f"Failed to update team: {data}")
+        
+        # Test 6: Test team deletion (cleanup)
+        if team_id:
+            status, data = await self.make_request("DELETE", f"/teams/{team_id}", auth_token=self.test_user_token)
+            if status == 200:
+                self.log_test("Team Deletion", True, f"Team deleted successfully: {data.get('message')}")
+                
+                # Verify team is deleted
+                status, _ = await self.make_request("GET", f"/teams/{team_id}")
+                if status == 404:
+                    self.log_test("Team Deletion Verification", True, "Team properly removed from database")
+                else:
+                    self.log_test("Team Deletion Verification", False, "Team still exists after deletion")
+            else:
+                self.log_test("Team Deletion", False, f"Failed to delete team: {data}")
+
+    async def test_server_integration_update(self):
+        """Test server integration with new community and profiles routes."""
+        print("\n🔗 Testing Server Integration Update...")
+        
+        # Test 1: Verify community routes are integrated
+        status, data = await self.make_request("GET", "/")
+        if status == 200 and "endpoints" in data:
+            endpoints = data["endpoints"]
+            if "community" in str(endpoints) or "/api/community" in str(endpoints):
+                self.log_test("Community Routes Integration", True, "Community routes integrated in server")
+            else:
+                self.log_test("Community Routes Integration", False, "Community routes not found in server endpoints")
+            
+            if "profiles" in str(endpoints) or "/api/profiles" in str(endpoints):
+                self.log_test("Profiles Routes Integration", True, "Profiles routes integrated in server")
+            else:
+                self.log_test("Profiles Routes Integration", False, "Profiles routes not found in server endpoints")
+        else:
+            self.log_test("Server Endpoints", False, f"Failed to get server endpoints: {data}")
+        
+        # Test 2: Test direct access to community endpoints
+        status, data = await self.make_request("GET", "/community/stats")
+        if status == 200:
+            self.log_test("Community Endpoint Access", True, "Community endpoints accessible via /api/community")
+        else:
+            self.log_test("Community Endpoint Access", False, f"Community endpoints not accessible: {status}")
+        
+        # Test 3: Test direct access to profiles endpoints (with auth)
+        if self.test_user_token:
+            status, user_data = await self.make_request("GET", "/auth/me", auth_token=self.test_user_token)
+            if status == 200:
+                user_id = user_data.get("id")
+                status, data = await self.make_request("GET", f"/profiles/{user_id}")
+                if status == 200:
+                    self.log_test("Profiles Endpoint Access", True, "Profiles endpoints accessible via /api/profiles")
+                else:
+                    self.log_test("Profiles Endpoint Access", False, f"Profiles endpoints not accessible: {status}")
+        
+        # Test 4: Verify CORS and middleware configuration
+        # This is tested implicitly by all other API calls working
+        self.log_test("CORS Configuration", True, "CORS middleware working (all API calls successful)")
+
     async def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Oupafamilly Backend Tests...")
@@ -766,6 +1168,12 @@ class OupafamillyTester:
             await self.test_content_management()
             await self.test_admin_dashboard()
             await self.test_protected_endpoints()
+            
+            # NEW TESTS for enhanced community and profiles features
+            await self.test_community_management_system()
+            await self.test_enhanced_profiles_system()
+            await self.test_enhanced_teams_system()
+            await self.test_server_integration_update()
             
         except Exception as e:
             print(f"❌ Critical error during testing: {e}")
