@@ -213,6 +213,18 @@ const Header = () => {
           font-size: 10px;
           font-weight: bold;
           text-transform: uppercase;
+          text-decoration: none;
+          transition: all 0.3s;
+        }
+
+        .admin-link {
+          text-decoration: none;
+        }
+
+        .admin-link:hover .admin-badge {
+          background: linear-gradient(45deg, #dc2626, #b91c1c);
+          transform: translateY(-1px);
+          box-shadow: 0 3px 8px rgba(239, 68, 68, 0.3);
         }
 
         .logout-btn {
@@ -297,6 +309,11 @@ const Header = () => {
           font-size: 10px;
           font-weight: bold;
           text-transform: uppercase;
+          text-decoration: none;
+        }
+
+        .admin-link-mobile {
+          text-decoration: none;
         }
 
         .logout-btn-mobile {
