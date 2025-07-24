@@ -56,7 +56,7 @@ const AdminUsers = () => {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ status: newStatus })
+        body: JSON.stringify(newStatus)
       });
 
       if (response.ok) {
@@ -79,7 +79,7 @@ const AdminUsers = () => {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ role: newRole })
+        body: JSON.stringify(newRole)
       });
 
       if (response.ok) {
