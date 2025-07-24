@@ -333,7 +333,7 @@ async def get_welcome_content():
             "welcome_message": "Bienvenue dans la communauté Oupafamilly ! 🎮",
             "important_announcements": [News(**news) for news in welcome_news],
             "getting_started_tutorials": [Tutorial(**tutorial) for tutorial in beginner_tutorials],
-            "upcoming_events": upcoming_tournaments,
+            "upcoming_events": [Tournament(**tournament) for tournament in upcoming_tournaments],
             "community_tips": [
                 "Complète ton profil avec tes jeux favoris",
                 "Consulte les tutoriels pour améliorer tes compétences",
