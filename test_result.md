@@ -296,7 +296,10 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "CS2 Tournament Templates Integration"
+    - "Frontend CS2 Focus Update"
+    - "Public Tournament Page CS2 Integration"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
