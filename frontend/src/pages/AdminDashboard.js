@@ -507,6 +507,29 @@ const AdminDashboard = () => {
           color: #d97706;
         }
 
+        .section-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+        }
+
+        .close-section-btn {
+          background: #ef4444;
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 6px;
+          font-size: 14px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: background-color 0.3s;
+        }
+
+        .close-section-btn:hover {
+          background: #dc2626;
+        }
+
         .loading, .error, .access-denied {
           text-align: center;
           padding: 60px 20px;
