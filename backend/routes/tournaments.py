@@ -125,16 +125,23 @@ async def register_for_tournament(
         tournament_requires_team = False
         tournament_name = tournament.title.lower()
         
-        if "2v2" in tournament_name or "2vs2" in tournament_name or tournament.max_participants <= 4:
-            tournament_requires_team = True
-        elif "5v5" in tournament_name or "5vs5" in tournament_name or tournament.max_participants >= 5:
-            tournament_requires_team = True
-        elif "1v1" in tournament_name or "1vs1" in tournament_name or tournament.max_participants <= 2:
+        # Check tournament name patterns first (most reliable)
+        if "1v1" in tournament_name or "1vs1" in tournament_name:
             tournament_requires_team = False
+        elif "2v2" in tournament_name or "2vs2" in tournament_name:
+            tournament_requires_team = True
+        elif "5v5" in tournament_name or "5vs5" in tournament_name:
+            tournament_requires_team = True
         else:
-            # Default logic based on max_participants
-            if tournament.max_participants > 2:
+            # Fallback to max_participants logic
+            # For individual tournaments: max_participants typically 8, 16, 32, etc.
+            # For team tournaments: max_participants typically 4 (2v2), 10 (5v5), etc.
+            # If max_participants is small (2-4), it's likely a team tournament
+            # If max_participants is larger (8+), it's likely individual
+            if tournament.max_participants <= 4:
                 tournament_requires_team = True
+            else:
+                tournament_requires_team = False
         
         participant_id = current_user.id
         
