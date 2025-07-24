@@ -47,7 +47,7 @@ Counter-Strike 2 représente l'évolution majeure de la série culte, avec une i
    - Facilite les bunny hops et jump-peeks
 
 2. **Walk en hold** : Plus de contrôle tactique
-   - \`bind shift "+speed"\`
+- bind shift "+speed"
 
 3. **Crouch optimisé** : 
    - \`bind ctrl "+duck"\`
