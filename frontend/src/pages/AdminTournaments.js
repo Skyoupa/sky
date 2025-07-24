@@ -609,6 +609,46 @@ const AdminTournaments = () => {
           color: #333333;
         }
 
+        .template-rules {
+          margin: 15px 0;
+        }
+
+        .template-rules details {
+          cursor: pointer;
+        }
+
+        .template-rules summary {
+          font-weight: 600;
+          color: #1e3a8a;
+          padding: 8px 12px;
+          background: #f1f5f9;
+          border-radius: 6px;
+          border: 1px solid #e2e8f0;
+          outline: none;
+          user-select: none;
+        }
+
+        .template-rules summary:hover {
+          background: #e2e8f0;
+        }
+
+        .rules-content {
+          margin-top: 10px;
+          padding: 15px;
+          background: #fafbfc;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          max-height: 200px;
+          overflow-y: auto;
+        }
+
+        .rule-line {
+          font-size: 13px;
+          line-height: 1.4;
+          color: #1a1a1a;
+          margin-bottom: 4px;
+        }
+
         .btn-template {
           width: 100%;
           background: #1e3a8a;
