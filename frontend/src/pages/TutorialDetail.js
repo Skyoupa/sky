@@ -367,11 +367,9 @@ Le counter-strafing est LA technique fondamentale qui sépare les débutants des
 - **Timing critique** : 33-66ms maximum pour l'input opposé
 
 **Commandes d'entraînement :**
-```
 sv_cheats 1
 sv_showimpacts 1
 weapon_debug_spread_show 1
-```
 
 ### 📏 Vitesses de déplacement (valeurs exactes)
 - **Marche normale** : 250 unités/seconde
