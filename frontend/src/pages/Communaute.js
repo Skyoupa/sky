@@ -253,7 +253,17 @@ const Communaute = () => {
           {/* Members View */}
           {activeView === 'membres' && (
             <div className="members-grid-pro">
-              {members.map(member => (
+              {filteredMembers.length === 0 ? (
+                <div className="no-results">
+                  <p>
+                    {searchTerm 
+                      ? `Aucun membre trouvé pour "${searchTerm}"` 
+                      : 'Aucun membre pour le moment'
+                    }
+                  </p>
+                </div>
+              ) : (
+                filteredMembers.map(member => (
                 <div key={member.id} className="member-card-pro">
                   <div className="member-header-pro">
                     <div className="member-avatar-pro">
