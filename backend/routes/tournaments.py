@@ -242,12 +242,9 @@ async def unregister_from_tournament(
             detail="Error unregistering from tournament"
         )
 
-@router.delete("/{tournament_id}")
-async def delete_tournament(
-    tournament_id: str,
-    current_user: User = Depends(get_current_active_user)
-):
-    """Delete a tournament. Only organizer or admin can do this."""
+@router.get("/{tournament_id}/participants-info")
+async def get_tournament_participants_info(tournament_id: str):
+    """Get detailed information about tournament participants (users and teams)."""
     try:
         # Get tournament
         tournament_data = await db.tournaments.find_one({"id": tournament_id})
@@ -256,50 +253,56 @@ async def delete_tournament(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Tournament not found"
             )
-        
+
         tournament = Tournament(**tournament_data)
-        
-        # Check permissions
-        if tournament.organizer_id != current_user.id and not is_admin(current_user):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Only tournament organizer or admin can delete tournament"
-            )
-        
-        # Check if tournament can be deleted (prevent deletion of active tournaments)
-        if tournament.status == TournamentStatus.IN_PROGRESS:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Cannot delete a tournament in progress"
-            )
-        
-        # Remove tournament participants' registration from user profiles
+        participants_info = []
+
         for participant_id in tournament.participants:
-            await db.user_profiles.update_one(
-                {"user_id": participant_id},
-                {"$inc": {"total_tournaments": -1}}
-            )
-        
-        # Delete the tournament
-        delete_result = await db.tournaments.delete_one({"id": tournament_id})
-        
-        if delete_result.deleted_count == 0:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to delete tournament"
-            )
-        
-        logger.info(f"Tournament {tournament.title} deleted by {current_user.username}")
-        
-        return {"message": f"Tournament '{tournament.title}' deleted successfully"}
+            # Try to find as user first
+            user_data = await db.users.find_one({"id": participant_id})
+            if user_data:
+                participants_info.append({
+                    "id": participant_id,
+                    "type": "user",
+                    "name": user_data["username"],
+                    "display_name": user_data["username"]
+                })
+                continue
+            
+            # Try to find as team
+            team_data = await db.teams.find_one({"id": participant_id})
+            if team_data:
+                participants_info.append({
+                    "id": participant_id,
+                    "type": "team", 
+                    "name": team_data["name"],
+                    "display_name": f"{team_data['name']} ({len(team_data['members'])}/{team_data['max_members']})",
+                    "members_count": len(team_data["members"]),
+                    "max_members": team_data["max_members"]
+                })
+                continue
+            
+            # Fallback for unknown participants
+            participants_info.append({
+                "id": participant_id,
+                "type": "unknown",
+                "name": f"Participant {participant_id[:8]}",
+                "display_name": f"Participant {participant_id[:8]}"
+            })
+
+        return {
+            "tournament_id": tournament_id,
+            "tournament_type": tournament.tournament_type,
+            "participants": participants_info
+        }
         
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error deleting tournament {tournament_id}: {str(e)}")
+        logger.error(f"Error getting tournament participants info: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error deleting tournament"
+            detail="Error fetching participants information"
         )
 
 @router.put("/{tournament_id}/status")
