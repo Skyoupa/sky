@@ -272,15 +272,18 @@ backend:
 
   - task: "Tournament Deletion Feature"
     implemented: true
-    working: false
+    working: true
     file: "/app/backend/routes/tournaments.py,/app/frontend/src/pages/AdminTournaments.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Added tournament deletion functionality with DELETE endpoint in backend and deletion interface in admin frontend. Includes safety checks (no deletion during in_progress status), double confirmation prompts, and automatic cleanup of participant registrations."
+      - working: true
+        agent: "testing"
+        comment: "✅ TOURNAMENT DELETION FEATURE FULLY FUNCTIONAL! Comprehensive testing completed with 100% success rate (11/11 deletion-specific tests passed). All security and functionality requirements met: 1) DELETE /tournaments/{id} endpoint working perfectly. 2) Permission checks working - only admin or organizer can delete (403 for unauthorized users). 3) Protection against deleting in-progress tournaments working (400 error returned). 4) Automatic cleanup of participant registrations working - user profile tournament counts properly decremented. 5) Security validations working: 404 for non-existent tournaments, 401/403 for unauthorized access. 6) Tournament list properly updated after deletions. 7) Database integrity maintained. 8) All edge cases handled correctly. Backend deletion system is production-ready for Oupafamilly community."
 
 frontend:
   - task: "Frontend Pages Structure"
