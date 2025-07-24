@@ -386,8 +386,8 @@ class OupafamillyTester:
             "title": "Test d'annonce",
             "message": "Ceci est un test d'annonce pour la communauté Oupafamilly!"
         }
-        status, data = await self.make_request("POST", "/admin/announcements/broadcast", 
-                                              announcement_data, 
+        status, data = await self.make_request("POST", "/admin/announcements/broadcast?title=Test%20d%27annonce&message=Ceci%20est%20un%20test%20d%27annonce%20pour%20la%20communaut%C3%A9%20Oupafamilly!", 
+                                              None, 
                                               auth_token=self.admin_token)
         if status == 200 and data.get("announcement_id"):
             self.log_test("Broadcast Announcement", True, f"Announcement broadcasted: {data.get('title')}")
