@@ -2,290 +2,312 @@ import React, { useState } from 'react';
 
 const Tutoriels = () => {
   const [selectedGame, setSelectedGame] = useState('all');
-  const [selectedLevel, setSelectedLevel] = useState('all');
 
   const games = [
     {
       id: 'cs2',
       name: 'Counter-Strike 2',
-      icon: '🔫',
-      description: 'FPS tactique par excellence',
-      color: 'orange',
-      tutorials: {
-        debutant: [
-          { title: 'Les bases du gameplay', duration: '15 min', difficulty: 'Facile' },
-          { title: 'Comprendre les armes', duration: '20 min', difficulty: 'Facile' },
-          { title: 'Les cartes essentielles', duration: '25 min', difficulty: 'Facile' }
-        ],
-        intermediaire: [
-          { title: 'Stratégies d\'équipe', duration: '30 min', difficulty: 'Moyen' },
-          { title: 'Gestion de l\'économie', duration: '25 min', difficulty: 'Moyen' },
-          { title: 'Positionnement tactique', duration: '35 min', difficulty: 'Moyen' }
-        ],
-        expert: [
-          { title: 'Smokes et utilités avancées', duration: '40 min', difficulty: 'Difficile' },
-          { title: 'Anti-stratégies pro', duration: '45 min', difficulty: 'Difficile' },
-          { title: 'Aim et reflexes de pro', duration: '50 min', difficulty: 'Difficile' }
-        ]
-      }
+      description: 'FPS Tactique Compétitif',
+      color: '#FF6B35',
+      bgGradient: 'from-orange-600 via-red-600 to-orange-800',
+      tutorials: [
+        { title: 'Bases du gameplay CS2', level: 'Débutant', duration: '15 min', type: 'Fundamentals' },
+        { title: 'Maîtrise des armes', level: 'Débutant', duration: '20 min', type: 'Weapons' },
+        { title: 'Connaissance des maps', level: 'Débutant', duration: '25 min', type: 'Maps' },
+        { title: 'Stratégies d\'équipe', level: 'Intermédiaire', duration: '30 min', type: 'Tactics' },
+        { title: 'Économie et management', level: 'Intermédiaire', duration: '25 min', type: 'Economy' },
+        { title: 'Positionnement avancé', level: 'Intermédiaire', duration: '35 min', type: 'Positioning' },
+        { title: 'Smokes et utilitaires pro', level: 'Expert', duration: '40 min', type: 'Utilities' },
+        { title: 'Anti-stratégies et reads', level: 'Expert', duration: '45 min', type: 'Analysis' },
+        { title: 'Aim et mechanics pro', level: 'Expert', duration: '50 min', type: 'Mechanics' }
+      ]
     },
     {
       id: 'wow',
       name: 'World of Warcraft',
-      icon: '⚔️',
-      description: 'MMORPG légendaire',
-      color: 'yellow',
-      tutorials: {
-        debutant: [
-          { title: 'Créer son personnage', duration: '20 min', difficulty: 'Facile' },
-          { title: 'Les bases du combat', duration: '25 min', difficulty: 'Facile' },
-          { title: 'Quêtes et exploration', duration: '30 min', difficulty: 'Facile' }
-        ],
-        intermediaire: [
-          { title: 'Donjons et instances', duration: '35 min', difficulty: 'Moyen' },
-          { title: 'Système de talents', duration: '30 min', difficulty: 'Moyen' },
-          { title: 'Craft et professions', duration: '40 min', difficulty: 'Moyen' }
-        ],
-        expert: [
-          { title: 'Raids mythiques', duration: '60 min', difficulty: 'Difficile' },
-          { title: 'PvP compétitif', duration: '50 min', difficulty: 'Difficile' },
-          { title: 'Optimisation DPS', duration: '45 min', difficulty: 'Difficile' }
-        ]
-      }
+      description: 'MMORPG Stratégique',
+      color: '#F4D03F',
+      bgGradient: 'from-yellow-500 via-amber-600 to-orange-700',
+      tutorials: [
+        { title: 'Création et classes', level: 'Débutant', duration: '20 min', type: 'Character' },
+        { title: 'Combat et quêtes', level: 'Débutant', duration: '25 min', type: 'Combat' },
+        { title: 'Interface et macros', level: 'Débutant', duration: '30 min', type: 'UI' },
+        { title: 'Donjons et mécaniques', level: 'Intermédiaire', duration: '35 min', type: 'Dungeons' },
+        { title: 'Talents et builds', level: 'Intermédiaire', duration: '30 min', type: 'Builds' },
+        { title: 'Professions et craft', level: 'Intermédiaire', duration: '40 min', type: 'Crafting' },
+        { title: 'Raids mythiques', level: 'Expert', duration: '60 min', type: 'Raids' },
+        { title: 'PvP Arena et RBG', level: 'Expert', duration: '50 min', type: 'PvP' },
+        { title: 'Optimisation DPS/HPS', level: 'Expert', duration: '45 min', type: 'Optimization' }
+      ]
     },
     {
       id: 'lol',
       name: 'League of Legends',
-      icon: '🏟️',
-      description: 'MOBA compétitif',
-      color: 'blue',
-      tutorials: {
-        debutant: [
-          { title: 'Interface et contrôles', duration: '15 min', difficulty: 'Facile' },
-          { title: 'Champions et rôles', duration: '25 min', difficulty: 'Facile' },
-          { title: 'Last hit et farm', duration: '20 min', difficulty: 'Facile' }
-        ],
-        intermediaire: [
-          { title: 'Vision et ward', duration: '30 min', difficulty: 'Moyen' },
-          { title: 'Jungle et ganks', duration: '35 min', difficulty: 'Moyen' },
-          { title: 'Teamfights', duration: '40 min', difficulty: 'Moyen' }
-        ],
-        expert: [
-          { title: 'Macro game avancé', duration: '50 min', difficulty: 'Difficile' },
-          { title: 'Draft et méta', duration: '45 min', difficulty: 'Difficile' },
-          { title: 'Carry en solo queue', duration: '55 min', difficulty: 'Difficile' }
-        ]
-      }
+      description: 'MOBA Esports',
+      color: '#3498DB',
+      bgGradient: 'from-blue-500 via-purple-600 to-blue-800',
+      tutorials: [
+        { title: 'Interface et contrôles', level: 'Débutant', duration: '15 min', type: 'Basics' },
+        { title: 'Champions et rôles', level: 'Débutant', duration: '25 min', type: 'Champions' },
+        { title: 'Last hit et farming', level: 'Débutant', duration: '20 min', type: 'Farming' },
+        { title: 'Vision et warding', level: 'Intermédiaire', duration: '30 min', type: 'Vision' },
+        { title: 'Jungle et objectives', level: 'Intermédiaire', duration: '35 min', type: 'Jungle' },
+        { title: 'Teamfights positioning', level: 'Intermédiaire', duration: '40 min', type: 'Teamfight' },
+        { title: 'Macro game avancé', level: 'Expert', duration: '50 min', type: 'Macro' },
+        { title: 'Draft et meta analysis', level: 'Expert', duration: '45 min', type: 'Draft' },
+        { title: 'Solo queue climbing', level: 'Expert', duration: '55 min', type: 'Climbing' }
+      ]
     },
     {
       id: 'sc2',
       name: 'StarCraft II',
-      icon: '🚀',
-      description: 'RTS stratégique',
-      color: 'purple',
-      tutorials: {
-        debutant: [
-          { title: 'Les trois races', duration: '25 min', difficulty: 'Facile' },
-          { title: 'Ressources et économie', duration: '20 min', difficulty: 'Facile' },
-          { title: 'Builds de base', duration: '30 min', difficulty: 'Facile' }
-        ],
-        intermediaire: [
-          { title: 'Micro et macro', duration: '40 min', difficulty: 'Moyen' },
-          { title: 'Timings d\'attaque', duration: '35 min', difficulty: 'Moyen' },
-          { title: 'Scouting efficace', duration: '30 min', difficulty: 'Moyen' }
-        ],
-        expert: [
-          { title: 'Builds pro meta', duration: '60 min', difficulty: 'Difficile' },
-          { title: 'APM et rapidité', duration: '45 min', difficulty: 'Difficile' },
-          { title: 'Analyse de replays', duration: '50 min', difficulty: 'Difficile' }
-        ]
-      }
+      description: 'RTS Stratégique',
+      color: '#9B59B6',
+      bgGradient: 'from-purple-500 via-cyan-600 to-blue-700',
+      tutorials: [
+        { title: 'Les trois races', level: 'Débutant', duration: '25 min', type: 'Races' },
+        { title: 'Économie et ressources', level: 'Débutant', duration: '20 min', type: 'Economy' },
+        { title: 'Build orders de base', level: 'Débutant', duration: '30 min', type: 'Builds' },
+        { title: 'Micro et macro', level: 'Intermédiaire', duration: '40 min', type: 'Control' },
+        { title: 'Timings d\'attaque', level: 'Intermédiaire', duration: '35 min', type: 'Timing' },
+        { title: 'Scouting efficace', level: 'Intermédiaire', duration: '30 min', type: 'Scouting' },
+        { title: 'Builds pro meta', level: 'Expert', duration: '60 min', type: 'Professional' },
+        { title: 'APM et vitesse', level: 'Expert', duration: '45 min', type: 'Speed' },
+        { title: 'Analyse de replays', level: 'Expert', duration: '50 min', type: 'Analysis' }
+      ]
     },
     {
       id: 'minecraft',
       name: 'Minecraft',
-      icon: '⛏️',
-      description: 'Créativité sans limites',
-      color: 'green',
-      tutorials: {
-        debutant: [
-          { title: 'Survie première nuit', duration: '20 min', difficulty: 'Facile' },
-          { title: 'Craft et outils', duration: '25 min', difficulty: 'Facile' },
-          { title: 'Construction de base', duration: '30 min', difficulty: 'Facile' }
-        ],
-        intermediaire: [
-          { title: 'Redstone et automatisation', duration: '45 min', difficulty: 'Moyen' },
-          { title: 'Fermes et élevage', duration: '35 min', difficulty: 'Moyen' },
-          { title: 'Exploration avancée', duration: '40 min', difficulty: 'Moyen' }
-        ],
-        expert: [
-          { title: 'Circuits redstone complexes', duration: '60 min', difficulty: 'Difficile' },
-          { title: 'Architectures monumentales', duration: '90 min', difficulty: 'Difficile' },
-          { title: 'Mods et customisation', duration: '70 min', difficulty: 'Difficile' }
-        ]
-      }
+      description: 'Créatif & Compétitif',
+      color: '#27AE60',
+      bgGradient: 'from-green-500 via-emerald-600 to-green-700',
+      tutorials: [
+        { title: 'Survie première nuit', level: 'Débutant', duration: '20 min', type: 'Survival' },
+        { title: 'Crafting et outils', level: 'Débutant', duration: '25 min', type: 'Crafting' },
+        { title: 'Construction basics', level: 'Débutant', duration: '30 min', type: 'Building' },
+        { title: 'Redstone fundamentals', level: 'Intermédiaire', duration: '45 min', type: 'Redstone' },
+        { title: 'Fermes automatiques', level: 'Intermédiaire', duration: '35 min', type: 'Farming' },
+        { title: 'Exploration avancée', level: 'Intermédiaire', duration: '40 min', type: 'Exploration' },
+        { title: 'Redstone complexe', level: 'Expert', duration: '60 min', type: 'Advanced' },
+        { title: 'Architectures monumentales', level: 'Expert', duration: '90 min', type: 'Architecture' },
+        { title: 'Mods et customisation', level: 'Expert', duration: '70 min', type: 'Modding' }
+      ]
     }
   ];
 
-  const levels = [
-    { id: 'all', name: 'Tous niveaux' },
-    { id: 'debutant', name: 'Débutant' },
-    { id: 'intermediaire', name: 'Intermédiaire' },
-    { id: 'expert', name: 'Expert' }
-  ];
+  const levels = ['Débutant', 'Intermédiaire', 'Expert'];
 
-  const getDifficultyColor = (difficulty) => {
-    switch (difficulty) {
-      case 'Facile': return 'green';
-      case 'Moyen': return 'orange';
-      case 'Difficile': return 'red';
-      default: return 'blue';
+  const getDifficultyColor = (level) => {
+    switch (level) {
+      case 'Débutant': return 'difficulty-beginner';
+      case 'Intermédiaire': return 'difficulty-intermediate';
+      case 'Expert': return 'difficulty-expert';
+      default: return 'difficulty-default';
     }
   };
 
   const filteredTutorials = () => {
-    let filtered = [];
+    if (selectedGame === 'all') {
+      return games.flatMap(game => 
+        game.tutorials.map(tutorial => ({
+          ...tutorial,
+          game: game.name,
+          gameId: game.id,
+          gameColor: game.color
+        }))
+      );
+    }
     
-    games.forEach(game => {
-      if (selectedGame === 'all' || selectedGame === game.id) {
-        Object.entries(game.tutorials).forEach(([level, tutorials]) => {
-          if (selectedLevel === 'all' || selectedLevel === level) {
-            tutorials.forEach(tutorial => {
-              filtered.push({
-                ...tutorial,
-                game: game.name,
-                gameIcon: game.icon,
-                level: level,
-                gameColor: game.color
-              });
-            });
-          }
-        });
-      }
-    });
-    
-    return filtered;
+    const selectedGameData = games.find(g => g.id === selectedGame);
+    return selectedGameData ? selectedGameData.tutorials.map(tutorial => ({
+      ...tutorial,
+      game: selectedGameData.name,
+      gameId: selectedGameData.id,
+      gameColor: selectedGameData.color
+    })) : [];
   };
 
   return (
-    <div className="page">
+    <div className="page-pro">
       {/* Header */}
-      <section className="page-header">
-        <div className="container">
-          <h1 className="page-title">Tutoriels Gaming</h1>
-          <p className="page-subtitle">
-            Maîtrisez vos jeux favoris avec nos guides détaillés pour tous les niveaux
+      <section className="page-header-pro tutorials-header">
+        <div className="tutorials-bg">
+          <div className="tutorials-overlay"></div>
+          <div className="tutorials-pattern"></div>
+        </div>
+        <div className="container-pro">
+          <div className="tutorials-badge">
+            <svg className="tutorials-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L15.09 8.26L22 9L16 14.74L17.18 21.02L12 18.77L6.82 21.02L8 14.74L2 9L8.91 8.26L12 2Z"/>
+            </svg>
+            <span>GUIDES D'ÉLITE</span>
+          </div>
+          <h1 className="page-title-pro">TUTORIELS GAMING</h1>
+          <p className="page-subtitle-pro">
+            Formations professionnelles • Techniques avancées • Progression garantie
           </p>
         </div>
       </section>
 
-      {/* Filters */}
-      <section className="filters-section">
-        <div className="container">
-          <div className="filters">
-            <div className="filter-group">
-              <label className="filter-label">Jeu :</label>
-              <select 
-                className="filter-select"
-                value={selectedGame}
-                onChange={(e) => setSelectedGame(e.target.value)}
-              >
-                <option value="all">Tous les jeux</option>
-                {games.map(game => (
-                  <option key={game.id} value={game.id}>
-                    {game.name}
-                  </option>
-                ))}
-              </select>
+      {/* Games Selection */}
+      <section className="section-pro">
+        <div className="container-pro">
+          <div className="section-header-pro">
+            <div className="section-badge">
+              <span>NOS SPÉCIALITÉS</span>
             </div>
-            
-            <div className="filter-group">
-              <label className="filter-label">Niveau :</label>
-              <select 
-                className="filter-select"
-                value={selectedLevel}
-                onChange={(e) => setSelectedLevel(e.target.value)}
-              >
-                {levels.map(level => (
-                  <option key={level.id} value={level.id}>
-                    {level.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <h2 className="section-title-pro">Choisissez votre domaine</h2>
+            <p className="section-subtitle-pro">5 jeux, expertise garantie à tous les niveaux</p>
           </div>
-        </div>
-      </section>
-
-      {/* Games Overview */}
-      <section className="section">
-        <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">Nos Jeux</h2>
-          </div>
-          <div className="games-overview">
-            {games.map(game => (
-              <div 
-                key={game.id} 
-                className={`game-overview-card ${selectedGame === game.id ? 'active' : ''}`}
-                onClick={() => setSelectedGame(game.id)}
-              >
-                <div className="game-overview-icon">{game.icon}</div>
-                <h3 className="game-overview-name">{game.name}</h3>
-                <p className="game-overview-desc">{game.description}</p>
-                <div className="tutorial-count">
-                  {Object.values(game.tutorials).flat().length} tutoriels
+          
+          <div className="games-selection">
+            <button 
+              className={`game-selector ${selectedGame === 'all' ? 'active' : ''}`}
+              onClick={() => setSelectedGame('all')}
+            >
+              <div className="selector-content">
+                <div className="selector-icon all-games">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M4 6H20V18H4V6M20 4H4C2.89 4 2 4.89 2 6V18C2 19.11 2.89 20 4 20H20C21.11 20 22 19.11 22 18V6C22 4.89 21.11 4 20 4Z"/>
+                  </svg>
+                </div>
+                <div className="selector-text">
+                  <h3>TOUS LES JEUX</h3>
+                  <p>Vue d'ensemble complète</p>
                 </div>
               </div>
+            </button>
+
+            {games.map(game => (
+              <button 
+                key={game.id}
+                className={`game-selector ${selectedGame === game.id ? 'active' : ''}`}
+                onClick={() => setSelectedGame(game.id)}
+              >
+                <div className={`selector-gradient bg-gradient-to-br ${game.bgGradient}`}></div>
+                <div className="selector-content">
+                  <div className="selector-info">
+                    <h3>{game.name}</h3>
+                    <p>{game.description}</p>
+                    <span className="tutorial-count">{game.tutorials.length} guides</span>
+                  </div>
+                </div>
+              </button>
             ))}
           </div>
         </div>
       </section>
 
+      {/* Game Banner */}
+      {selectedGame !== 'all' && (
+        <section className="game-banner-section">
+          <div className="container-pro">
+            {games.filter(game => game.id === selectedGame).map(game => (
+              <div key={game.id} className="game-banner">
+                <div className={`banner-bg bg-gradient-to-r ${game.bgGradient}`}>
+                  <div className="banner-pattern"></div>
+                </div>
+                <div className="banner-content">
+                  <div className="banner-info">
+                    <h2 className="banner-title">{game.name}</h2>
+                    <p className="banner-description">{game.description}</p>
+                    <div className="banner-stats">
+                      <div className="banner-stat">
+                        <span className="stat-number">{game.tutorials.length}</span>
+                        <span className="stat-label">Tutoriels</span>
+                      </div>
+                      <div className="banner-stat">
+                        <span className="stat-number">{levels.length}</span>
+                        <span className="stat-label">Niveaux</span>
+                      </div>
+                      <div className="banner-stat">
+                        <span className="stat-number">PRO</span>
+                        <span className="stat-label">Qualité</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="banner-levels">
+                    {levels.map(level => (
+                      <div key={level} className="level-indicator">
+                        <div className={`level-dot ${getDifficultyColor(level)}`}></div>
+                        <span className="level-label">{level}</span>
+                        <span className="level-count">
+                          ({game.tutorials.filter(t => t.level === level).length})
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Tutorials List */}
-      <section className="section section-alt">
-        <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">
-              {selectedGame === 'all' ? 'Tous les tutoriels' : games.find(g => g.id === selectedGame)?.name}
-              {selectedLevel !== 'all' && ` - ${levels.find(l => l.id === selectedLevel)?.name}`}
+      <section className="section-pro section-alt-pro">
+        <div className="container-pro">
+          <div className="section-header-pro">
+            <h2 className="section-title-pro">
+              {selectedGame === 'all' 
+                ? `Tous les tutoriels (${filteredTutorials().length})`
+                : `${games.find(g => g.id === selectedGame)?.name} - ${filteredTutorials().length} guides`
+              }
             </h2>
-            <p className="section-subtitle">
-              {filteredTutorials().length} tutoriel{filteredTutorials().length > 1 ? 's' : ''} trouvé{filteredTutorials().length > 1 ? 's' : ''}
-            </p>
           </div>
           
-          <div className="tutorials-grid">
+          <div className="tutorials-grid-pro">
             {filteredTutorials().map((tutorial, index) => (
-              <div key={index} className="tutorial-card">
-                <div className="tutorial-header">
-                  <div className="tutorial-game">
-                    <span className="tutorial-game-icon">{tutorial.gameIcon}</span>
-                    <span className="tutorial-game-name">{tutorial.game}</span>
+              <div key={index} className="tutorial-card-pro">
+                <div className="tutorial-header-pro">
+                  <div className="tutorial-game-info">
+                    <span className="game-name-small">{tutorial.game}</span>
+                    <span className="tutorial-type">{tutorial.type}</span>
                   </div>
-                  <span className={`difficulty-badge ${getDifficultyColor(tutorial.difficulty)}`}>
-                    {tutorial.difficulty}
+                  <span className={`difficulty-badge-pro ${getDifficultyColor(tutorial.level)}`}>
+                    {tutorial.level}
                   </span>
                 </div>
                 
-                <h3 className="tutorial-title">{tutorial.title}</h3>
+                <h3 className="tutorial-title-pro">{tutorial.title}</h3>
                 
-                <div className="tutorial-meta">
-                  <span className="tutorial-duration">⏱️ {tutorial.duration}</span>
-                  <span className="tutorial-level">📚 {tutorial.level}</span>
+                <div className="tutorial-meta-pro">
+                  <div className="meta-item">
+                    <svg className="meta-icon" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12S6.48 22 12 22 22 17.52 22 12 17.52 2 12 2M15.5 11H13V7H11V13H15.5V11Z"/>
+                    </svg>
+                    <span>{tutorial.duration}</span>
+                  </div>
+                  <div className="meta-item">
+                    <svg className="meta-icon" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2L15.09 8.26L22 9L16 14.74L17.18 21.02L12 18.77L6.82 21.02L8 14.74L2 9L8.91 8.26L12 2Z"/>
+                    </svg>
+                    <span>Guide Pro</span>
+                  </div>
                 </div>
                 
-                <button className="tutorial-btn">
-                  Commencer le tutoriel
-                </button>
+                <div className="tutorial-actions-pro">
+                  <button className="btn-primary-pro btn-tutorial">
+                    <span>COMMENCER</span>
+                    <svg className="btn-icon" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             ))}
           </div>
           
           {filteredTutorials().length === 0 && (
-            <div className="no-results">
-              <h3>Aucun tutoriel trouvé</h3>
-              <p>Essayez de modifier vos filtres pour voir plus de résultats.</p>
+            <div className="no-tutorials-pro">
+              <div className="no-tutorials-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2L15.09 8.26L22 9L16 14.74L17.18 21.02L12 18.77L6.82 21.02L8 14.74L2 9L8.91 8.26L12 2Z"/>
+                </svg>
+              </div>
+              <h3>Aucun tutoriel disponible</h3>
+              <p>Les guides pour ce jeu arrivent bientôt !</p>
             </div>
           )}
         </div>
