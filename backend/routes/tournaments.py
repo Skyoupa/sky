@@ -121,11 +121,32 @@ async def register_for_tournament(
                 detail="Registration period has ended"
             )
         
+        # Determine tournament type based on max_participants and title
+        tournament_requires_team = False
+        tournament_name = tournament.title.lower()
+        
+        if "2v2" in tournament_name or "2vs2" in tournament_name or tournament.max_participants <= 4:
+            tournament_requires_team = True
+        elif "5v5" in tournament_name or "5vs5" in tournament_name or tournament.max_participants >= 5:
+            tournament_requires_team = True
+        elif "1v1" in tournament_name or "1vs1" in tournament_name or tournament.max_participants <= 2:
+            tournament_requires_team = False
+        else:
+            # Default logic based on max_participants
+            if tournament.max_participants > 2:
+                tournament_requires_team = True
+        
         participant_id = current_user.id
         
-        # If team_id is provided, register the team instead
-        if team_id:
-            # Verify the team exists and user is captain or member
+        # For team tournaments, team_id is required
+        if tournament_requires_team:
+            if not team_id:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Team is required for this tournament type. Please select a team."
+                )
+            
+            # Verify the team exists and user is a member
             team_data = await db.teams.find_one({"id": team_id})
             if not team_data:
                 raise HTTPException(
@@ -143,8 +164,22 @@ async def register_for_tournament(
                     detail="You must be a member of the team to register it"
                 )
             
+            # Check if team game matches tournament game
+            if team.game != tournament.game:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Team game ({team.game}) doesn't match tournament game ({tournament.game})"
+                )
+            
             # Use team ID as participant
             participant_id = team_id
+        
+        # For individual tournaments, team_id should not be provided (optional check)
+        elif team_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="This is an individual tournament. Team registration is not allowed."
+            )
         
         # Check if already registered (user or team)
         if participant_id in tournament.participants:
@@ -169,7 +204,8 @@ async def register_for_tournament(
         # Update user profile tournament count
         await db.user_profiles.update_one(
             {"user_id": current_user.id},
-            {"$inc": {"total_tournaments": 1}}
+            {"$inc": {"total_tournaments": 1}},
+            upsert=True
         )
         
         registration_type = "team" if team_id else "individual"
@@ -184,6 +220,90 @@ async def register_for_tournament(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error registering for tournament"
+        )
+
+@router.get("/{tournament_id}/user-teams")
+async def get_user_teams_for_tournament(
+    tournament_id: str,
+    current_user: User = Depends(get_current_active_user)
+):
+    """Get user's teams that are eligible for tournament registration."""
+    try:
+        # Get tournament to check game type
+        tournament_data = await db.tournaments.find_one({"id": tournament_id})
+        if not tournament_data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tournament not found"
+            )
+        
+        tournament = Tournament(**tournament_data)
+        
+        # Get user's teams for the tournament game
+        user_teams = await db.teams.find({
+            "members": {"$in": [current_user.id]},
+            "game": tournament.game
+        }).to_list(50)
+        
+        # Format teams with member info
+        eligible_teams = []
+        for team_data in user_teams:
+            from models import Team
+            team = Team(**team_data)
+            
+            # Get member names
+            member_names = []
+            for member_id in team.members:
+                member = await db.users.find_one({"id": member_id})
+                if member:
+                    member_names.append({
+                        "id": member["id"],
+                        "username": member["username"]
+                    })
+            
+            # Get captain name
+            captain = await db.users.find_one({"id": team.captain_id})
+            captain_name = captain["username"] if captain else "Unknown"
+            
+            eligible_teams.append({
+                "id": team.id,
+                "name": team.name,
+                "game": team.game,
+                "captain": captain_name,
+                "is_captain": team.captain_id == current_user.id,
+                "members": member_names,
+                "member_count": len(team.members),
+                "max_members": team.max_members,
+                "description": team.description
+            })
+        
+        # Determine if tournament requires team
+        tournament_requires_team = False
+        tournament_name = tournament.title.lower()
+        
+        if "2v2" in tournament_name or "2vs2" in tournament_name or tournament.max_participants <= 4:
+            tournament_requires_team = True
+        elif "5v5" in tournament_name or "5vs5" in tournament_name or tournament.max_participants >= 5:
+            tournament_requires_team = True
+        elif tournament.max_participants > 2:
+            tournament_requires_team = True
+        
+        return {
+            "tournament_id": tournament_id,
+            "tournament_name": tournament.title, 
+            "tournament_game": tournament.game,
+            "requires_team": tournament_requires_team,
+            "eligible_teams": eligible_teams,
+            "can_register_individual": not tournament_requires_team
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting user teams for tournament {tournament_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error getting user teams for tournament"
         )
 
 @router.delete("/{tournament_id}/register")
