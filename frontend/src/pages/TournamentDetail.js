@@ -768,7 +768,7 @@ const TournamentDetail = () => {
           gap: 20px;
         }
 
-        .registration-card, .organizer-card, .bracket-card {
+        .organizer-card {
           background: white;
           padding: 25px;
           border-radius: 15px;
@@ -776,11 +776,18 @@ const TournamentDetail = () => {
           border: 2px solid #e5e7eb;
         }
 
-        .registration-card h3, .organizer-card h3, .bracket-card h3 {
+        .organizer-card h3 {
           color: #1e3a8a;
           font-size: 18px;
           font-weight: 700;
           margin-bottom: 15px;
+        }
+
+        .organizer-card p {
+          color: #1a1a1a;
+          font-size: 16px;
+          font-weight: 600;
+          margin: 0;
         }
 
         .bracket-card {
