@@ -593,7 +593,7 @@ const AdminTournaments = () => {
           gap: 15px;
           margin: 15px 0;
           font-size: 14px;
-          color: #6b7280;
+          color: #333333;
         }
 
         .btn-template {
@@ -638,7 +638,7 @@ const AdminTournaments = () => {
         .form-group label {
           margin-bottom: 8px;
           font-weight: 600;
-          color: #374151;
+          color: #1a1a1a;
         }
 
         .form-group input,
@@ -649,6 +649,7 @@ const AdminTournaments = () => {
           border-radius: 8px;
           font-size: 14px;
           transition: border-color 0.3s;
+          color: #1a1a1a;
         }
 
         .form-group input:focus,
