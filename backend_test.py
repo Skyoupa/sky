@@ -1315,6 +1315,172 @@ class OupafamillyTester:
         if team_id_2:
             await self.make_request("DELETE", f"/teams/{team_id_2}", auth_token=self.test_user_token)
 
+    async def test_team_deletion_functionality(self):
+        """Test team deletion functionality comprehensively as per user requirements."""
+        print("\n🗑️ Testing Team Deletion Functionality...")
+        
+        if not self.admin_token or not self.test_user_token:
+            self.log_test("Team Deletion Setup", False, "Missing required tokens for testing")
+            return
+        
+        # Create test teams for deletion testing
+        test_team_data = {
+            "name": "Team Deletion Test",
+            "description": "Team created specifically for testing deletion functionality",
+            "game": "cs2",
+            "max_members": 6
+        }
+        
+        # Test 1: Create team as captain (test user)
+        status, data = await self.make_request("POST", "/teams/", test_team_data, auth_token=self.test_user_token)
+        team_id = None
+        if status == 200 and data.get("id"):
+            team_id = data["id"]
+            self.log_test("Create Team for Deletion Test", True, f"Team created: {data.get('name')}")
+        else:
+            self.log_test("Create Team for Deletion Test", False, f"Failed to create team: {data}")
+            return
+        
+        # Test 2: Try to delete team with non-captain user (should fail with 403)
+        # First create another user to test non-captain access
+        test_user_2_data = {
+            "username": "non_captain_user",
+            "email": "noncaptain@example.com",
+            "password": "Test123!",
+            "display_name": "Non Captain User"
+        }
+        
+        # Register second user
+        status, _ = await self.make_request("POST", "/auth/register", test_user_2_data)
+        if status == 200 or (status == 400 and "already registered" in str(_)):
+            # Login second user
+            login_data = {"email": test_user_2_data["email"], "password": test_user_2_data["password"]}
+            status, login_response = await self.make_request("POST", "/auth/login", login_data)
+            if status == 200:
+                non_captain_token = login_response["access_token"]
+                
+                # Try to delete team with non-captain user
+                status, data = await self.make_request("DELETE", f"/teams/{team_id}/delete", auth_token=non_captain_token)
+                if status == 403:
+                    self.log_test("Non-Captain Deletion Block", True, "Non-captain user properly blocked from deleting team")
+                else:
+                    self.log_test("Non-Captain Deletion Block", False, f"Non-captain deletion not blocked: {status} - {data}")
+            else:
+                self.log_test("Non-Captain User Login", False, "Could not login non-captain user for testing")
+        
+        # Test 3: Try to delete non-existent team (should return 404)
+        fake_team_id = "fake-team-id-12345"
+        status, data = await self.make_request("DELETE", f"/teams/{fake_team_id}/delete", auth_token=self.test_user_token)
+        if status == 404:
+            self.log_test("Delete Non-existent Team", True, "404 returned for non-existent team")
+        else:
+            self.log_test("Delete Non-existent Team", False, f"Expected 404, got {status}: {data}")
+        
+        # Test 4: Create tournament and register team to test active tournament protection
+        tournament_data = {
+            "title": "Test Tournament for Team Deletion",
+            "description": "Tournament to test team deletion protection",
+            "game": "cs2",
+            "tournament_type": "elimination",
+            "max_participants": 8,
+            "entry_fee": 0.0,
+            "prize_pool": 50.0,
+            "registration_start": (datetime.utcnow() + timedelta(hours=1)).isoformat(),
+            "registration_end": (datetime.utcnow() + timedelta(days=7)).isoformat(),
+            "tournament_start": (datetime.utcnow() + timedelta(days=8)).isoformat(),
+            "rules": "Test tournament rules"
+        }
+        
+        status, tournament_response = await self.make_request("POST", "/tournaments/", tournament_data, auth_token=self.admin_token)
+        tournament_id = None
+        if status == 200:
+            tournament_id = tournament_response["id"]
+            
+            # Set tournament to open status
+            status, _ = await self.make_request("PUT", f"/tournaments/{tournament_id}/status?new_status=open", auth_token=self.admin_token)
+            
+            if status == 200:
+                # Register team for tournament
+                status, _ = await self.make_request("POST", f"/tournaments/{tournament_id}/register", 
+                                                 {"team_id": team_id}, auth_token=self.test_user_token)
+                
+                if status == 200:
+                    self.log_test("Team Tournament Registration", True, "Team registered for tournament successfully")
+                    
+                    # Test 5: Try to delete team while registered in active tournament (should fail with 400)
+                    status, data = await self.make_request("DELETE", f"/teams/{team_id}/delete", auth_token=self.test_user_token)
+                    if status == 400 and "active tournaments" in data.get("detail", "").lower():
+                        self.log_test("Active Tournament Deletion Block", True, "Team deletion properly blocked due to active tournament registration")
+                    else:
+                        self.log_test("Active Tournament Deletion Block", False, f"Team deletion not blocked for active tournament: {status} - {data}")
+                    
+                    # Complete the tournament to test cleanup functionality
+                    status, _ = await self.make_request("PUT", f"/tournaments/{tournament_id}/status?new_status=completed", auth_token=self.admin_token)
+                    
+                    if status == 200:
+                        # Test 6: Delete team after tournament completion (should succeed and cleanup)
+                        status, data = await self.make_request("DELETE", f"/teams/{team_id}/delete", auth_token=self.test_user_token)
+                        if status == 200:
+                            self.log_test("Team Deletion After Tournament Completion", True, f"Team deleted successfully: {data.get('message')}")
+                            
+                            # Verify team is actually deleted
+                            status, _ = await self.make_request("GET", f"/teams/{team_id}")
+                            if status == 404:
+                                self.log_test("Team Deletion Verification", True, "Team properly removed from database")
+                            else:
+                                self.log_test("Team Deletion Verification", False, "Team still exists after deletion")
+                            
+                            # Verify team was cleaned up from tournament participants
+                            status, tournament_details = await self.make_request("GET", f"/tournaments/{tournament_id}")
+                            if status == 200:
+                                participants = tournament_details.get("participants", [])
+                                if team_id not in participants:
+                                    self.log_test("Tournament Cleanup Verification", True, "Team properly removed from tournament participants")
+                                else:
+                                    self.log_test("Tournament Cleanup Verification", False, "Team still in tournament participants after deletion")
+                        else:
+                            self.log_test("Team Deletion After Tournament Completion", False, f"Team deletion failed: {data}")
+                    else:
+                        self.log_test("Tournament Status Update", False, "Could not complete tournament for cleanup testing")
+                else:
+                    self.log_test("Team Tournament Registration", False, "Could not register team for tournament")
+            else:
+                self.log_test("Tournament Status Update", False, "Could not set tournament to open status")
+        else:
+            self.log_test("Tournament Creation for Deletion Test", False, "Could not create tournament for testing")
+        
+        # Test 7: Test successful team deletion without tournament constraints
+        # Create another team for clean deletion test
+        clean_team_data = {
+            "name": "Clean Deletion Test Team",
+            "description": "Team for testing clean deletion",
+            "game": "cs2",
+            "max_members": 6
+        }
+        
+        status, data = await self.make_request("POST", "/teams/", clean_team_data, auth_token=self.test_user_token)
+        clean_team_id = None
+        if status == 200:
+            clean_team_id = data["id"]
+            
+            # Delete team immediately (should succeed)
+            status, data = await self.make_request("DELETE", f"/teams/{clean_team_id}/delete", auth_token=self.test_user_token)
+            if status == 200:
+                self.log_test("Clean Team Deletion", True, f"Team deleted successfully: {data.get('message')}")
+                
+                # Verify deletion
+                status, _ = await self.make_request("GET", f"/teams/{clean_team_id}")
+                if status == 404:
+                    self.log_test("Clean Team Deletion Verification", True, "Team properly removed from database")
+                else:
+                    self.log_test("Clean Team Deletion Verification", False, "Team still exists after deletion")
+            else:
+                self.log_test("Clean Team Deletion", False, f"Clean team deletion failed: {data}")
+        
+        # Cleanup: Delete test tournament if created
+        if tournament_id:
+            await self.make_request("DELETE", f"/tournaments/{tournament_id}", auth_token=self.admin_token)
+
     async def test_enhanced_tournament_registration_system(self):
         """Test enhanced tournament registration system focusing on tournament type detection logic."""
         print("\n🏆 Testing Enhanced Tournament Registration System...")
