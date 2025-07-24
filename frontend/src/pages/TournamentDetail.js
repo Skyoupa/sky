@@ -135,6 +135,7 @@ const TournamentDetail = () => {
         alert('Inscription réussie !');
         setShowRegistrationModal(false);
         fetchTournamentDetails(); // Refresh tournament data
+        fetchParticipantsInfo(); // Refresh participants info  
         fetchUserTeams(); // Refresh teams
       } else {
         const errorData = await response.json();
